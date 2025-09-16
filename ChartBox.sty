@@ -5,18 +5,17 @@
 \RequirePackage[most]{tcolorbox}
 
 \newcommand{\bstar}{★} \newcommand{\nstar}{☆}
-\newcommand{\StarForChart}[1]{%
-  \ifcase#1
-    % case 0（存在しない場合は空）
-  \or
-    \nstar\nstar\bstar % case 1
-  \or
-    \nstar\bstar\bstar % case 2
-  \or
-    \bstar\bstar\bstar % case 3
-  \else
-  \fi
-}
+
+\ExplSyntaxOn
+\NewDocumentCommand \StarForChart { m }
+  {
+    \int_compare:nNnT {#1} > 0
+      {
+        \prg_replicate:nn { 3 - #1 } { \nstar }
+        \prg_replicate:nn {#1} { \bstar }
+      }
+  }
+\ExplSyntaxOff
 
 \newlength{\ChartShikiTitleLen}
 \newlength{\ChartShikiSTitleLen}
