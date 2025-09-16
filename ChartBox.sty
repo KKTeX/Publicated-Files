@@ -1,0 +1,49 @@
+% This package is part of the packages planned to be included in TeX Live by April next year.
+% This package is licensed under the MIT License.
+
+\ProvidesPackage{ChartBox}[2025/09/16, v1.0.0]
+\RequirePackage[most]{tcolorbox}
+
+\newcommand{\bstar}{★} \newcommand{\nstar}{☆}
+\newcommand{\StarForChart}[1]{%
+  \ifcase#1
+    % case 0（存在しない場合は空）
+  \or
+    \nstar\nstar\bstar % case 1
+  \or
+    \nstar\bstar\bstar % case 2
+  \or
+    \bstar\bstar\bstar % case 3
+  \else
+  \fi
+}
+
+\newlength{\ChartShikiTitleLen}
+\newlength{\ChartShikiSTitleLen}
+\newlength{\ChartShikiSSTitleLen}
+\DeclareTColorBox{mydec8}{m m m m}{
+  before={%
+    \noindent\settowidth{\ChartShikiTitleLen}{{\mbox{\large #1}}}
+    \settowidth{\ChartShikiSTitleLen}{{\mbox{\large #2}}}
+    \settowidth{\ChartShikiSSTitleLen}{{\mbox{\large #3}}}
+  },
+  enhanced, empty, left=2mm, right=2mm, right skip=.7em, left skip=-.1em,
+  underlay={%
+    %タイトル
+    \fill[red!80] (frame.north west) -- ([xshift=\ChartShikiTitleLen+.5em]frame.north west) -- ++(-.5em,-1.5em) -- ([yshift=-1.5em]frame.north west);
+    \node[anchor=north west,inner sep=.3mm] at ([yshift=-.05em]frame.north west) {\large\gtfamily\textcolor{white}{#1}};
+    \fill[red!20] ([xshift=\ChartShikiTitleLen+.5em]frame.north west) -- ([xshift=\ChartShikiTitleLen+.8em]frame.north west) -- ++ (-.5em,-1.5em) -- ++ (-.3em,0em);
+    \node[anchor=north west,inner sep=.3mm] at ([xshift=\ChartShikiTitleLen+1em,yshift=-.05em]frame.north west) {\large\gtfamily #2};
+    \fill[red!20] ([xshift=\ChartShikiTitleLen+2.4em+\ChartShikiSTitleLen]frame.north west) -- ([xshift=-6em]frame.north east) -- ++(-.5em,-1.5em) -- ([xshift=\ChartShikiTitleLen+1.9em+\ChartShikiSTitleLen,yshift=-1.5em]frame.north west);
+    \node[anchor=north west,inner sep=.3mm] at ([xshift=\ChartShikiTitleLen+2.4em+\ChartShikiSTitleLen,yshift=-.05em]frame.north west) {\large\gtfamily #3};
+    %外枠
+    \draw[red, line width=1.5pt] (frame.north west) -- (frame.south west);
+    \draw[red, line width=.3pt] ([yshift=-.17pt]frame.north west) -- ([yshift=-.17pt]frame.north east);
+    \draw[red, line width=.3pt] ([yshift=.17pt]frame.south west) -- ([yshift=.17pt]frame.south east);
+    \draw[red, line width=.3pt] ([yshift=.18pt-1.5em]frame.north west) -- ([yshift=.18pt-1.5em]frame.north east);
+    \node[anchor=north east, inner sep=.3mm] at ([yshift=-.14em]frame.north east) {\textcolor{red!80}{\StarForChart{#4}}};
+  },
+  top=5mm,bottom=1mm
+}
+
+\endinput
