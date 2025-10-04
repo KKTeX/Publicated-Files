@@ -1,0 +1,20 @@
+KKsymbols
+================================================
+
+Version: 1.0.1
+Date: 2025-10-04
+Author: Kosei Kawaguchi a.k.a. KKTeX
+License: LPPL 1.3c
+
+Description:
+------------
+This package offers LaTeX commands for enclosing characters in circles, squares, diamonds, or brackets, with automatic scaling and baseline correction to ensure correct appearance in both horizontal and vertical writing modes.
+
+Dependencies:
+-------------
+tikz
+
+Notice
+This package is **LuaLaTeX-only**. 
+
+See kksymbols-doc.tex for usage examples.

@@ -1,9 +1,9 @@
 keisennote — TikZ notebook ruled lines for LaTeX
 ================================================
 
-Version: 1.0.3
-Date: 2025-09-15
-Author: KKTeX
+Version: 1.0.4
+Date: 2025-10-04
+Author: Kosei Kawaguchi a.k.a. KKTeX
 License: LPPL 1.3c
 
 Description:
@@ -13,7 +13,7 @@ Typeset Japanese-style ruled notebook lines in LaTeX. Supports full-page fills
 
 Dependencies:
 -------------
-xcolor, tikz, xparse, calc, ifthen, fp, zref-savepos
+xcolor, tikz etc.
 
 Credit:
 -------

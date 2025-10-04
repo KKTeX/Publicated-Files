@@ -36,8 +36,8 @@
 
 
 \title{\texttt{keisennote} Package Documentation}
-\author{KKTeX}
-\date{Version 1.0.3 (2025/09/17)}
+\author{Kosei Kawaguchi a.k.a. KKTeX}
+\date{Version 1.0.4 (2025/10/04)}
 \begin{document}
 \begin{titlepage}
   \maketitle
@@ -61,10 +61,8 @@ Dependencies:
 \begin{itemize}
     \item \texttt{xcolor} 
     \item \texttt{tikz}
-    \item \texttt{xparse}, \texttt{calc}, \texttt{ifthen}
-    \item \texttt{fp}
-    \item \texttt{zref-savepos} 
-    \item \texttt{luatex85}, \texttt{url}, \texttt{expl3}, \texttt{xkeyval}
+    \item \texttt{zref}, \text{zref-savepos}, \text{fp}
+    \item \texttt{kvoptions}
 \end{itemize}
 
 
@@ -78,83 +76,75 @@ Load the package:
 
 \subsection{\texttt{\textbackslash notefill}}
 \begin{verbatim}
-\notefill[<scale>][<color>]
+\notefill[<color>]
 \end{verbatim}
 
 Fills the current vertical space with ruled notebook lines and dots.
 
-\begin{itemize}
-    \item \texttt{<scale>} (optional, default: 0.5pt): size of triangular end markers.
-    \item \texttt{<color>} (optional, default: white!70!black): color of lines and dots.
-\end{itemize}
-
 \textbf{Example:}
 \begin{verbatim}
-\notefill[0.6pt][Gray]
+\notefill[green]
 \end{verbatim}
 
 \subsection{\texttt{\textbackslash note}}
 \begin{verbatim}
-\note{<lines>}[<scale>][<color>]
+\note{<lines>}[<color>]
 \end{verbatim}
 
 Typesets a short ruled block with a specified number of lines.
 
 \begin{itemize}
     \item \texttt{<lines>} (mandatory, integer $\ge$ 2): number of ruled lines.
-    \item \texttt{<scale>} (optional, default: 0.5pt): size of triangular markers.
     \item \texttt{<color>} (optional, default: white!70!black): color of lines and dots.
 \end{itemize}
 
 \textbf{Example:}
 \begin{verbatim}
-\note{5}[0.4pt][NavyBlue]
+\note{5}[NavyBlue]
 \end{verbatim}
 
 This produces the following output.\bigskip
 
-\note{5}[0.4pt][NavyBlue]
+\note{5}[NavyBlue]
 
 \bigskip Inserting \verb|\bigskip| before (and after) using the \verb|\note| command can sometimes improve the appearance.
 
 \subsection{\texttt{\textbackslash masumefill}}
 \begin{verbatim}
-\masume[<scale>][<color>]
+\masume[<color>]
 \end{verbatim}
 
 Fills the current vertical space with grids and dots.
 
 \begin{itemize}
-    \item \texttt{<scale>} (optional, default: 0.5pt): size of triangular end markers.
-    \item \texttt{<color>} (optional, default: white!70!black): color of lines and dots.
+  \item \texttt{<color>} (optional, default: white!70!black): color of lines and dots.
 \end{itemize}
 
 \textbf{Example:}
 \begin{verbatim}
-\notefill[0.6pt][Gray]
+\notefill[Gray]
 \end{verbatim}
 
 \subsection{\texttt{\textbackslash masume}}
 \begin{verbatim}
-\masume{<lines>}[<scale>][<color>]
+\masume{<lines>}[<color>]
 \end{verbatim}
 
 Typesets a short grid block with a specified number of lines.
 
 \begin{itemize}
-    \item \texttt{<lines>} (mandatory, integer $\ge$ 2): number of ruled lines.
-    \item \texttt{<scale>} (optional, default: 0.5pt): size of triangular markers.
-    \item \texttt{<color>} (optional, default: white!70!black): color of lines and dots.
+  \item \texttt{<lines>} (mandatory, integer $\ge$ 2): number of ruled lines.
+  \item \texttt{<color>} (optional, default: white!70!black): color of lines and dots.
 \end{itemize}
 
 \textbf{Example:}
 \begin{verbatim}
-\masume{5}[0.4pt][NavyBlue]
+\masume{5}[NavyBlue]
 \end{verbatim}
 
 This produces the following output.\bigskip
 
-\masume{5}[0.4pt][NavyBlue]
+\masume{5}[NavyBlue]
 
 \bigskip Inserting \verb|\bigskip| before (and after) using the \verb|\masume| command can sometimes improve the appearance.
 
@@ -162,16 +152,14 @@ This produces the following output.\bigskip
 
 These dimensions can be adjusted:
 
-\begin{itemize}
-    \item \texttt{\textbackslash noteLineWidth}: thickness of ruled lines (default: 0.5pt)
-    \item \texttt{\textbackslash dotsRadius}: radius of intersection dots (default: 0.8pt)
-    \item \texttt{\textbackslash noteLineDistance}: vertical distance between lines (default: 6mm)
-\end{itemize}
+\begin{description}
+  \item[\texttt{\textbackslash SetNoteLineWidth}] You can set the width of note lines : \verb|\SetNoteLineWidth[2mm]|
+  \item[\texttt{\textbackslash SetNoteDotRadius}] You can set the radius of dots. : \verb|\SetNoteDotRadius[1pt]|
+  \item[\texttt{\textbackslash SetNoteLineDistance}] You can set the distance between each lines. \\: \verb|\SetNoteLineDistance[7mm]|
+  \item[\texttt{\textbackslash SetNoteTriangleSize}] You can set the size of triangles. : \verb|\SetNoteTriangleSiz[1pt]|
+\end{description}
 
-Example:
-\begin{verbatim}
-\setlength{\noteLineDistance}{7truemm} % A-kei spacing
-\end{verbatim}
+If no argument is given, the parameter is reset to its default value.
 
 \section{Examples}
 
@@ -180,21 +168,12 @@ Example:
 \note{4}
 \end{verbatim}
 \note{4}
-
+\newpage
 \subsection{Full Page Fill}
 \begin{verbatim}
 \notefill
 \end{verbatim}
 \notefill
-
-\newpage\section{Implementation Notes}
-
-\begin{itemize}
-    \item Notebook lines are drawn using TikZ, with dots placed at equal horizontal intervals.
-    \item The number of dots per line is automatically calculated using the \texttt{fp} package.
-    \item Triangular markers are added at the top and bottom of each ruled block.
-    \item \texttt{\textbackslash notefill} measures available vertical space using \texttt{zref-savepos}.
-\end{itemize}
 
 \section{License}
 
@@ -205,26 +184,64 @@ Released under the \href{https://www.latex-project.org/lppl/}{LaTeX Project Publ
 \begin{itemize}
     \item \textbf{v1.0.0 (2025/09/13)} --- Initial public release.
     \item \textbf{v1.0.3 (2025/09/13)} --- KKTeX added \texttt{\textbackslash masume} and \texttt{\textbackslash masumefill}.
+    \item \textbf{v1.0.4 (2025/10/4)} --- KKTeX fixed the problem in \verb|\masumefill| and added some package options and setting commands.
 \end{itemize}
 
 \section{Source Code}
   \begin{lstlisting}
-    \ProvidesPackage{keisennote}[2025/09/17, v1.0.3]
+    \ProvidesPackage{keisennote}[2025/10/04, v1.0.4]
 
     \RequirePackage[dvipsnames, svgnames, x11names]{xcolor}
-    \RequirePackage{luatex85, zref, zref-savepos, fp, url, expl3, xkeyval}
-    \RequirePackage{tikz}\RequirePackage{graphicx}
-    \usetikzlibrary{shapes, positioning, shadows, shadows.blur, patterns, decorations.text, decorations.pathmorphing, arrows.meta, calc, snakes, intersections}
-    \RequirePackage{xparse, calc, ifthen}
+    \RequirePackage{zref, zref-savepos, fp}
+    \RequirePackage{tikz}
+
+    \RequirePackage{kvoptions} 
+
+    \SetupKeyvalOptions{%
+      family=kn,%
+      prefix=kn@%
+    }
+
+    \newdimen\noteLineWidth
+    \noteLineWidth=.5truept
+
+    \newdimen\dotsRadius
+    \dotsRadius=.8truept
+
+    \newdimen\noteLineDistance
+    \noteLineDistance=6truemm
 
     \newdimen\VoD@mag
-    \VoD@mag=.5pt 
-    \newdimen\noteLineWidth
-    \newdimen\dotsRadius
-    \newdimen\noteLineDistance
-    \noteLineWidth.5truept\relax%    <- 罫線の太さ
-    \dotsRadius.8truept\relax%       <- ドットの半径
-    \noteLineDistance=6truemm\relax% <- 罫線間隔（A罫 : 7truemm，B罫 : 6truemm） 
+    \VoD@mag=.5pt
+
+    %%%パッケージオプションの宣言
+    \DeclareStringOption[.5truept]{linewidth}% 線の太さ
+    \DeclareStringOption[.8truept]{radius}% ドットの大きさ
+    \DeclareStringOption[6truemm]{distance}% ドットの間隔
+    \DeclareStringOption[.5pt]{triangle}% 三角形の大きさ
+
+    \ProcessKeyvalOptions* % オプション適用
+
+    %%%オプションの反映
+    \setlength{\noteLineWidth}{\kn@linewidth}
+    \setlength{\dotsRadius}{\kn@radius}
+    \setlength{\noteLineDistance}{\kn@distance}
+    \setlength{\VoD@mag}{\kn@triangle}
+
+
+    %%%途中でパラメータ変更ができるように
+    \NewDocumentCommand{\SetNoteLineWidth}{O{.5truept}}{%
+      \setlength{\noteLineWidth}{#1}
+    }
+    \NewDocumentCommand{\SetNoteDotRadius}{O{.8truept}}{%
+      \setlength{\dotsRadius}{#1}
+    }
+    \NewDocumentCommand{\SetNoteLineDistance}{O{6truemm}}{%
+      \setlength{\noteLineDistance}{#1}
+    }
+    \NewDocumentCommand{\SetNoteTriangleSize}{O{.5pt}}{%
+      \setlength{\VoD@mag}{#1}
+    }
 
     %%%必要な内部レジスタの用意
     \newdimen\VDNT@currentXPos
@@ -233,15 +250,14 @@ Released under the \href{https://www.latex-project.org/lppl/}{LaTeX Project Publ
     \newdimen\VDNT@Yinterval
     \newdimen\VDNT@notegoal
 
-
     %%% \notefillで用いる座標管理用カウンタの準備
     \def\VDNT@pkgname{vodnote}
     \global\newcount\VDNT@uniqe
 
 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%% \notefill の定義
-    \NewDocumentCommand{\notefill}{ O{.5pt} O{white!70!black} }{\par\bgroup
-      \VoD@mag=#1
+    \NewDocumentCommand{\notefill}{ O{white!70!black} }{\par\bgroup
       \parindent\z@
       %%罫線間隔の算出
       \@tempcnta\linewidth
@@ -263,17 +279,17 @@ Released under the \href{https://www.latex-project.org/lppl/}{LaTeX Project Publ
       \noindent\smash{%
         \begin{tikzpicture}[xscale=0.996]
           \VDNT@currentYPos\z@
-          \fill[#2] (\VDNT@Xinterval*\VDNT@dotsNum/2,\VDNT@currentYPos+\VoD@mag*4pt) -- ++(\VoD@mag*3pt,-\VoD@mag*4pt) -- ++(-\VoD@mag*6pt,0) -- cycle;
+          \fill[#1] (\VDNT@Xinterval*\VDNT@dotsNum/2,\VDNT@currentYPos+\VoD@mag*4pt) -- ++(\VoD@mag*3pt,-\VoD@mag*4pt) -- ++(-\VoD@mag*6pt,0) -- cycle;
           \@whiledim\VDNT@currentYPos<\VDNT@notegoal\do{
             \VDNT@currentXPos\z@
-            \draw[#2,line width=\noteLineWidth] (0,\VDNT@currentYPos) -- (\linewidth,\VDNT@currentYPos);
+            \draw[#1,line width=\noteLineWidth] (0,\VDNT@currentYPos) -- (\linewidth,\VDNT@currentYPos);
             \foreach \k in{0,1,...,\VDNT@dotsNum}{%
               \VDNT@currentXPos=\dimexpr\VDNT@Xinterval*\k\relax
-              \fill[#2] (\VDNT@currentXPos,\VDNT@currentYPos) circle [radius=\dotsRadius];
+              \fill[#1] (\VDNT@currentXPos,\VDNT@currentYPos) circle [radius=\dotsRadius];
             }
             \advance\VDNT@currentYPos\VDNT@Yinterval\relax
           }
-          \fill[#2] (\VDNT@Xinterval*\VDNT@dotsNum/2,\VDNT@currentYPos-\VDNT@Yinterval-\VoD@mag*4pt) -- ++(\VoD@mag*3pt,\VoD@mag*4pt) -- ++(-\VoD@mag*6pt,0) -- cycle;
+          \fill[#1] (\VDNT@Xinterval*\VDNT@dotsNum/2,\VDNT@currentYPos-\VDNT@Yinterval-\VoD@mag*4pt) -- ++(\VoD@mag*3pt,\VoD@mag*4pt) -- ++(-\VoD@mag*6pt,0) -- cycle;
         \end{tikzpicture}%
       }%
       \egroup
@@ -284,9 +300,7 @@ Released under the \href{https://www.latex-project.org/lppl/}{LaTeX Project Publ
 
 
     %%% \note の定義（２以上の整数を引数に）
-    \NewDocumentCommand{\note}{ m O{.5pt} O{white!70!black} }{\par\bgroup
-      %%三角形の大きさ
-      \VoD@mag=#2
+    \NewDocumentCommand{\note}{ m O{white!70!black} }{\par\bgroup
       %%罫線間隔の算出
       \@tempcnta\linewidth
       \@tempcntb\noteLineDistance
@@ -297,25 +311,25 @@ Released under the \href{https://www.latex-project.org/lppl/}{LaTeX Project Publ
       \noindent
         \begin{tikzpicture}[xscale=0.996]
           \VDNT@currentYPos\z@
-          \fill[#3] (\VDNT@Xinterval*\VDNT@dotsNum/2,\VDNT@currentYPos+\VDNT@Yinterval+\VoD@mag*4pt) -- ++(\VoD@mag*3pt,-\VoD@mag*4pt) -- ++(-\VoD@mag*6pt,0) -- cycle; %上の三角形
+          \fill[#2] (\VDNT@Xinterval*\VDNT@dotsNum/2,\VDNT@currentYPos+\VDNT@Yinterval+\VoD@mag*4pt) -- ++(\VoD@mag*3pt,-\VoD@mag*4pt) -- ++(-\VoD@mag*6pt,0) -- cycle; %上の三角形
           \foreach \i in{1,2,...,#1}{ 
             \VDNT@currentXPos\z@
             \global\VDNT@currentYPos=\dimexpr\VDNT@Yinterval*\i\relax
-            \draw[#3,line width=\noteLineWidth] (0,\VDNT@currentYPos) -- (\linewidth,\VDNT@currentYPos);
+            \draw[#2,line width=\noteLineWidth] (0,\VDNT@currentYPos) -- (\linewidth,\VDNT@currentYPos);
             \foreach \k in{0,1,...,\VDNT@dotsNum}{
               \VDNT@currentXPos=\dimexpr\VDNT@Xinterval*\k\relax
-              \fill[#3] (\VDNT@currentXPos,\VDNT@currentYPos) circle [radius=\dotsRadius];
+              \fill[#2] (\VDNT@currentXPos,\VDNT@currentYPos) circle [radius=\dotsRadius];
             }
           }
-          \fill[#3] (\VDNT@Xinterval*\VDNT@dotsNum/2,\VDNT@currentYPos-\VoD@mag*4pt) -- ++(\VoD@mag*3pt,\VoD@mag*4pt) -- ++(-\VoD@mag*6pt,0) -- cycle; %下の三角形
+          \fill[#2] (\VDNT@Xinterval*\VDNT@dotsNum/2,\VDNT@currentYPos-\VoD@mag*4pt) -- ++(\VoD@mag*3pt,\VoD@mag*4pt) -- ++(-\VoD@mag*6pt,0) -- cycle; %下の三角形
         \end{tikzpicture}%
       \egroup
       \par
     }
 
 
-    \NewDocumentCommand{\masumefill}{ O{.5pt} O{white!70!black} }{\par\bgroup
-      \VoD@mag=#1
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \NewDocumentCommand{\masumefill}{ O{white!70!black} }{\par\bgroup
       \parindent\z@
       %%罫線間隔の算出
       \@tempcnta\linewidth
@@ -337,19 +351,19 @@ Released under the \href{https://www.latex-project.org/lppl/}{LaTeX Project Publ
       \noindent\smash{%
         \begin{tikzpicture}[xscale=0.996]
           \VDNT@currentYPos\z@
-          \fill[#2] (\VDNT@Xinterval*\VDNT@dotsNum/2,\VDNT@currentYPos+\VoD@mag*4pt) -- ++(\VoD@mag*3pt,-\VoD@mag*4pt) -- ++(-\VoD@mag*6pt,0) -- cycle;
+          \fill[#1] (\VDNT@Xinterval*\VDNT@dotsNum/2,\VDNT@currentYPos+\VoD@mag*4pt) -- ++(\VoD@mag*3pt,-\VoD@mag*4pt) -- ++(-\VoD@mag*6pt,0) -- cycle;
           \@whiledim\VDNT@currentYPos<\VDNT@notegoal\do{
             \VDNT@currentXPos\z@
-            \draw[#2,line width=\noteLineWidth] (0,\VDNT@currentYPos) -- (\linewidth,\VDNT@currentYPos);
+            \draw[#1,line width=\noteLineWidth] (0,\VDNT@currentYPos) -- (\linewidth,\VDNT@currentYPos);
             \foreach \k in{0,1,...,\VDNT@dotsNum}{%
               \VDNT@currentXPos=\dimexpr\VDNT@Xinterval*\k\relax
-              \draw[#2,line width=\noteLineWidth]
-              (\VDNT@currentXPos,0) -- (\VDNT@currentXPos,\VDNT@notegoal-.5\VDNT@Yinterval);
-              \fill[#2] (\VDNT@currentXPos,\VDNT@currentYPos) circle [radius=\dotsRadius];
+              \draw[#1,line width=\noteLineWidth]
+              (\VDNT@currentXPos,0) -- (\VDNT@currentXPos,\VDNT@currentYPos);
+              \fill[#1] (\VDNT@currentXPos,\VDNT@currentYPos) circle [radius=\dotsRadius];
             }
             \advance\VDNT@currentYPos\VDNT@Yinterval\relax
           }
-          \fill[#2] (\VDNT@Xinterval*\VDNT@dotsNum/2,\VDNT@currentYPos-\VDNT@Yinterval-\VoD@mag*4pt) -- ++(\VoD@mag*3pt,\VoD@mag*4pt) -- ++(-\VoD@mag*6pt,0) -- cycle;
+          \fill[#1] (\VDNT@Xinterval*\VDNT@dotsNum/2,\VDNT@currentYPos-\VDNT@Yinterval-\VoD@mag*4pt) -- ++(\VoD@mag*3pt,\VoD@mag*4pt) -- ++(-\VoD@mag*6pt,0) -- cycle;
         \end{tikzpicture}%
       }%
       \egroup
@@ -359,9 +373,7 @@ Released under the \href{https://www.latex-project.org/lppl/}{LaTeX Project Publ
     }
 
 
-    \NewDocumentCommand{\masume}{ m O{.5pt} O{white!70!black} }{\par\bgroup
-      %%三角形の大きさ
-      \VoD@mag=#2
+    \NewDocumentCommand{\masume}{ m O{white!70!black} }{\par\bgroup
       %%罫線間隔の算出
       \@tempcnta\linewidth
       \@tempcntb\noteLineDistance
@@ -372,18 +384,18 @@ Released under the \href{https://www.latex-project.org/lppl/}{LaTeX Project Publ
       \noindent
         \begin{tikzpicture}[xscale=0.996]
           \VDNT@currentYPos\z@
-          \fill[#3] (\VDNT@Xinterval*\VDNT@dotsNum/2,\VDNT@currentYPos+\VDNT@Yinterval+\VoD@mag*4pt) -- ++(\VoD@mag*3pt,-\VoD@mag*4pt) -- ++(-\VoD@mag*6pt,0) -- cycle; %上の三角形
+          \fill[#2] (\VDNT@Xinterval*\VDNT@dotsNum/2,\VDNT@currentYPos+\VDNT@Yinterval+\VoD@mag*4pt) -- ++(\VoD@mag*3pt,-\VoD@mag*4pt) -- ++(-\VoD@mag*6pt,0) -- cycle; %上の三角形
           \foreach \i in{1,2,...,#1}{ 
             \VDNT@currentXPos\z@
             \global\VDNT@currentYPos=\dimexpr\VDNT@Yinterval*\i\relax
-            \draw[#3,line width=\noteLineWidth] (0,\VDNT@currentYPos) -- (\linewidth,\VDNT@currentYPos);
+            \draw[#2,line width=\noteLineWidth] (0,\VDNT@currentYPos) -- (\linewidth,\VDNT@currentYPos);
             \foreach \k in{0,1,...,\VDNT@dotsNum}{
               \VDNT@currentXPos=\dimexpr\VDNT@Xinterval*\k\relax
-              \draw[#3,line width=\noteLineWidth] (\VDNT@currentXPos,\VDNT@Yinterval) -- (\VDNT@currentXPos,\VDNT@Yinterval*#1);
-              \fill[#3] (\VDNT@currentXPos,\VDNT@currentYPos) circle [radius=\dotsRadius];
+              \draw[#2,line width=\noteLineWidth] (\VDNT@currentXPos,\VDNT@Yinterval) -- (\VDNT@currentXPos,\VDNT@Yinterval*#1);
+              \fill[#2] (\VDNT@currentXPos,\VDNT@currentYPos) circle [radius=\dotsRadius];
             }
           }
-          \fill[#3] (\VDNT@Xinterval*\VDNT@dotsNum/2,\VDNT@currentYPos-\VoD@mag*4pt) -- ++(\VoD@mag*3pt,\VoD@mag*4pt) -- ++(-\VoD@mag*6pt,0) -- cycle; %下の三角形
+          \fill[#2] (\VDNT@Xinterval*\VDNT@dotsNum/2,\VDNT@currentYPos-\VoD@mag*4pt) -- ++(\VoD@mag*3pt,\VoD@mag*4pt) -- ++(-\VoD@mag*6pt,0) -- cycle; %下の三角形
         \end{tikzpicture}%
       \egroup
       \par
