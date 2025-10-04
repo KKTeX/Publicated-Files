@@ -1,16 +1,8 @@
 \documentclass[a4paper,12pt]{article}
 
-\usepackage[dvipsnames, svgnames, x11names]{xcolor}
-\usepackage{tikz}
-\usetikzlibrary{shapes, positioning, shadows, shadows.blur, patterns, decorations.text, 
-                decorations.pathmorphing, arrows.meta, calc, snakes, intersections}
-\usepackage{xparse, calc, ifthen}
-\usepackage{fp}
-\usepackage{zref-savepos}
-\usepackage{geometry}
+\usepackage{booktabs,tabularray}
+
 \usepackage{hyperref}
-\usepackage{lipsum}
-\usepackage[most]{tcolorbox}
 \usepackage{keisennote}
 \usepackage{listings}
 \lstset{
@@ -61,7 +53,7 @@ Dependencies:
 \begin{itemize}
     \item \texttt{xcolor} 
     \item \texttt{tikz}
-    \item \texttt{zref}, \text{zref-savepos}, \text{fp}
+    \item \texttt{zref}, \texttt{zref-savepos}, \texttt{fp}
     \item \texttt{kvoptions}
 \end{itemize}
 
@@ -71,6 +63,78 @@ Load the package:
 \begin{verbatim}
 \usepackage{keisennote}
 \end{verbatim}
+
+\section{Package options}
+\section{Package options}
+
+This package accepts key--value style options at load time.  
+The option handling is powered by \texttt{kvoptions}, with
+\texttt{family=kn} and \texttt{prefix=kn@}.  
+All options are declared as string options (accepting any \TeX\ length expression)
+and are applied during \verb|\ProcessKeyvalOptions*|.  
+The available options and their default values are listed below.
+
+\bigskip
+\begin{center}
+  \begin{tabular}{l l p{.6\linewidth}}
+    \toprule
+    Option name & Default value & Description \\
+    \midrule
+    \texttt{linewidth} & \texttt{.5truept}
+      & Width of the line used for note drawing.  
+        The value is assigned internally to \verb|\noteLineWidth|.  
+        Any \TeX\ length (e.g.\ \texttt{1pt}, \texttt{0.6truept}, \texttt{0.2mm}) is accepted. \\
+    \texttt{radius} & \texttt{.8truept}
+      & Radius of each dot.  
+        Internally stored in \verb|\dotsRadius|. \\
+    \texttt{distance} & \texttt{6truemm}
+      & Spacing between adjacent dots.  
+        Internally stored in \verb|\noteLineDistance|. \\
+    \texttt{triangle} & \texttt{.5pt}
+      & Size of triangular markers.  
+        Internally stored in \verb|\VoD@mag|. \\
+    \bottomrule
+  \end{tabular}
+\end{center}
+\bigskip
+
+\paragraph{Internal behaviour}
+\begin{itemize}
+  \item Each option is first stored as a string macro (e.g.\ \verb|\kn@linewidth|), as imposed by \verb|\DeclareStringOption|.
+        The package then assigns it to a \verb|\dimen| register, for example:
+\begin{lstlisting}[language=TeX]
+\noteLineWidth=\kn@linewidth\relax
+\dotsRadius=\kn@radius\relax
+\noteLineDistance=\kn@distance\relax
+\VoD@mag=\kn@triangle\relax
+\end{lstlisting}
+        This conversion ensures that user-supplied expressions such as
+        \texttt{1truept} or \texttt{0.5mm} are properly interpreted as lengths.
+  \item If the package does not perform this assignment automatically,
+        users may do so manually; however, in normal usage this is handled internally.
+\end{itemize}
+
+\paragraph{Examples}
+\begin{itemize}
+  \item Specify options at package load:
+\begin{lstlisting}[language=TeX]
+\usepackage[linewidth=1truept, radius=.6truept, distance=8truemm]{keisennote}
+\end{lstlisting}
+  \item Modify options afterwards using \verb|\setkeys|:
+\begin{lstlisting}[language=TeX]
+\setkeys{kn}{linewidth=0.8pt, distance=5mm}
+\noteLineWidth=\kn@linewidth\relax  % reassign to internal registers if needed
+\end{lstlisting}
+\end{itemize}
+
+\paragraph{Remarks}
+\begin{itemize}
+  \item Absolute units such as \texttt{truept} / \texttt{truemm} are used as defaults
+        to avoid driver-dependent scaling.
+  \item No range checks are performed on the option values.
+        Excessively small or negative values may lead to undesirable results.
+        If required, minimum-value guards can be implemented via \verb|\ifdim|.
+\end{itemize}
 
 \section{Commands}
 
@@ -173,7 +237,7 @@ If no argument is given, the parameter is reset to its default value.
 \begin{verbatim}
 \notefill
 \end{verbatim}
-\notefill
+\notefill\newpage
 
 \section{License}
 

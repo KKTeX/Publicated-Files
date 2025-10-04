@@ -4,6 +4,7 @@
 \usepackage{hyperref}
 \usepackage{fp}
 \usepackage{listings}
+\usepackage{caption}
 \lstset{
     basicstyle=\ttfamily\small,
     keywordstyle=\color{blue},
@@ -121,7 +122,6 @@ This package provides two commands, \verb|\dccare| and \verb|\ndccare|. Characte
 \end{quotation}
 
 \noindent\triangleright \ \underline{\bfseries Single string which includes a descender}\\
-
 In this case, use the special command \verb|\slowcare| and handle it as follows.
 
 \begin{lstlisting}
@@ -156,7 +156,6 @@ In this case, use the special command \verb|\slowcare| and handle it as follows.
 \end{quotation}
 
 \noindent\triangleright \ \underline{\bfseries "Q"}\\
-
 Among uppercase alphabetic characters, \textbf{Q} is the only one that has a descender. In this case, you should use \verb|\dccare| in \textbf{ANY} case.
 
 \begin{lstlisting}
@@ -172,10 +171,9 @@ For certain fonts, the characters may still extend beyond the frame even with th
 
 \section{The seihou series}
 The commands introduced below are used in exactly the same way as the maru series.
-
-\begin{table}[h]
+\bigskip{%
 \centering
-\caption{seihou series}
+\captionof{table}{seihou series}
 \begin{tabular}{|c|c|c|}
 \hline
 argument & \texttt{\textbackslash seihou} & \texttt{\textbackslash kuroseihou} \\
@@ -186,11 +184,11 @@ argument & \texttt{\textbackslash seihou} & \texttt{\textbackslash kuroseihou} \
 ばばば & \seihou{ばばば} & \kuroseihou{ばばば} \\
 \hline
 \end{tabular}
-\end{table}
+}\bigskip
 
-\begin{table}[h]
+{%
 \centering
-\caption{seimaru series}
+\captionof{table}{seimaru series}
 \begin{tabular}{|c|c|c|}
 \hline
 argument & \texttt{\textbackslash seimaru} & \texttt{\textbackslash kuroseimaru} \\
@@ -201,11 +199,11 @@ argument & \texttt{\textbackslash seimaru} & \texttt{\textbackslash kuroseimaru}
 ばばば & \seimaru{ばばば} & \kuroseimaru{ばばば} \\
 \hline
 \end{tabular}
-\end{table}
+}\bigskip
 
-\begin{table}[h]
+{%
 \centering
-\caption{hishi series}
+\captionof{table}{hishi series}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
 argument & \texttt{\textbackslash hishi} & \texttt{\textbackslash kurohishi} & \texttt{\textbackslash maruhishi} & \texttt{\textbackslash kuromaruhishi} \\
@@ -216,7 +214,7 @@ argument & \texttt{\textbackslash hishi} & \texttt{\textbackslash kurohishi} & \
 ばばば & \hishi{ばばば} & \kurohishi{ばばば} & \maruhishi{ばばば} & \kuromaruhishi{ばばば} \\
 \hline
 \end{tabular}
-\end{table}
+}\bigskip
 
 Examples with lowercase alphabet characters are additionally provided.
 
@@ -240,9 +238,9 @@ Examples with lowercase alphabet characters are additionally provided.
 \section{The kakko series}
 The commands introduced below are used in exactly the same way as the maru series.
 
-\begin{table}[h]
+\bigskip{%
 \centering
-\caption{kakko series\maru{1}}
+\captionof{table}{kakko series\maru{1}}
 \begin{tabular}{|c|c|c|c|c|c|}
 \hline
 argument & \texttt{\textbackslash kakko} & \texttt{\textbackslash sumikakko} & \texttt{\textbackslash kakukakko} & \texttt{\textbackslash kikakko} & \texttt{\textbackslash ykakko} \\
@@ -253,11 +251,11 @@ argument & \texttt{\textbackslash kakko} & \texttt{\textbackslash sumikakko} & \
 ばばば & \kakko{ばばば} & \sumikakko{ばばば} & \kakukakko{ばばば} & \kikakko{ばばば} & \ykakko{ばばば} \\
 \hline
 \end{tabular}
-\end{table}
+}
 
-\begin{table}[h]
+\bigskip{%
 \centering
-\caption{kakko series\maru{2}}
+\captionof{table}{kakko series\maru{2}}
 \begin{tabular}{|c|c|c|c|c|c|}
 \hline
 argument & \texttt{\textbackslash nykakko} & \texttt{\textbackslash namikakko} & \texttt{\textbackslash kagikakko} & \texttt{\textbackslash nkagikakko} & \texttt{\textbackslash period} \\
@@ -268,7 +266,7 @@ argument & \texttt{\textbackslash nykakko} & \texttt{\textbackslash namikakko} &
 ばばば & \nykakko{ばばば} & \namikakko{ばばば} & \kagikakko{ばばば} & \nkagikakko{ばばば} & \period{ばばば} \\
 \hline
 \end{tabular}
-\end{table}
+}\bigskip
 
 Examples with lowercase alphabet characters are additionally provided.
 
