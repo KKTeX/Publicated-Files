@@ -1,0 +1,28 @@
+% This package is part of the packages planned to be included in TeX Live by April next year.
+% This package is licensed under the MIT License.
+
+\ProvidesPackage{TetsuKeyBox}[2025/10/05, v1.0.0]
+\RequirePackage[most]{tcolorbox}
+
+\newlength{\len}\newlength{\lenn}\newlength{\myfontsize}
+\setlength{\myfontsize}{\f@size pt}
+\newcommand{\titlelength}[1]{
+	\settowidth{\lenn}{#1}\setlength{\len}{\linewidth}\addtolength{\len}{-\lenn}\addtolength{\len}{-.33\myfontsize}\addtolength{\len}{11.5pt}
+}
+
+\DeclareTColorBox{ptbs}{m O{} O{}}
+{enhanced,breakable,boxsep=0mm,lefttitle=1.5mm,
+arc=.5mm, bottom=1.5mm, top=1.5mm, leftupper=4mm, rightupper=4mm,
+colbacktitle=black!100!white, colframe=black!100!white,
+coltitle=white, colback=black!10!white, boxrule=1pt,
+fonttitle=\hirakakutffamily\bfseries\normalsize, 
+fontupper=\hirakakutffamily\bfseries\normalsize,
+   title={#1\ \titlelength{#1\ }\hspace*{0.0356\myfontsize}},  
+   after title={%
+     \tcbox[on line, boxsep=0.25\myfontsize, boxrule=0pt, top=-0.178\myfontsize, bottom=-0.178\myfontsize, 
+       left=0.712\myfontsize, width=\len -5.34\myfontsize, right*=0.712\myfontsize, tcbox width=minimum left,
+       colback=black!30!white, arc=.5mm]
+     {\raisebox{.2ex}{\parbox{\len-1.7075\myfontsize}{\renewcommand{\baselinestretch}{.5}\selectfont#2}}\relax\strut}%
+},#3}
+
+\endinput
