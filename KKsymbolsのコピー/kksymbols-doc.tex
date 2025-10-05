@@ -27,7 +27,7 @@
 
 \title{\texttt{KKsymbols} Package Documentation}
 \author{Kosei Kawaguchi a.k.a KKTeX}
-\date{Version 1.0.1 (2025/10/04)}
+\date{Version 1.0.2 (2025/10/05)}
 \begin{document}
 
 \begin{titlepage}
@@ -45,8 +45,10 @@ Place \texttt{KKsymbols.sty} in a directory where LaTeX can find it, e.g., your 
 
 Dependencies:
 \begin{itemize}
+    \item \texttt{LuaLaTeX-ja}
     \item \texttt{tikz}
     \item \texttt{clac}
+    \item \texttt{bxghost}
 \end{itemize}
 
 Load the package:
@@ -726,13 +728,15 @@ Released under the \href{https://www.latex-project.org/lppl/}{LaTeX Project Publ
 \begin{itemize}
     \item \textbf{v1.0.0 (2025/10/03)} --- Initial public release.
     \item \textbf{v1.0.1 (2025/10/04)} --- Added \verb|\slowcare|, and adjusted \verb|\dccare|.
+    \item \textbf{v1.0.2 (2025/10/05)} --- Fixed a problem related to dependency environments.
 \end{itemize}
 
 \section{Source Code}
 
 \begin{lstlisting}
   \NeedsTeXFormat{LaTeX2e}
-  \ProvidesPackage{KKsymbols}[2025/10/04, Version 1.0.1]
+  \ProvidesPackage{KKsymbols}[2025/10/05, Version 1.0.2]
+  \RequirePackage{bxghost}
   \RequirePackage{expl3}
   \RequirePackage{calc}
   \RequirePackage{tikz}

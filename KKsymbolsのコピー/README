@@ -1,8 +1,8 @@
 KKsymbols
 ================================================
 
-Version: 1.0.1
-Date: 2025-10-04
+Version: 1.0.2
+Date: 2025-10-05
 Author: Kosei Kawaguchi a.k.a. KKTeX
 License: LPPL 1.3c
 
@@ -12,7 +12,7 @@ This package offers LaTeX commands for enclosing characters in circles, squares,
 
 Dependencies:
 -------------
-tikz
+LuaLaTeX-ja, tikz, clac, bxghost
 
 Notice
 This package is **LuaLaTeX-only**. 
