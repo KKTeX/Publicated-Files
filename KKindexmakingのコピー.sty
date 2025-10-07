@@ -1,0 +1,106 @@
+% This package is based on this article: https://qiita.com/munepi/items/2e1524859e24b5fb44bc.
+% This package is licensed under the MIT License.
+
+% Pcakage option can be used as follows.
+% \usepackage[column=number of columns(1,2,...),linestyle=1 or 2 or the other numbers,linewidth=dimen,idxtitle=Title of the index,symboltitle=Title of the entries related to symbols]{KKindexmaking}
+% In default, column=3,linestyle=3,linewidth=.8pt,idxtitle=\hspace*{1em}Index of Terms\hspace*{1em},symboltitle=記号・数字
+
+% Additional description for linestyle key:
+% linestyle=1 means column separating rule is densly dotted. 
+% linestyle=2 means column separating rule is dotted. 
+% linestyle=n(\neq 1,2) means column separating rule solid. 
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{KKindexmaking}[2025/10/07, Version 2.0.2]
+
+
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{makeidx}
+\RequirePackage{needspace}
+\RequirePackage{kvoptions,fancyhdr,multicol,multicolrule} 
+\RequirePackage[dvipsnames, svgnames, x11names]{xcolor}
+
+
+\SetupKeyvalOptions{%
+  family=KKidx,%
+  prefix=KKidx@%
+}
+\DeclareStringOption[3]{column}
+\DeclareStringOption[3]{linestyle}
+\DeclareStringOption[0.8pt]{linewidth}
+\DeclareStringOption[\hspace*{1em}Index of Terms\hspace*{1em}]{idxtitle}
+\DeclareStringOption[記号・数字]{symboltitle}
+
+\ProcessKeyvalOptions*
+
+\def\KKidxcolumn{\KKidx@column}
+\def\KKidxlinestyle{\KKidx@linestyle}
+\def\KKidxlinewidth{\KKidx@linewidth}
+\def\KKidxidxtitle{\KKidx@idxtitle}
+\def\KKidxsymboltitle{\KKidx@symboltitle}
+
+\ifnum\KKidxlinestyle=1
+  \SetMCRule{line-style=densely-dotted, width=\KKidx@linewidth}%
+\else\ifnum\KKidxlinestyle=2
+  \SetMCRule{line-style=dots, width=\KKidx@linewidth}%
+\else
+  \SetMCRule{line-style=solid, width=\KKidx@linewidth}%
+\fi\fi
+
+
+\newcommand{\MyClearDoublePage@KKindexmaking}{%
+\clearpage
+  \if@twoside
+    \ifodd\c@page\else
+      \begingroup
+        \null
+        \thispagestyle{fancy}%
+        \newpage
+      \endgroup
+    \fi
+  \fi
+}
+
+\definecolor{tealgreenforKKindexmaking}{RGB}{0, 128, 140}
+\newtcbox{\titleboxformokuji@KKindexmaking}{enhanced,coltext=white,colback=tealgreenforKKindexmaking!70!white,colframe=white,sharp corners,halign=center,valign=center,left=0pt, right=0pt, top=0pt, bottom=0pt,boxsep=0pt,height=7.4ex,box align=base,fontupper=\Large \bfseries\gtfamily}
+
+\makeindex
+
+\renewenvironment{theindex}{%
+  \MyClearDoublePage@KKindexmaking
+  \columnsep3\zw
+  \begin{multicols*}{\KKidxcolumn}[\titleboxformokuji@KKindexmaking{\hspace*{1em}\KKidx@idxtitle\hspace*{1em}}]%
+    \small
+    \@mkboth{\indexname}{\indexname}%
+    \parindent\z@
+    \parskip\z@
+    \lineskiplimit\z@
+    \lineskip\z@
+    \raggedbottom
+    \raggedcolumns
+    \raggedright
+    \let\item\@idxitem}
+  {\end{multicols*}
+   \clearpage}
+
+\renewcommand{\@idxitem}{\par\leavevmode\hangindent1\zw\inhibitglue}
+\renewcommand{\subitem}{\@idxitem\hangindent2\zw\hspace*{1\zw}\inhibitglue}
+\renewcommand{\subsubitem}{\@idxitem\hangindent3\zw\hspace*{2\zw}\inhibitglue}
+\renewcommand{\indexspace}{\par\vskip\baselineskip\relax}
+
+\newcommand\idxdelim{\nobreak{\reset@font\scriptsize\space
+  \leaders\hbox to .3333\zw{\hss\hbox{.}\hss}\hfill\space}\nobreak}
+
+\newcommand*{\symbolindexname}{\KKidxsymboltitle}
+
+\newcommand{\cdotFill}{\leavevmode\leaders\hbox{$\raisebox{.2ex}{\cdot}$\kern0.01em}\hfill\kern0pt}
+
+\NewDocumentCommand{\makeidxhead}{m}{%
+  \needspace{2\baselineskip}%
+  \vspace{\baselineskip}%
+  \hbox to \columnwidth{\hfil
+    \normalsize\gtfamily\bfseries
+    \textcolor{DeepSkyBlue3}{■\cdotFill\hspace{.5\zw}#1\hspace{.5\zw}\cdotfill■\hfil}}\par
+  \nopagebreak
+}
+\endinput
