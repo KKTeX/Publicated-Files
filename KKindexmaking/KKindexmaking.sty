@@ -1,14 +1,135 @@
-% This package is based on this article: https://qiita.com/munepi/items/2e1524859e24b5fb44bc.
-% This package is licensed under the MIT License.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% KKindexmaking.sty — Custom Index Design Package
+%%
+%% Version: 1.0.0 (2025/10/07)
+%% Author : KKTeX
+%% License: MIT License
+%% Source : https://qiita.com/munepi/items/2e1524859e24b5fb44bc
+%%
+%% -----------------------------------------------------------------------------
+%% Overview
+%% -----------------------------------------------------------------------------
+%% This package redefines the LaTeX index layout with a modern, multi-column,
+%% and colored style. It uses multicolrule for column separation, tcolorbox for
+%% decorative titles, and provides several customization keys for easy control
+%% over the index format.
+%%
+%% -----------------------------------------------------------------------------
+%% Requirements
+%% -----------------------------------------------------------------------------
+%% - Compiles with pdfLaTeX, LuaLaTeX, or XeLaTeX.
+%% - Required packages:
+%%     kvoptions, makeidx, multicol, multicolrule, tcolorbox, fancyhdr,
+%%     needspace, xcolor
+%%
+%% -----------------------------------------------------------------------------
+%% Basic Usage
+%% -----------------------------------------------------------------------------
+%%
+%%   \usepackage{KKindexmaking}
+%%   \makeindex
+%%
+%%   ...
+%%   \printindex
+%%
+%% In the document body, use \index{term} as usual.
+%% The package automatically formats the index into a multi-column layout with
+%% decorative titles and dotted/solid column rules.
+%%
+%% -----------------------------------------------------------------------------
+%% Package Options
+%% -----------------------------------------------------------------------------
+%%
+%% \usepackage[
+%%   column=<n>,          % Number of columns (default: 3)
+%%   linestyle=<style>,   % 1=densely dotted, 2=dotted, other=solid (default: 3)
+%%   linewidth=<dimen>,   % Width of column rule (default: .8pt)
+%%   idxtitle={<title>},  % Title of the main index (default: "Index of Terms")
+%%   symboltitle={<title>} % Title for symbol/numerical entries (default: 記号・数字)
+%% ]{KKindexmaking}
+%%
+%% Example:
+%%   \usepackage[column=2,linestyle=1,linewidth=1pt,
+%%               idxtitle={\hspace*{1em}Index\hspace*{1em}},
+%%               symboltitle={Symbols and Numbers}]{KKindexmaking}
+%%
+%% -----------------------------------------------------------------------------
+%% Custom Commands
+%% -----------------------------------------------------------------------------
+%%
+%%   \makeidxhead{<heading>}
+%%       → Creates a decorative section header for groups within the index.
+%%         For example:
+%%             \makeidxhead{A}
+%%             \item Apple
+%%             \item Atom
+%%
+%%   \symbolindexname
+%%       → Expands to the value of the ‘symboltitle’ option.
+%%
+%%   \idxdelim
+%%       → Defines the leader dots between entry and page number.
+%%
+%% -----------------------------------------------------------------------------
+%% Index Formatting
+%% -----------------------------------------------------------------------------
+%%
+%% - The index is typeset using the ‘multicols*’ environment.
+%% - Column separator style is defined via \SetMCRule depending on the option
+%%   `linestyle`.
+%% - Page numbers are aligned using dot leaders.
+%% - Entries are formatted as:
+%%       \item      main entry
+%%       \subitem   subentry (indented)
+%%       \subsubitem deeper subentry (further indented)
+%%
+%% -----------------------------------------------------------------------------
+%% Colors and Design
+%% -----------------------------------------------------------------------------
+%%
+%% - The main title (Index of Terms) is displayed in a colored tcolorbox header.
+%% - The default color is a teal-like tone defined as
+%%       RGB(0, 128, 140)
+%%   You can modify this color in the .sty file by changing:
+%%       \definecolor{tealgreenforKKindexmaking}{RGB}{0, 128, 140}
+%%
+%% -----------------------------------------------------------------------------
+%% Notes and Limitations
+%% -----------------------------------------------------------------------------
+%%
+%% - This package assumes that \makeindex and \printindex are used properly.
+%% - The title box height (currently ~7.4ex) may require adjustment for certain fonts.
+%% - Works in both single- and two-sided documents.
+%% - The rule style (densely dotted, dotted, solid) is handled by multicolrule.
+%%
+%% -----------------------------------------------------------------------------
+%% Compilation
+%% -----------------------------------------------------------------------------
+%%
+%% Typical build process:
+%%   $ pdflatex main.tex
+%%   $ makeindex main
+%%   $ pdflatex main.tex
+%%
+%% -----------------------------------------------------------------------------
+%% Example
+%% -----------------------------------------------------------------------------
+%%
+%% \documentclass{book}
+%% \usepackage[column=3,linestyle=2,linewidth=0.6pt,
+%%             idxtitle={\hspace*{1em}Index of Terms\hspace*{1em}},
+%%             symboltitle={Symbols}]{KKindexmaking}
+%% \makeindex
+%%
+%% \begin{document}
+%% Some text\index{LaTeX} and more text\index{TeX}.
+%%
+%% \clearpage
+%% \printindex
+%% \end{document}
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Pcakage option can be used as follows.
-% \usepackage[column=number of columns(1,2,...),linestyle=1 or 2 or the other numbers,linewidth=dimen,idxtitle=Title of the index,symboltitle=Title of the entries related to symbols]{KKindexmaking}
-% In default, column=3,linestyle=3,linewidth=.8pt,idxtitle=\hspace*{1em}Index of Terms\hspace*{1em},symboltitle=記号・数字
-
-% Additional description for linestyle key:
-% linestyle=1 means column separating rule is densly dotted. 
-% linestyle=2 means column separating rule is dotted. 
-% linestyle=n(\neq 1,2) means column separating rule solid. 
 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{KKindexmaking}[2025/10/07, Version 1.0.0]
