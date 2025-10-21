@@ -27,7 +27,7 @@
 
 \title{\texttt{KKsymbols} Package Documentation}
 \author{Kosei Kawaguchi a.k.a KKTeX}
-\date{Version 1.0.3 (2025/10/12)}
+\date{Version 1.0.4 (2025/10/18)}
 \begin{document}
 
 \begin{titlepage}
@@ -257,14 +257,14 @@ argument & \texttt{\textbackslash kakko} & \texttt{\textbackslash sumikakko} & \
 \bigskip{%
 \centering
 \captionof{table}{kakko series\maru{2}}
-\begin{tabular}{|c|c|c|c|c|c|}
+\begin{tabular}{|c|c|c|c|c|c|c|}
 \hline
-argument & \texttt{\textbackslash nykakko} & \texttt{\textbackslash namikakko} & \texttt{\textbackslash kagikakko} & \texttt{\textbackslash nkagikakko} & \texttt{\textbackslash period} \\
+argument & \texttt{\textbackslash nykakko} & \texttt{\textbackslash namikakko} & \texttt{\textbackslash kagikakko} & \texttt{\textbackslash nkagikakko} & \texttt{\textbackslash period} & \texttt{\textbackslash ichimoji} \\
 \hline
-1     & \nykakko{1}     & \namikakko{1}     & \kagikakko{1}     & \nkagikakko{1}     & \period{1} \\
-97    & \nykakko{97}    & \namikakko{97}    & \kagikakko{97}    & \nkagikakko{97}    & \period{97} \\
-だ    & \nykakko{だ}    & \namikakko{だ}    & \kagikakko{だ}    & \nkagikakko{だ}    & \period{だ} \\
-ばばば & \nykakko{ばばば} & \namikakko{ばばば} & \kagikakko{ばばば} & \nkagikakko{ばばば} & \period{ばばば} \\
+1     & \nykakko{1}     & \namikakko{1}     & \kagikakko{1}     & \nkagikakko{1}     & \period{1} & \ichimoji{1} \\
+97    & \nykakko{97}    & \namikakko{97}    & \kagikakko{97}    & \nkagikakko{97}    & \period{97} & \ichimoji{97} \\
+だ    & \nykakko{だ}    & \namikakko{だ}    & \kagikakko{だ}    & \nkagikakko{だ}    & \period{だ} & \ichimoji{だ} \\
+ばばば & \nykakko{ばばば} & \namikakko{ばばば} & \kagikakko{ばばば} & \nkagikakko{ばばば} & \period{ばばば} & \ichimoji{ばばば} \\
 \hline
 \end{tabular}
 }\bigskip
@@ -281,6 +281,30 @@ Examples with lowercase alphabet characters are additionally provided.
 
   \kakko{\dccare{j}\ndccare{b}\dccare{j}}\kakko{あ\dccare{g}}\kakko{A\dccare{j}}\kakko{田\ndccare{a}}
 \end{quotation}
+
+\noindent\triangleright \ \underline{\bfseries \textbackslash ichimoji}\\
+On 2025/10/18, I added \verb|\ichimoji| command which forces ANY arguments to fit in zenkaku width (=1em).
+
+As follows, \verb|\kakko| for example, is actually not fits in accurate zenkaku width: 
+
+\begin{quotation}
+  \fbox{\kakko{123}}\fbox{あ}\kakko{123}あ
+\end{quotation}
+
+However, if you want to made its width fit in accurate zenkaku width, you can use them together as follows:
+
+\begin{lstlisting}
+  \fbox{\ichimoji{\kakko{123}}}\fbox{あ}\ichimoji{\kakko{123}}あ
+\end{lstlisting}
+
+\begin{quotation}
+  \fbox{\ichimoji{\kakko{123}}}\fbox{あ}\ichimoji{\kakko{123}}あ
+\end{quotation}
+
+Personally, I don't think those should always be used together.
+The reason is that, when I originally designed \verb|\kakko|, I intentionally settled on the current adjustment out of concern that forcing it to fit strictly within a zenkaku-width space would compromise its visual appearance.
+This package was never intended to pursue "uniform zenkaku width alignment" as its goal; rather, the decision was made to prioritize providing versatile and visually pleasing commands.
+Therefore, please regard the recommended usage as a fallback measure—something to be applied only when the layout is severely disrupted due to the lack of zenkaku width alignment.
 
 \section{License}
 
@@ -729,13 +753,14 @@ Released under the \href{https://www.latex-project.org/lppl/}{LaTeX Project Publ
     \item \textbf{v1.0.1 (2025/10/04)} --- Added \verb|\slowcare|, and adjusted \verb|\dccare|.
     \item \textbf{v1.0.2 (2025/10/05)} --- Fixed a problem related to dependency environments.
     \item \textbf{v1.0.3 (2025/10/12)} --- Fixed a problem related to maru series.
+    \item \textbf{v1.0.4 (2025/10/18)} --- Added \verb|\ichimoji| command.
 \end{itemize}
 
 \section{Source Code}
 
 \begin{lstlisting}
   \NeedsTeXFormat{LaTeX2e}
-  \ProvidesPackage{KKsymbols}[2025/10/12, Version 1.0.3]
+  \ProvidesPackage{KKsymbols}[2025/10/18, Version 1.0.4]
   \RequirePackage{luatexja-adjust}
   \RequirePackage{expl3}
   \RequirePackage{calc}
@@ -1321,6 +1346,23 @@ Released under the \href{https://www.latex-project.org/lppl/}{LaTeX Project Publ
     }\hss}}}\ltjghostafterjachar
   }
 
+  \newlength{\ichimoji@boxwidth}
+  \newlength{\ichimoji@textwidth}
+  \newlength{\ichimoji@textheight}
+  \DeclareRobustCommand{\ichimoji}[1]{%
+    \settowidth{\ichimoji@textwidth}{#1}%
+    \setlength{\ichimoji@boxwidth}{\f@size pt}%
+    \settoheight{\ichimoji@textheight}{#1}%
+    \multiply\ichimoji@boxwidth by 100 %
+    \divide\ichimoji@boxwidth by 100 %
+    \ltjghostbeforejachar\vphantom{羅}\raisebox{\VerticalAdjustKakkoX}{%
+    \mbox{%
+    \hbox to \ichimoji@boxwidth{%
+    \hss
+    \tikz[baseline=(char.base)]{%
+        \node[inner sep=-\dimexpr 0.125\dimexpr\f@size pt, align=center, minimum size=.8\ichimoji@boxwidth] (char) {{\raisebox{\VerticalAdjustKakkoX}{\scalebox{1}{\hspace*{\dimexpr 0.02\ichimoji@boxwidth}\makebox[\ichimoji@boxwidth][c]{\maybescale{\ichimoji@textwidth}{\ichimoji@boxwidth}{\maybescaleVVVV{\ichimoji@textheight}{\ichimoji@boxwidth}{#1}}}\hspace*{\dimexpr 0.02\ichimoji@boxwidth}}}}};
+    }\hss}}}\ltjghostafterjachar
+  }
   \endinput
 \end{lstlisting}
 \end{document}

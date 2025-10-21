@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{KKsymbols}[2025/10/12, Version 1.0.3]
+\ProvidesPackage{KKsymbols}[2025/10/18, Version 1.0.4]
 \RequirePackage{luatexja-adjust}
 \RequirePackage{expl3}
 \RequirePackage{calc}
@@ -585,4 +585,21 @@
   }\hss}}}\ltjghostafterjachar
 }
 
+\newlength{\ichimoji@boxwidth}
+\newlength{\ichimoji@textwidth}
+\newlength{\ichimoji@textheight}
+\DeclareRobustCommand{\ichimoji}[1]{%
+  \settowidth{\ichimoji@textwidth}{#1}%
+  \setlength{\ichimoji@boxwidth}{\f@size pt}%
+  \settoheight{\ichimoji@textheight}{#1}%
+  \multiply\ichimoji@boxwidth by 100 %
+  \divide\ichimoji@boxwidth by 100 %
+  \ltjghostbeforejachar\vphantom{羅}\raisebox{\VerticalAdjustKakkoX}{%
+  \mbox{%
+  \hbox to \ichimoji@boxwidth{%
+  \hss
+  \tikz[baseline=(char.base)]{%
+      \node[inner sep=-\dimexpr 0.125\dimexpr\f@size pt, align=center, minimum size=.8\ichimoji@boxwidth] (char) {{\raisebox{\VerticalAdjustKakkoX}{\scalebox{1}{\hspace*{\dimexpr 0.02\ichimoji@boxwidth}\makebox[\ichimoji@boxwidth][c]{\maybescale{\ichimoji@textwidth}{\ichimoji@boxwidth}{\maybescaleVVVV{\ichimoji@textheight}{\ichimoji@boxwidth}{#1}}}\hspace*{\dimexpr 0.02\ichimoji@boxwidth}}}}};
+  }\hss}}}\ltjghostafterjachar
+}
 \endinput
