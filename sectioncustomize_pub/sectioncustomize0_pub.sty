@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{sectioncustomize0}[2025/10/23, Version 1.1.1]
+\ProvidesPackage{sectioncustomize0}[2025/10/23, Version 1.1.2]
 
 \RequirePackage{tikz}
 \usetikzlibrary{shadows.blur}
@@ -75,8 +75,8 @@
 %セクション
 \renewcommand*\thesection{\arabic{section}} %作り直した
 \renewcommand{\section}[1]{\jl@heading@pre\refstepcounter{section}\addcontentsline{toc}{section}{\thesection\quad #1}
-\noindent\needspace{5\baselineskip}
-\begin{DummyBox@section@zero}[white][bottom=-1mm,top=-1mm]
+\noindent\needspace{5\baselineskip}%
+\begin{DummyBox@section@zero}[white][bottom=-1mm,top=0mm]
 \begin{tikzpicture}
   \draw[fill=mygray@section1@zero, draw=none, anchor=west,blur shadow={shadow blur steps=40,shadow xshift=0pt,shadow yshift=0pt}] (0.24,0) ellipse [x radius=0.7cm, y radius=0.5cm];
   \node at (0.24,0) {\Large \bfseries \gtfamily \color{white} \S\LARGE \raisebox{-2pt}{\thesection}};
@@ -98,7 +98,7 @@
 % サブセクション
 \renewcommand{\subsection}[1]{\jl@heading@pre\refstepcounter{subsection}\addcontentsline{toc}{subsection}{\thesubsection\quad #1}%
 \needspace{3\baselineskip}%
-\begin{DummyBox@subsection@zero}[white][top=-1mm,bottom=-1mm]
+\begin{DummyBox@subsection@zero}[white][top=0mm,bottom=-1mm]
 \begin{tikzpicture}
   \begin{scope}[xshift=-2.5mm]
     \draw[line width=1pt, color=mygray@section1@zero] (1.795,0.36) -- (\columnwidth+2.5mm,0.36);
@@ -126,10 +126,10 @@
 \newcommand{\ruleFill}[2]{%
   \leaders\hbox{\textcolor{mygray@section0@zero}{\raisebox{0.8mm}{\rule{#1}{#2}}}}\hfill
 }
-\renewcommand{\subsubsection}[1]{\jl@heading@pre\refstepcounter{subsubsection}
+\renewcommand{\subsubsection}[1]{\jl@heading@pre\refstepcounter{subsubsection}%
   \addcontentsline{toc}{subsubsection}{▷\hspace{.3em} #1}%
-  \noindent\needspace{4\baselineskip}
-  \begin{DummyBox@subsubsection@zero}[white][top=-.5mm,bottom=-.5mm]
+  \needspace{4\baselineskip}%
+  \begin{DummyBox@subsubsection@zero}[white][top=.3mm,bottom=-.5mm]
   \noindent\hspace*{-\parindent-1mm}
   \tcbox[on line, enhanced,  
     arc=2pt,colback=mygray@section0@zero,coltext=white,
