@@ -5,26 +5,36 @@
 \RequirePackage[most]{tcolorbox}
 \RequirePackage{calc}
 
-\newlength{\len@ptbs@kk}\newlength{\lenn@ptbs@kk}\newlength{\myfontsize@ptbs@kk}
-\setlength{\myfontsize@ptbs@kk}{\f@size pt}
-\newcommand{\titlelength@ptbs@kk}[1]{
-	\settowidth{\lenn@ptbs@kk}{#1}\setlength{\len@ptbs@kk}{\linewidth}\addtolength{\len@ptbs@kk}{-\lenn@ptbs@kk}\addtolength{\len@ptbs@kk}{-.33\myfontsize@ptbs@kk}\addtolength{\len@ptbs@kk}{11.5pt}
+\newlength{\len@ptbs@kk@D}\newlength{\lenn@ptbs@kk@D}\newlength{\myfontsize@ptbs@kk@D}
+\newcommand{\titlelength@ptbs@kk@D}[1]{%
+  \setlength{\myfontsize@ptbs@kk@D}{\f@size pt}
+  \def\titletext@ptbs@D{\gtfamily\normalsize\selectfont#1}% タイトルフォントに合わせる。
+	\settowidth{\lenn@ptbs@kk@D}{\titletext@ptbs@D}%
+  \setlength{\len@ptbs@kk@D}{\linewidth}%
+  \addtolength{\len@ptbs@kk@D}{-\lenn@ptbs@kk@D}%
+  \addtolength{\len@ptbs@kk@D}{-.3em}%
+  \addtolength{\len@ptbs@kk@D}{-1pt}%
+  \addtolength{\len@ptbs@kk@D}{4mm}%
 }
-
 \DeclareTColorBox{ptbs}{m O{} O{}}
 {enhanced,breakable,boxsep=0mm,lefttitle=1.5mm,
 arc=.5mm, bottom=1.5mm, top=1.5mm, leftupper=4mm, rightupper=4mm,
 colbacktitle=black!100!white, colframe=black!100!white,
 coltitle=white, colback=black!10!white, boxrule=1pt,
+lefttitle=.3em,
 before upper={\setlength{\parindent}{1em}\relax},
 fonttitle=\gtfamily\normalsize, 
 fontupper=\gtfamily\normalsize,
-   title={#1\ \titlelength@ptbs@kk{#1\ }\hspace*{0.0356\myfontsize@ptbs@kk}},  
+   title={\titlelength@ptbs@kk@D{#1}#1\kern.3em\kern1pt},  
    after title={%
-     \tcbox[on line, boxsep=0.25\myfontsize@ptbs@kk, boxrule=0pt, top=-0.178\myfontsize@ptbs@kk, bottom=-0.178\myfontsize@ptbs@kk, 
-       left=0.712\myfontsize@ptbs@kk, width=\len@ptbs@kk -5.34\myfontsize@ptbs@kk, right*=0.712\myfontsize@ptbs@kk, tcbox width=minimum left,
+     \tcbox[on line, boxsep=.25\myfontsize@ptbs@kk@D, boxrule=0pt, 
+     top=-.1\myfontsize@ptbs@kk@D, bottom=-.1\myfontsize@ptbs@kk@D, 
+       left=0mm, 
+       right=0mm,
+       width=\len@ptbs@kk@D, 
        colback=black!30!white, arc=.5mm]
-     {\raisebox{.2ex}{\parbox{\len@ptbs@kk-1.7075\myfontsize@ptbs@kk}{\renewcommand{\baselinestretch}{.5}\selectfont#2}}\relax\strut}%
-},#3}
+     {\raisebox{.2ex}{\parbox{\len@ptbs@kk@D-.5\myfontsize@ptbs@kk@D}{\renewcommand{\baselinestretch}{.5}\selectfont#2}}}%
+     }%
+,#3}
 
 \endinput
