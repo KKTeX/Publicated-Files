@@ -1,0 +1,72 @@
+% This package is part of the packages planned to be included in TeX Live by April next year.
+% This package is licensed under the MIT License.
+
+\ProvidesPackage{PracticeBox}[2025/10/05, v1.0.1]
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{calc,varwidth}
+
+%汎用性アップバージョン
+% 下準備（Lua言語を使用）
+\newcommand{\getcharfrom}[2]{%
+  \begingroup
+    \def\GFstr{#1}%
+    \def\GFidx{#2}%
+    % Lua 側で UTF-8 の i 番目文字を取り出す
+    \directlua{%
+      local s = "\luaescapestring{\GFstr}"
+      local idx = tonumber("\luaescapestring{\GFidx}") or 0
+      local ch = unicode.utf8.sub(s, idx, idx) or ""
+      tex.sprint(ch)
+    }%
+  \endgroup
+}
+
+\newcounter{NN@practicebox} 
+\DeclareRobustCommand{\getstrlenNN@practicebox}[1]{%
+  \begingroup
+    \edef\GLstr{#1}%
+    \directlua{%
+      local ss = "\luaescapestring{\GLstr}"
+      local lenn = unicode.utf8.len(ss) or 0
+      tex.sprint("\\setcounter{NN@practicebox}{"..lenn.."}")
+    }%
+  \endgroup
+}
+
+\newdimen\PracticeBox@Unit
+\PracticeBox@Unit=6mm
+
+\DeclareTColorBox{practicebox}{ m O{} O{}}%
+{enhanced,sharp corners,colback=black!10!white, colframe=black!10!white , attach boxed title to top left={xshift=0mm,yshift=1mm}, fonttitle=\gtfamily,varwidth boxed title=0.85\linewidth, breakable, arc=0mm,title={#1},before={\getstrlenNN@practicebox{#1}}, enlarge top by=1.6mm, boxed title style={empty,arc=0pt,outer arc=0pt,boxrule=0pt},
+   underlay unbroken and first={
+      \draw[black,ultra thick] (frame.north west) -- (frame.north east);
+      \draw[black] ([yshift=-.8mm]frame.north west) -- ([yshift=-.8mm]frame.north east);
+
+      \pgfmathtruncatemacro{\N@practicebox}{\arabic{NN@practicebox}}%
+
+      % 1 から N まで繰り返す。
+      \foreach \i [count=\xi from 0] in {1,...,\N@practicebox}{%
+        % \i の偶奇を計算（0=偶数,1=奇数）
+        \pgfmathtruncatemacro{\isodd@practicebox}{mod(\i,2)}%
+
+        % 横シフト量を長さとして作る（\xlen に mm 等の長さが入る）
+        \pgfmathsetlengthmacro{\xlen@practicebox}{\xi*\PracticeBox@Unit}%
+      
+        \begin{scope}
+          % y方向だけ微調整
+          \ifnum\isodd@practicebox=1\relax 
+          \filldraw[fill=black, draw=black, thick] ([yshift=1mm, xshift=\xlen@practicebox + .4pt]frame.north west) rectangle +(6mm,6mm); \node at ([xshift=3mm + \xlen@practicebox + .4pt,yshift=4mm]frame.north west){\large\textcolor{white}{\textgt{\getcharfrom{#1}{\i}}}};
+           \else 
+           \draw[black, thick] ([yshift=1mm, xshift=\xlen@practicebox + .4pt]frame.north west) rectangle +(6mm,6mm); \node at ([xshift=3mm + \xlen@practicebox + .4pt,yshift=4mm]frame.north west){\large\textgt{\getcharfrom{#1}{\i}}}; 
+           \fi 
+        \end{scope}%
+      }% 
+      \node[anchor=west] at ([xshift=3mm + \N@practicebox*\PracticeBox@Unit + .15mm,yshift=4mm]frame.north west) {\textgt{#2}};
+  },
+   underlay unbroken and last={
+      \draw[black,ultra thick] (frame.south west) -- (frame.south east);
+      \draw[black] ([yshift=.8mm]frame.south west) -- ([yshift=.8mm]frame.south east);
+  },
+#3}
+
+\endinput
