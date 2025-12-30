@@ -40,17 +40,13 @@
    underlay unbroken and first={
       \draw[black,ultra thick] (frame.north west) -- (frame.north east);
       \draw[black] ([yshift=-.8mm]frame.north west) -- ([yshift=-.8mm]frame.north east);
-
       \pgfmathtruncatemacro{\N@practicebox}{\arabic{NN@practicebox}}%
-
       % 1 から N まで繰り返す。
       \foreach \i [count=\xi from 0] in {1,...,\N@practicebox}{%
         % \i の偶奇を計算（0=偶数,1=奇数）
         \pgfmathtruncatemacro{\isodd@practicebox}{mod(\i,2)}%
-
         % 横シフト量を長さとして作る（\xlen に mm 等の長さが入る）
         \pgfmathsetlengthmacro{\xlen@practicebox}{\xi*\PracticeBox@Unit}%
-      
         \begin{scope}
           % y方向だけ微調整
           \ifnum\isodd@practicebox=1\relax 
