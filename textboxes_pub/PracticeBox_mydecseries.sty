@@ -1,4 +1,3 @@
-% This package is part of the packages planned to be included in TeX Live by April next year.
 % This package is licensed under the MIT License.
 
 \ProvidesPackage{PracticeBox}[2025/10/05, v1.0.1]
@@ -7,14 +6,14 @@
 
 %汎用性アップバージョン
 % 下準備（Lua言語を使用）
-\newcommand{\getcharfrom}[2]{%
+\newcommand{\getcharfrom@practicebox}[2]{%
   \begingroup
-    \def\GFstr{#1}%
-    \def\GFidx{#2}%
+    \def\GFstr@practicebox{#1}%
+    \def\GFidx@practicebox{#2}%
     % Lua 側で UTF-8 の i 番目文字を取り出す
     \directlua{%
-      local s = "\luaescapestring{\GFstr}"
-      local idx = tonumber("\luaescapestring{\GFidx}") or 0
+      local s = "\luaescapestring{\GFstr@practicebox}"
+      local idx = tonumber("\luaescapestring{\GFidx@practicebox}") or 0
       local ch = unicode.utf8.sub(s, idx, idx) or ""
       tex.sprint(ch)
     }%
@@ -55,9 +54,9 @@
         \begin{scope}
           % y方向だけ微調整
           \ifnum\isodd@practicebox=1\relax 
-          \filldraw[fill=black, draw=black, thick] ([yshift=1mm, xshift=\xlen@practicebox + .4pt]frame.north west) rectangle +(6mm,6mm); \node at ([xshift=3mm + \xlen@practicebox + .4pt,yshift=4mm]frame.north west){\large\textcolor{white}{\textgt{\getcharfrom{#1}{\i}}}};
+          \filldraw[fill=black, draw=black, thick] ([yshift=1mm, xshift=\xlen@practicebox + .4pt]frame.north west) rectangle +(6mm,6mm); \node at ([xshift=3mm + \xlen@practicebox + .4pt,yshift=4mm]frame.north west){\large\textcolor{white}{\textgt{\getcharfrom@practicebox{#1}{\i}}}};
            \else 
-           \draw[black, thick] ([yshift=1mm, xshift=\xlen@practicebox + .4pt]frame.north west) rectangle +(6mm,6mm); \node at ([xshift=3mm + \xlen@practicebox + .4pt,yshift=4mm]frame.north west){\large\textgt{\getcharfrom{#1}{\i}}}; 
+           \draw[black, thick] ([yshift=1mm, xshift=\xlen@practicebox + .4pt]frame.north west) rectangle +(6mm,6mm); \node at ([xshift=3mm + \xlen@practicebox + .4pt,yshift=4mm]frame.north west){\large\textgt{\getcharfrom@practicebox{#1}{\i}}}; 
            \fi 
         \end{scope}%
       }% 

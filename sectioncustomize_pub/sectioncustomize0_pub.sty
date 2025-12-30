@@ -6,9 +6,7 @@
 \RequirePackage[most]{tcolorbox}
 \RequirePackage{needspace}
 
-\@ifundefined{fft}{
-  \newcommand{\fft}[1]{\textgt{\textbf{#1}}}
-}{}
+\newcommand{\fft@section@zero}[1]{\textgt{\textbf{#1}}}
 
 \DeclareTColorBox{DummyBox@section@zero}{ O{black} O{} }{%
   enhanced,  before skip=0mm, after skip=2mm,
@@ -153,14 +151,14 @@
       \filldraw[draw=white, line width=.8pt, fill=black!60] (12mm,-.8mm) circle (.8mm);
       \filldraw[draw=white, line width=.8pt, fill=black!60] (3mm,-14.2mm) circle (.8mm);
       \fill[black] (0,0) -- ++(5mm,0) -- ++(10mm,-10mm) -- ++(0,-5mm) -- ++(-5mm,0) -- ++(-10mm,10mm) -- cycle;
-      \node[anchor=north west] at ([shift={(.5mm,-.5mm)}]0,0) {\color{white}\fft{第}};
-      \node[anchor=south east] at ([shift={(-.5mm,.5mm)}]15mm,-15mm) {\color{white}\fft{章}};
-      \node[anchor=center] at (7.5mm,-7.5mm) {\LARGE\color{white}\fft{\thechapter}};
+      \node[anchor=north west] at ([shift={(.5mm,-.5mm)}]0,0) {\color{white}\fft@section@zero{第}};
+      \node[anchor=south east] at ([shift={(-.5mm,.5mm)}]15mm,-15mm) {\color{white}\fft@section@zero{章}};
+      \node[anchor=center] at (7.5mm,-7.5mm) {\LARGE\color{white}\fft@section@zero{\thechapter}};
     \end{scope}
       \draw[color=white!20!black, line width=1.3pt] (\columnwidth, -12mm) -- (20mm,-12mm);
       \draw[fill=mygray@section1@zero] (20mm,-12mm) circle [radius=.6mm];
       \draw[fill=mygray@section1@zero] (\columnwidth, -12mm) circle [radius=.6mm];
-    \node[anchor=south west] at (28mm, -11mm) {\LARGE\fft{#1}};
+    \node[anchor=south west] at (28mm, -11mm) {\LARGE\fft@section@zero{#1}};
     \node[anchor=center] at (\columnwidth-1cm,-8mm) {%
       \begin{tikzpicture}[scale=.4, line width=0.8pt, rotate=90]
         % 原子核
