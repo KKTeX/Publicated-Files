@@ -114,25 +114,25 @@
 \begin{document}
 
 \section*{Example A — MiniBox}
-最小構成。\verb|\DeclareTColorBox| の使い方とタイトル基本。
+最小構成。\verb|\DeclareTColorBox|の使い方とタイトル基本。
 
 \begin{MiniBox}{Quick Start}
 これは最小構成のボックスです。色と角丸を変えるだけでも雰囲気が出ます。
 \end{MiniBox}
 
 \section*{Example B — DoubleBox}
-\verb|borderline| を 2 つ重ねた、タイトルなしの引用カード風。
+\verb|borderline|を2つ重ねた、タイトルなしの引用カード風。
 
 \begin{DoubleBox}
-borderline を 2 行書くだけで、外側に実線、内側 1.2mm に破線、という二重枠が手に入る。
+borderlineを2行書くだけで、外側に実線、内側1.2mmに破線、という二重枠が手に入る。
 タイトルを載せていないので軽量な引用ブロックとして使える。
 \end{DoubleBox}
 
 \section*{Example C — CornerBox}
-TikZ \verb|underlay| で 4 隅にブラケットだけ描いたミニマルカード。
+TikZ \verb|underlay|で4隅にブラケットだけ描いたミニマルカード。
 
 \begin{CornerBox}{Tech Note}
-4 隅の短い L 字だけで「囲ってる感」を出すデザイン。
+4隅の短いL字だけで「囲ってる感」を出すデザイン。
 紙資料やテックスライドでよく見る形。
 \end{CornerBox}
 
@@ -140,12 +140,12 @@ TikZ \verb|underlay| で 4 隅にブラケットだけ描いたミニマルカ�
 最終形態。タイトルが枠線をパンチ抜きし、内側にサブ枠を持つ。
 
 \begin{TechCard}{Overview}
-水色 × 白のミニマムテックボックス。\verb|breakable| を ON にしているので、
+水色×白のミニマムテックボックス。\verb|breakable|をONにしているので、
 長文を入れるとページをまたいで自動で折り返されつつ、装飾が破綻しないようになっている。
 \end{TechCard}
 
 \section*{Example D — TechCard（breakable）}
-ページをまたぐと、underlay first / middle / last に分配された描画が機能する。
+ページをまたぐと、underlay first / middle / lastに分配された描画が機能する。
 
 \begin{TechCard}{Long Content Test}
 \lipsum[1-7]
