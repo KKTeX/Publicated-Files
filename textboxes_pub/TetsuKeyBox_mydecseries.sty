@@ -1,9 +1,14 @@
 % This package is licensed under the MIT License.
 
-\ProvidesPackage{TetsuKeyBox}[2025/10/05, v1.0.1]
+\ProvidesPackage{TetsuKeyBox}[2026/01/28, v1.0.2]
 \RequirePackage[most]{tcolorbox}
 \RequirePackage{calc}
 
+\newcommand{\ascb@parindent}[1]{%
+  \setlength{\parindent}{#1}\relax%
+}
+\newdimen\ascb@parindent@dimen
+\ascb@parindent@dimen=\zw
 \newlength{\len@ptbs@kk@D}\newlength{\lenn@ptbs@kk@D}\newlength{\myfontsize@ptbs@kk@D}
 \newcommand{\titlelength@ptbs@kk@D}[1]{%
   \setlength{\myfontsize@ptbs@kk@D}{\f@size pt}
@@ -15,25 +20,25 @@
   \addtolength{\len@ptbs@kk@D}{-1pt}%
   \addtolength{\len@ptbs@kk@D}{4mm}%
 }
-\DeclareTColorBox{ptbs}{m O{} O{}}
-{enhanced,breakable,boxsep=0mm,lefttitle=1.5mm,
-arc=.5mm, bottom=1.5mm, top=1.5mm, leftupper=4mm, rightupper=4mm,
+\DeclareTColorBox{ptbs}{ m O{\phantom{A}} O{} }
+{enhanced, breakable, boxsep=0mm, lefttitle=1.5mm,
+arc=.5mm, bottom=2mm, top=2mm, leftupper=4mm, rightupper=4mm,
 colbacktitle=black!100!white, colframe=black!100!white,
 coltitle=white, colback=black!10!white, boxrule=1pt,
 lefttitle=.3em,
-before upper={\setlength{\parindent}{1em}\relax},
+before upper={\ascb@parindent{\ascb@parindent@dimen}},%%%
 fonttitle=\gtfamily\normalsize, 
 fontupper=\gtfamily\normalsize,
-   title={\titlelength@ptbs@kk@D{#1}#1\kern.3em\kern1pt},  
+   title={\titlelength@ptbs@kk@D{#1}#1\kern.3\zw\kern1pt},  
    after title={%
      \tcbox[on line, boxsep=.25\myfontsize@ptbs@kk@D, boxrule=0pt, 
-     top=-.1\myfontsize@ptbs@kk@D, bottom=-.1\myfontsize@ptbs@kk@D, 
-       left=0mm, 
-       right=0mm,
+     top=.1\myfontsize@ptbs@kk@D, bottom=.1\myfontsize@ptbs@kk@D, 
+       left= .5mm, 
+       right=.5mm,
        width=\len@ptbs@kk@D, 
        colback=black!30!white, arc=.5mm]
-     {\raisebox{.2ex}{\parbox{\len@ptbs@kk@D-.5\myfontsize@ptbs@kk@D}{\renewcommand{\baselinestretch}{.5}\selectfont#2}}}%
+     {\raisebox{.2ex}{\parbox{\len@ptbs@kk@D-.5\myfontsize@ptbs@kk@D-1mm}{\renewcommand{\baselinestretch}{.5}\selectfont#2}}}%
      }%
-,#3}
+, #3}
 
 \endinput
