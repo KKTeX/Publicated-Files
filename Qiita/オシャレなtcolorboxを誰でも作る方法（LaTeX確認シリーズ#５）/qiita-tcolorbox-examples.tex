@@ -1,0 +1,154 @@
+\documentclass[a4paper,11pt]{ltjsarticle}
+\usepackage[margin=22mm]{geometry}
+\usepackage[most]{tcolorbox}
+\usetikzlibrary{calc}
+\usepackage{lipsum}
+
+\definecolor{qaccent}{HTML}{0EA5E9}      % sky-500
+\definecolor{qaccentLight}{HTML}{BAE6FD} % sky-200
+\definecolor{qtext}{HTML}{1F2937}        % gray-800
+\definecolor{qsoft}{HTML}{F1F5F9}        % slate-100
+
+\DeclareTColorBox{MiniBox}{ m }{%
+  enhanced,
+  colback=white,
+  colframe=qaccent,
+  boxrule=.5pt,
+  arc=1.5mm, outer arc=1.5mm,
+  left=4mm, right=4mm, top=3mm, bottom=3mm,
+  fonttitle=\sffamily\bfseries,
+  coltitle=white,
+  title={#1},
+}
+
+\DeclareTColorBox{DoubleBox}{ }{%
+  enhanced,
+  colback=qsoft,
+  colframe=qsoft,
+  boxrule=0pt,
+  arc=0pt,
+  left=5mm, right=5mm, top=4mm, bottom=4mm,
+  borderline={0.5pt}{0pt}{qaccent},
+  borderline={0.3pt}{1.2mm}{qaccent, dashed},
+}
+
+\DeclareTColorBox{CornerBox}{ m }{%
+  enhanced,
+  colback=white,
+  colframe=white,
+  boxrule=0pt,
+  arc=0pt,
+  left=5mm, right=5mm, top=6mm, bottom=5mm,
+  underlay={%
+    \draw[qaccent, line width=.6pt]
+         ($(frame.north west)+(0,-4mm)$) -- (frame.north west)
+         -- ($(frame.north west)+(4mm,0)$);
+    \draw[qaccent, line width=.6pt]
+         ($(frame.north east)+(0,-4mm)$) -- (frame.north east)
+         -- ($(frame.north east)+(-4mm,0)$);
+    \draw[qaccent, line width=.6pt]
+         ($(frame.south west)+(0,4mm)$) -- (frame.south west)
+         -- ($(frame.south west)+(4mm,0)$);
+    \draw[qaccent, line width=.6pt]
+         ($(frame.south east)+(0,4mm)$) -- (frame.south east)
+         -- ($(frame.south east)+(-4mm,0)$);
+  },
+  fonttitle=\sffamily\bfseries,
+  coltitle=qaccent,
+  attach boxed title to top center={yshift=-2.2mm},
+  boxed title style={
+    colback=white, colframe=white,
+    boxrule=0pt, arc=0pt,
+    left=2mm, right=2mm, top=0pt, bottom=0pt,
+  },
+  title={#1},
+}
+
+\DeclareTColorBox{TechCard}{ m }{%
+  enhanced, breakable,
+  colback=white,
+  colframe=qaccent,
+  coltext=qtext,
+  boxrule=.5pt,
+  arc=1.5mm, outer arc=1.5mm,
+  left=5mm, right=5mm, top=4mm, bottom=4mm,
+  fontupper=\sffamily,
+  before skip=4mm,
+  underlay unbroken={%
+    \draw[qaccentLight, line width=.3pt, rounded corners=.8mm]
+         ($(frame.south west)+(1.5mm,1.5mm)$)
+         rectangle
+         ($(frame.north east)+(-1.5mm,-1.5mm)$);
+  },
+  underlay first={%
+    \draw[qaccentLight, line width=.3pt, rounded corners=.8mm]
+         ($(frame.south west)+(1.5mm,0)$)
+      -- ($(frame.north west)+(1.5mm,-1.5mm)$)
+      -- ($(frame.north east)+(-1.5mm,-1.5mm)$)
+      -- ($(frame.south east)+(-1.5mm,0)$);
+  },
+  underlay middle={%
+    \draw[qaccentLight, line width=.3pt]
+         ($(frame.south west)+(1.5mm,0)$) -- ($(frame.north west)+(1.5mm,0)$);
+    \draw[qaccentLight, line width=.3pt]
+         ($(frame.south east)+(-1.5mm,0)$) -- ($(frame.north east)+(-1.5mm,0)$);
+  },
+  underlay last={%
+    \draw[qaccentLight, line width=.3pt, rounded corners=.8mm]
+         ($(frame.north west)+(1.5mm,0)$)
+      -- ($(frame.south west)+(1.5mm,1.5mm)$)
+      -- ($(frame.south east)+(-1.5mm,1.5mm)$)
+      -- ($(frame.north east)+(-1.5mm,0)$);
+  },
+  fonttitle=\sffamily\bfseries,
+  coltitle=qaccent,
+  attach boxed title to top left={xshift=5mm, yshift=-2.5mm},
+  boxed title style={
+    colback=white, colframe=white,
+    boxrule=0pt, arc=0pt,
+    left=1.5mm, right=1.5mm, top=0pt, bottom=0pt,
+  },
+  title={\rule[-.05ex]{1.4mm}{1.4mm}\hspace{1.2mm}#1},
+}
+
+\begin{document}
+
+\section*{Example A — MiniBox}
+最小構成。\verb|\DeclareTColorBox| の使い方とタイトル基本。
+
+\begin{MiniBox}{Quick Start}
+これは最小構成のボックスです。色と角丸を変えるだけでも雰囲気が出ます。
+\end{MiniBox}
+
+\section*{Example B — DoubleBox}
+\verb|borderline| を 2 つ重ねた、タイトルなしの引用カード風。
+
+\begin{DoubleBox}
+borderline を 2 行書くだけで、外側に実線、内側 1.2mm に破線、という二重枠が手に入る。
+タイトルを載せていないので軽量な引用ブロックとして使える。
+\end{DoubleBox}
+
+\section*{Example C — CornerBox}
+TikZ \verb|underlay| で 4 隅にブラケットだけ描いたミニマルカード。
+
+\begin{CornerBox}{Tech Note}
+4 隅の短い L 字だけで「囲ってる感」を出すデザイン。
+紙資料やテックスライドでよく見る形。
+\end{CornerBox}
+
+\section*{Example D — TechCard（unbroken）}
+最終形態。タイトルが枠線をパンチ抜きし、内側にサブ枠を持つ。
+
+\begin{TechCard}{Overview}
+水色 × 白のミニマムテックボックス。\verb|breakable| を ON にしているので、
+長文を入れるとページをまたいで自動で折り返されつつ、装飾が破綻しないようになっている。
+\end{TechCard}
+
+\section*{Example D — TechCard（breakable）}
+ページをまたぐと、underlay first / middle / last に分配された描画が機能する。
+
+\begin{TechCard}{Long Content Test}
+\lipsum[1-7]
+\end{TechCard}
+
+\end{document}
