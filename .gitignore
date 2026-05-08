@@ -33,3 +33,19 @@ Work/*
 ## CTAN upload archive
 gckanbun.tds.zip
 gckanbun.zip
+
+## AI assistants / editor metadata
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+.claude.json
+.cursor/
+.cursorrules
+.aider*
+.continue/
+.windsurfrules
+.github/copilot-instructions.md
+
+## Editor / IDE
+.vscode/
+.idea/
