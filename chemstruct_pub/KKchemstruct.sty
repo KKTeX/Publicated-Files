@@ -2,73 +2,26 @@
 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{KKchemstruct}[2026/08/02, v1.0.0 chemfig structural formulas for chemistry worksheets]
-% 高校化学（有機・無機）の構造式を chemfig で組むための部品集。
-% 市販の化学参考書の図版を実測し、線幅・結合長・二重結合間隔・置換基の向きを
-% その見えに合わせてある。
-%
-% 寸法の決め方（各図のラベル書体のキャップハイトから em に直した値。図ごとに
-% 版面倍率が違うので、絶対寸法ではなく「ラベルに対する比」で合わせている）:
-%   ・ベンゼン環の一辺        1.20em〜1.41em。既定はその中間の 1.35em。
-%   ・環→置換基ラベルの可視線 環の atom sep から O の半幅と余白を引いた残り（≈0.65em）
-%   ・示性式の横向きの可視線  0.60em（ラベル幅によらず一定）
-%   ・縦向きの C=O            横と同じ〜1.19倍。既定は 1.15倍。
-%   ・配位結合の矢印          横の 1.4倍。矢尻のぶん長く要る。既定は 1.5倍。
-%   ・骨格の縦棒（油脂）      横の 2.75倍（カルボニルの O を挟むため）
-%   ・二重結合の内側短線      一辺の 0.77倍（chemfig の環の既定が 0.80倍でほぼ一致）
-%   ・ラベルと結合線の隙間    0.13em
-%   ・二重結合の線間          0.26em
-%   ・線幅                    0.05em
-%
-% 参考にした図版は「環まわり」と「示性式の鎖」で結合長の決め方が違う。前者は
-% 原子中心間距離が一定（＝正六角形が描ける）、後者は可視線の長さが一定
-% （CH_2 のような広いラベルでも線が潰れない）。chemfig の `fixed length` が
-% ちょうどこの二択にあたるので、
-% 環系＝\KKchemring… 系マクロ（fixed length=false）、
-% 示性式＝\KKchemchain 系マクロ（fixed length=true）と使い分ける。
-%
-% ---- 使い方の索引 ----
-%   \KKbenzene[2=OH,3=COOH]        置換ベンゼン（位置は真上を1として時計回り）
-%   \KKphenyl{COOH} / \KKphenylene{SO_3H} / \KKphenylring
-%                                  本文中に置く横向きの環
-%   \KKchemring[<chemfigキー>]{…}  縮合環など、chemfig の生の記法で書く環
-%   \KKchemchain[<chemfigキー>]{…} 示性式（横書き＋縦棒）
-%   \KKcarbonyl / \KKcarbonyldown / \KKdative{<角度>}
-%                                  鎖の中で使う断片（C=O・配位結合）
-%   \KKscheme{…} / \KKbranchscheme{…}{…}{…}{…}{…}{…}{…}
-%                                  反応式と枝分かれ反応式
-%   \KKname{<構造>}{<名称>}        構造の下に化合物名
-%   \KKchemmark{<節点>}{<節点>} / \KKhbond / \KKchemcross
-%                                  脱離部分の点線囲み・水素結合・×印
-%   \ck{<式>}                      矢印ラベルなど、数式モードに入らない場所の化学式
-%   \KKchemsetup{ring sep=1.35em,…} 寸法の一括変更
-% 個々の化合物マクロ（\KKsalicylicacid など）は最後の節にまとめてある。
-%
-% 注意: 矢印のラベルは chemfig の仕様で数式モードに入らない。化学式を置くときは
-% \ck{CH_3OH} のように包むこと。和文はそのまま書いてよい。
 
 \RequirePackage{chemfig}
 \RequirePackage{etoolbox}
 \RequirePackage{xkeyval}
 \usetikzlibrary{fit}
 
-% ---------------------------------------------------------------------------
 % 1. 寸法パラメータ
-% ---------------------------------------------------------------------------
-% すべて em 指定なので、判型ごとに本文サイズを変えても比率が保たれる。
-% 数値を触りたいときは \KKchemsetup{...} で上書きする。
-\newcommand*\KKchem@ringsep{1.35em}      % 骨格だけの環の一辺（原子中心間距離）
-\newcommand*\KKchem@labelringsep{1.75em} % 頂点にC・Oのラベルが載る環の一辺
-\newcommand*\KKchem@chainsep{0.75em}     % 示性式の結合の長さ（可視線はここから隙間ぶん短い）
-\newcommand*\KKchem@vcoeff{1.15}         % 縦向きの結合（C=O・骨格の縦棒）の伸ばし率
-\newcommand*\KKchem@dativecoeff{1.5}     % 配位結合の矢印の伸ばし率（矢尻のぶん長めに）
-\newcommand*\KKchem@bondoffset{0.13em}   % ラベルと結合線の隙間
-\newcommand*\KKchem@doublesep{0.26em}    % 二重結合の線間
-\newcommand*\KKchem@bondwidth{0.05em}    % 結合線の太さ
-\newcommand*\KKchem@arrowlabelsep{0.30em}% 反応矢印とラベルの隙間
-\newcommand*\KKchem@arrowoffset{0.8em}   % 化合物と矢印端の隙間
-\newcommand*\KKchem@compoundsep{5.5em}   % 反応式中の化合物どうしの間隔
-\newcommand*\KKchem@kink{1.8em}          % 枝分かれ矢印の立ち上がり幅
-\newcommand*\KKchem@namefont{\normalsize}% 構造式の下に置く名称の書体
+\newcommand*\KKchem@ringsep{1.35em}%
+\newcommand*\KKchem@labelringsep{1.75em}%
+\newcommand*\KKchem@chainsep{0.75em}%
+\newcommand*\KKchem@vcoeff{1.15}%
+\newcommand*\KKchem@dativecoeff{1.5}%
+\newcommand*\KKchem@bondoffset{0.13em}%
+\newcommand*\KKchem@doublesep{0.26em}%
+\newcommand*\KKchem@bondwidth{0.05em}%
+\newcommand*\KKchem@arrowlabelsep{0.30em}%
+\newcommand*\KKchem@arrowoffset{0.8em}%
+\newcommand*\KKchem@compoundsep{5.5em}%
+\newcommand*\KKchem@kink{1.8em}%
+\newcommand*\KKchem@namefont{\normalsize}%
 
 \define@key{KKchem}{ring sep}{\renewcommand*\KKchem@ringsep{#1}}
 \define@key{KKchem}{label ring sep}{\renewcommand*\KKchem@labelringsep{#1}}
@@ -85,7 +38,6 @@
 \define@key{KKchem}{name font}{\renewcommand*\KKchem@namefont{#1}}
 \newcommand\KKchemsetup[1]{\setkeys{KKchem}{#1}}
 
-% 環系・鎖系に共通の設定。#1 に fixed length と atom sep だけを差し替えて渡す。
 \newcommand\KKchem@base[1]{%
   \setchemfig{%
     #1,%
@@ -103,39 +55,17 @@
 \newcommand\KKchem@chainmode{%
   \KKchem@base{fixed length=true,atom sep=\KKchem@chainsep}}
 
-% 文書全体の既定は環モード。\chemfig を直接使ったときもこの寸法になる。
 \AtBeginDocument{\KKchem@ringmode}
 
-% ---------------------------------------------------------------------------
 % 2. 化学式の組み方
-% ---------------------------------------------------------------------------
-% chemfig は原子ラベルを \printatom 経由で組む。既定は \mathrm なので、
-% CH_3 のような添字付きの式がそのまま通る。反応矢印のラベルだけは数式モードに
-% 入らない仕様なので、そこでは \ck を使う。
-% 正式名は \KKchemformula。\ck は打鍵を減らすためだけの薄い別名なので、2文字の
-% 公開名が他と衝突する文書では使わなくてよい。
 \newcommand\KKchemformula[1]{\ensuremath{\mathrm{#1}}}
 \newcommand\KKchemminus{\ensuremath{^{-}}}
 \newcommand\KKchemplus{\ensuremath{^{+}}}
 \newcommand\ck{\KKchemformula}
-% イオンの右肩（\ck{RCOO\ckm}、\ck{Na\ckp} のように使う）
 \newcommand\ckm{\KKchemminus}
 \newcommand\ckp{\KKchemplus}
 
-% ---------------------------------------------------------------------------
 % 3. ベンゼン環
-% ---------------------------------------------------------------------------
-% 参考図版の環はすべて「頂点が上下」の向き（左右の辺が垂直）で、二重結合の内側
-% 短線は左上・右・左下の3辺に入る。chemfig の *6(=-=-=-) がちょうどこの配置。
-% 置換基は頂点から放射方向へ出る（真上の頂点なら 90 度、右上なら 30 度…）。
-% これも chemfig の既定と一致するので、角度指定は不要。
-%
-% 置換位置は時計回りに 1..6 で数える:
-%        1 (真上)
-%   6 ┌───┐ 2 (右上)
-%     │   │
-%   5 └───┘ 3 (右下)
-%        4 (真下)
 \define@key{KKben}{1}{\def\KKben@a{#1}}
 \define@key{KKben}{2}{\def\KKben@b{#1}}
 \define@key{KKben}{3}{\def\KKben@c{#1}}
@@ -144,8 +74,6 @@
 \define@key{KKben}{6}{\def\KKben@f{#1}}
 \define@key{KKben}{angle}{\def\KKben@angle{#1}}
 \define@key{KKben}{sep}{\def\KKben@sep{#1}}
-% kekule=b で二重結合を裏返す（右上・下・左上の3辺に入れる）。
-% 置換基と内側短線がぶつかって見苦しいときの逃げ道。
 \define@key{KKben}{kekule}{\def\KKben@kekule{#1}}
 
 \newcommand\KKben@reset{%
@@ -153,29 +81,24 @@
   \def\KKben@d{}\def\KKben@e{}\def\KKben@f{}%
   \def\KKben@angle{}\let\KKben@sep\KKchem@ringsep\def\KKben@kekule{a}}
 
-% 環の chemfig コードを組み立てる。空の置換基は枝ごと落とす。
-% chemfig は引数を生のトークン列として舐めるので、マクロのまま渡すと環の括弧も
-% 結合記号も解釈されない。先に文字列を組み立ててから \expandafter で渡す。
 \newcommand\KKben@code{}
 \newcommand\KKben@put[1]{\g@addto@macro\KKben@code{#1}}
 \newcommand\KKben@putx[1]{\expandafter\KKben@put\expandafter{#1}}
 \newcommand\KKben@sub[1]{%
   \ifblank{#1}{}{\KKben@put{(-}\KKben@put{#1}\KKben@put{)}}}
 \newcommand\KKben@subx[1]{\expandafter\KKben@sub\expandafter{#1}}
-% 環の記述順は chemfig の並び（開始原子＝左下、そこから反時計回り）に合わせる:
-%   開始=5, 次が 4 → 3 → 2 → 1 → 6
 \newcommand\KKben@build{%
   \gdef\KKben@code{}%
   \expandafter\ifblank\expandafter{\KKben@angle}{}%
     {\KKben@put{[:}\KKben@putx\KKben@angle\KKben@put{]}}%
   \KKben@put{*6(}%
-  \KKben@subx\KKben@e                             % 左下（開始原子）
-  \KKben@putx\KKben@bondA \KKben@subx\KKben@d     % → 真下
-  \KKben@putx\KKben@bondB \KKben@subx\KKben@c     % → 右下
-  \KKben@putx\KKben@bondA \KKben@subx\KKben@b     % → 右上
-  \KKben@putx\KKben@bondB \KKben@subx\KKben@a     % → 真上
-  \KKben@putx\KKben@bondA \KKben@subx\KKben@f     % → 左上
-  \KKben@putx\KKben@bondB                         % → 左下へ閉じる
+  \KKben@subx\KKben@e%
+  \KKben@putx\KKben@bondA \KKben@subx\KKben@d%
+  \KKben@putx\KKben@bondB \KKben@subx\KKben@c%
+  \KKben@putx\KKben@bondA \KKben@subx\KKben@b%
+  \KKben@putx\KKben@bondB \KKben@subx\KKben@a%
+  \KKben@putx\KKben@bondA \KKben@subx\KKben@f%
+  \KKben@putx\KKben@bondB%
   \KKben@put{)}}
 
 \newcommand\KKben@setbonds{%
@@ -183,10 +106,6 @@
     {\def\KKben@bondA{-}\def\KKben@bondB{=}}%
     {\def\KKben@bondA{=}\def\KKben@bondB{-}}}
 
-% \KKbenzene[<キー=値,...>]
-%   例: \KKbenzene[2=OH,3=COOH]        サリチル酸
-%       \KKbenzene[1=COOH,4=COOH]      テレフタル酸
-%       \KKbenzene[]                    無置換ベンゼン
 \newcommand\KKbenzene[1][]{%
   \begingroup
     \KKben@reset
@@ -197,29 +116,16 @@
     \expandafter\chemfig\expandafter{\KKben@code}%
   \endgroup}
 
-% 環そのものを chemfig の生の記法で書きたいとき（縮合環など）の逃げ道。
-% 環モードの寸法だけ与えて \chemfig をそのまま呼ぶ。
 \newcommand\KKchemring[2][]{%
   \begingroup
     \KKchem@base{fixed length=false,atom sep=\KKchem@ringsep,#1}%
     \KKchem@emit{#2}%
   \endgroup}
 
-% \KKcarbonyl のような「chemfig コードの断片」マクロを効かせるための一段展開。
-% chemfig は引数を展開せずに読むので、渡す前にこちらで文字列にしておく。
-% 原子ラベル側のマクロ（\ck など）は \protected@edef が保護するので壊れない。
 \newcommand\KKchem@emit[1]{%
   \protected@edef\KKchem@body{#1}%
   \expandafter\chemfig\expandafter{\KKchem@body}}
 
-% 本文中に置く横向きの環。左右の「頂点」で結合するので、環を -30 度回して
-% flat-top（上下の辺が水平）にする。⟨環⟩-COOH や
-% CH3(CH2)11-⟨環⟩-SO3H のような形がこれ。
-%   \KKphenyl{<右に付く置換基>}     … 環＋右への結合（左は結合なし）
-%   \KKphenylene{<右に付く置換基>}  … 左にも結合の切り株を出す（鎖の途中に挟む）
-% [:-30] 回転では開始原子が左の頂点に来るので、環の中心がちょうどベースライン上に
-% 乗る。参考図版は数式軸あたりに載っているので、既定でわずかに持ち上げる。
-% 二重結合は左上・右上・下辺の3辺（flat-top 環の慣用の並び）。
 \newcommand*\KKchem@inlineraise{0.35ex}
 \define@key{KKchem}{inline raise}{\renewcommand*\KKchem@inlineraise{#1}}
 \newcommand\KKchem@flatring[1]{%
@@ -229,40 +135,20 @@
   \endgroup}
 \newcommand\KKphenyl[1]{\KKchem@flatring{-=-(-#1)=-=}}
 \newcommand\KKphenylene[1]{\KKchem@flatring{(-[:180])-=-(-#1)=-=}}
-% 無置換の横向き環（本文中の「ベンゼン」1文字ぶんの図）
 \newcommand\KKphenylring{\KKchem@flatring{-=-=-=}}
 
-% ---------------------------------------------------------------------------
 % 4. 示性式（縮合構造式）
-% ---------------------------------------------------------------------------
-% CH_2-O-C(=[2]O)-R_1 のように、ラベルが並ぶ横書き＋縦棒の形。
-% fixed length=true にすると、CH_2 のような広いラベルの後でも可視線の長さが
-% 一定になり、参考図版の見えに一致する。
 \newcommand\KKchemchain[2][]{%
   \begingroup
     \KKchem@base{fixed length=true,atom sep=\KKchem@chainsep,#1}%
     \KKchem@emit{#2}%
   \endgroup}
 
-% よく出る断片。chemfig のコード片なので \KKchemchain の引数中で使う。
-% 角度は chemfig の 45 度刻み（0=右, 2=上, 4=左, 6=下）。
-% 参考図版は縦向きの結合を横向きより長く取っている（オキソ酸で横 0.55em に対し
-% 縦の配位結合は 0.78em）。ラベルの高さと矢尻のぶん、縦は伸ばさないと詰まって見える。
-\newcommand\KKcarbonyl{(=[2,\KKchem@vcoeff]O)}      % 上向きの C=O
-\newcommand\KKcarbonyldown{(=[6,\KKchem@vcoeff]O)}  % 下向きの C=O
-\newcommand\KKdative[1]{-[#1,\KKchem@dativecoeff,,,-CF]}% 配位結合（S→O, P→O, N→O）
+\newcommand\KKcarbonyl{(=[2,\KKchem@vcoeff]O)}%
+\newcommand\KKcarbonyldown{(=[6,\KKchem@vcoeff]O)}%
+\newcommand\KKdative[1]{-[#1,\KKchem@dativecoeff,,,-CF]}%
 
-% ---------------------------------------------------------------------------
 % 5. 反応式
-% ---------------------------------------------------------------------------
-% chemfig の \schemestart/\schemestop をそのまま使う。寸法だけ揃える。
-% 既定は鎖モード（反応式に並ぶのは示性式が多いため）。環を置くときは
-% \KKbenzene / \KKchemring が各自で寸法を切り替えるので、混在しても崩れない。
-% \KKscheme[<キー>]{<反応式の中身>}
-% #1 は chemfig の \schemestart のキー（arrow angle / arrow coeff / arrow style）。
-% 空のまま [] を渡すと chemfig 側の解析が壊れるので、指定があるときだけ通す。
-% 環境ではなく引数で受けるのは、\schemestart が \schemestop というトークンを
-% 直接探しに行く実装で、環境の終了コード越しには見つけられないため。
 \newcommand\KKscheme[2][]{%
   \par\begingroup
     \KKchem@chainmode
@@ -270,10 +156,6 @@
     #2\schemestop
   \endgroup\par}
 
-% 枝分かれ矢印 `-|>`。基質から斜めに立ち上がってから水平に伸びる矢印
-% （サリチル酸→メチル体／アセチル体のような図）。
-% ラベルは水平な軸の上下に、水平のまま置く（斜め部分には載せない）。
-%   \arrow{-|>[上ラベル][下ラベル][垂直シフト][立ち上がり幅]}[角度,長さ係数]
 \catcode`\_=11
 \definearrow4{-|>}{%
   \CF_arrowshiftnodes{#3}%
@@ -288,12 +170,6 @@
 }
 \catcode`\_=8
 
-% 1つの基質から2つの生成物へ枝分かれする図。
-%   \KKbranchscheme{<基質>}{<上の試薬>}{<上の反応名>}{<上の生成物>}
-%                          {<下の試薬>}{<下の反応名>}{<下の生成物>}
-% 化合物は \KKname{構造}{名称} を渡せば名称付きになる。
-% 角度と長さは参考図版の見えに合わせた既定値。個別に変えたいときは
-% \KKchemsetup{branch angle=..,branch coeff=..} で。
 \newcommand*\KKchem@branchangle{20}
 \newcommand*\KKchem@branchcoeff{2.7}
 \define@key{KKchem}{branch angle}{\renewcommand*\KKchem@branchangle{#1}}
@@ -306,26 +182,16 @@
     \arrow(@c1--){-|>[#5][#6]}[-\KKchem@branchangle,\KKchem@branchcoeff]%
     #7}}
 
-% 構造式の下に名称を置く（和文の化合物名を中央に添える形）。
 \newcommand\KKname[2]{\chemname{#1}{\KKchem@namefont#2}}
 
-% ---------------------------------------------------------------------------
 % 6. 注釈（脱離部分の囲み・水素結合・×印）
-% ---------------------------------------------------------------------------
-% 脱離する -OH や -H を点線の角丸枠で囲む。chemfig の @{名前} で付けた
-% ノード2つを対角に取って fit させる。
-%   \KKchemchain{R-C\KKcarbonyl-@{s}OH}\ +\ \KKchemchain{@{e}H-O-R'}
-%   \KKchemmark{s}{e}
 \newcommand\KKchemmark[3][]{%
   \chemmove{\node[draw=black,densely dotted,line width=.06em,rounded corners=.35em,
     line cap=round,inner sep=.12em,fit=(#2)(#3),#1]{};}}
 
-% 分子内水素結合の点線。O-H…O を結ぶ。
-% \chemmove の既定スタイルには矢印先端が入っているので、`-` で明示的に消す。
 \newcommand\KKhbond[3][]{%
   \chemmove{\draw[-,densely dotted,line width=.06em,line cap=round,#1](#2)--(#3);}}
 
-% 「この反応は起こらない」を示す×印。
 \newcommand\KKchemcross[2][black!35]{%
   \begin{tikzpicture}[baseline=(kkx.base)]
     \node[inner sep=.2em](kkx){#2};
@@ -333,60 +199,38 @@
       (kkx.south west)--(kkx.north east) (kkx.north west)--(kkx.south east);
   \end{tikzpicture}}
 
-% ---------------------------------------------------------------------------
 % 7. 頻出化合物
-% ---------------------------------------------------------------------------
-% よく出る構造をそのまま呼べるようにしておく。
-% 中身は上のマクロの組み合わせなので、別の化合物もこれを真似して足せる。
 \newcommand\KKsalicylicacid{\KKbenzene[2=OH,3=COOH]}
 \newcommand\KKmethylsalicylate{\KKbenzene[2=OH,3=COOCH_3]}
 \newcommand\KKaspirin{\KKbenzene[2=OCOCH_3,3=COOH]}
-% 単置換体は縦向きの環。本文に流し込む横向きの形が要るときは \KKphenyl{COOH}。
 \newcommand\KKbenzoicacid{\KKbenzene[2=COOH]}
 \newcommand\KKphthalicacid{\KKbenzene[2=COOH,3=COOH]}
 \newcommand\KKisophthalicacid{\KKbenzene[1=COOH,3=COOH]}
 \newcommand\KKterephthalicacid{\KKbenzene[1=COOH,4=COOH]}
 \newcommand\KKphenol{\KKbenzene[1=OH]}
 
-% 無水フタル酸: ベンゼン環の右の縦辺に五員環を縮合させる。
-% *6 の途中で *5 を開くと、直前に通った辺を共有する縮合環になる。
-% 環内の枝（=O）は角度を書かなければ環の中心から外向きに出るので、
-% 回転を変えても向きが崩れない。ケクレの内側短線は
-% 左下・右縦・左上の3辺に入る。
 \newcommand\KKphthalicanhydride{%
   \KKchemring[atom sep=\KKchem@labelringsep]%
     {*6(=-*5(-C(=O)-O-C(=O)-)=-=-)}}
 
-% 無水マレイン酸: 五員環を単独で描く。開始原子を O にすると残り4つの C が
-% すべて環の中に入るので、枝（=O と -H）を無角度で書ける＝外向きに出る。
-% [:144] は「O を右端・C=C を左の縦辺」という向きに合わせる回転。
 \newcommand\KKmaleicanhydride{%
   \KKchemring[atom sep=\KKchem@labelringsep]%
     {[:144]O*5(-C(=O)-C(-H)=C(-H)-C(=O)-)}}
 
-% マレイン酸: H-C-COOH を上下2段に置き、C=C を縦に通す。
 \newcommand\KKmaleicacid{%
   \KKchemchain{H-C(-[0]COOH)=[6,\KKchem@vcoeff]C(-[4]H)-[0]COOH}}
-% フマル酸: C=C を横に通し、置換基を斜め4方向へ出す。
 \newcommand\KKfumaricacid{%
   \KKchemchain{HOOC-[:-45]C(-[:-135]H)=[:0]C(-[:45]H)-[:-45]COOH}}
 
-% エステル化の一般式
 \newcommand\KKestergeneric{\KKchemchain{R_1-C\KKcarbonyl-OH}}
-% オキソ酸。配位結合は \KKdative で矢印付きの結合にする。
 \newcommand\KKnitricacid{%
   \KKchemchain{H-O-N(=[1,\KKchem@vcoeff]O)(\KKdative{7}O)}}
 \newcommand\KKsulfuricacid{%
   \KKchemchain{H-O-S(\KKdative{2}O)(\KKdative{6}O)-O-H}}
 \newcommand\KKphosphoricacid{%
   \KKchemchain{H-O-P(\KKdative{2}O)(-[6,\KKchem@vcoeff]O-H)-O-H}}
-% グリセリン。縦の骨格は炭素3つ。
 \newcommand\KKglycerol{%
   \KKchemchain{CH_2(-OH)-[6,\KKchem@vcoeff]CH(-OH)-[6,\KKchem@vcoeff]CH_2-OH}}
-% 油脂。カルボニルの O を上に出すぶん、骨格の縦結合を伸ばす。
-% 真ん中の CH は CH_2 より添字ぶん狭いので、そのままだと O の列が左にずれる。
-% 参考図版も同じ事情から真ん中だけ長いダッシュにしているので、係数で合わせる
-% （1.28 は 8.5pt の HaranoAji＋LMRoman で列が揃う値）。
 \newcommand*\KKchem@midbond{1.28}
 \define@key{KKchem}{mid bond coeff}{\renewcommand*\KKchem@midbond{#1}}
 \newcommand\KKtriglyceride[3]{%
