@@ -1,0 +1,350 @@
+% KKchemstruct 取扱説明書（日本語版）
+%   lualatex KKchemstruct-manual-ja.tex   （2回）
+% \KKchemmark と \KKhbond の位置決めのため、2回コンパイルしてください。
+\documentclass[paper=a4paper,fontsize=10pt]{jlreq}
+\usepackage{KKchemstruct}
+
+\title{KKchemstruct 取扱説明書}
+\author{KKTeX}
+\date{2026年8月2日\quad v1.0.0}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{概要}
+
+\textsf{KKchemstruct} は、高校化学（有機・無機）の構造式を組むためのマクロ集です。
+描画そのものは \textsf{chemfig} が行い、本パッケージは
+参考書の図版の見えに合うよう寸法・線幅・向きを設定したうえで、
+置換ベンゼン・示性式・反応式・注釈を短い記法で書けるようにします。
+
+寸法はすべて \verb|em| 単位で定義してあるので、本文の文字サイズを変えれば
+図もそれに追随します。判型ごとに数値を書き直す必要はありません。
+
+\subsection{必要なもの}
+
+\begin{itemize}
+\item TeX エンジン: LuaLaTeX、または pLaTeX + dvipdfmx
+\item 依存パッケージ: \textsf{chemfig}、\textsf{etoolbox}、\textsf{xkeyval}
+      （いずれも TeX Live に収録）
+\end{itemize}
+
+\subsection{読み込み}
+
+\verb|KKchemstruct.sty| を TeX のサーチパス上か文書と同じディレクトリに置き、
+
+\begin{verbatim}
+\usepackage{KKchemstruct}
+\end{verbatim}
+
+と書きます。オプションはありません。
+
+\subsection{2回のコンパイルが要る場合}
+
+\verb|\KKchemmark| と \verb|\KKhbond| は TikZ のノード参照を使うため、
+位置が定まるまでに2回のコンパイルが必要です。1回目は枠や点線が
+ずれた場所に出ますが、2回目で正しい位置に落ち着きます。
+
+\section{ベンゼン環}
+
+\subsection{\texttt{\char`\\KKbenzene}}
+
+置換ベンゼンは \verb|\KKbenzene| で書きます。置換位置は真上を 1 として
+時計回りに 1〜6 です。
+
+\begin{verbatim}
+\KKbenzene[2=OH,3=COOH]
+\end{verbatim}
+
+\begin{center}
+\KKbenzene[2=OH,3=COOH]\qquad
+\KKbenzene[1=COOH,4=COOH]\qquad
+\KKbenzene[]
+\end{center}
+
+置換基は数式モードで組まれるので、\verb|COOCH_3| のように添字を
+そのまま書けます。空の位置は書かなければ枝ごと出ません。
+
+\subsection{オプション}
+
+\begin{description}
+\item[\texttt{1}〜\texttt{6}] 各位置の置換基。
+\item[\texttt{angle}] 環全体の回転角（度）。既定は回転なし（頂点が上下）。
+\item[\texttt{sep}] この環だけの一辺の長さ（原子中心間距離）。
+\item[\texttt{kekule=b}] 二重結合の内側短線を裏返し、右上・下・左上の3辺に入れます。
+      置換基と短線がぶつかって見苦しいときに使います。
+\end{description}
+
+\begin{verbatim}
+\KKbenzene[1=OH,kekule=b]      \KKbenzene[2=OH,angle=30,sep=1.0em]
+\end{verbatim}
+
+\begin{center}
+\KKbenzene[1=OH,kekule=b]\qquad
+\KKbenzene[2=OH,angle=30,sep=1.0em]
+\end{center}
+
+\subsection{本文中に置く横向きの環}
+
+段落の途中に環を流し込むときは、上下の辺が水平な（flat-top の）形を使います。
+左右の頂点で結合するので、鎖の途中に自然に収まります。
+
+\begin{description}
+\item[\texttt{\char`\\KKphenylring}] 無置換の環だけ。
+\item[\texttt{\char`\\KKphenyl\{...\}}] 環の右へ置換基を出します。
+\item[\texttt{\char`\\KKphenylene\{...\}}] 左にも結合の切り株を出し、鎖の途中に挟めます。
+\end{description}
+
+本文の中に \KKphenylring{} を置いても行送りは崩れません。
+\KKphenyl{COOH} のように右へ置換基が出せますし、
+鎖の途中に \ck{CH_3(CH_2)_{11}}\KKphenylene{SO_3H} と挟むこともできます。
+
+ベースラインからの持ち上げ量は \verb|\KKchemsetup{inline raise=0.35ex}| で調整できます。
+
+\subsection{縮合環など（\texttt{\char`\\KKchemring}）}
+
+ベンゼン以外の環や縮合環は、\textsf{chemfig} の生の記法をそのまま
+\verb|\KKchemring| に渡します。環に合った寸法（原子中心間距離が一定）だけが
+適用されます。第1引数（省略可）には \textsf{chemfig} のキーを渡せます。
+
+\begin{verbatim}
+\KKchemring[atom sep=1.75em]{*6(=-*5(-C(=O)-O-C(=O)-)=-=-)}
+\end{verbatim}
+
+\begin{center}
+\KKphthalicanhydride\qquad\KKmaleicanhydride
+\end{center}
+
+頂点に C や O のラベルが載る環は、骨格だけの環より一辺を広く取らないと
+文字が詰まります。既定値は \verb|label ring sep|（1.75em）です。
+
+\section{示性式}
+
+\subsection{\texttt{\char`\\KKchemchain}}
+
+\verb|CH_2-O-C(=[2]O)-R_1| のようにラベルが横に並ぶ形は
+\verb|\KKchemchain| で書きます。こちらは可視線の長さが一定になるので、
+\verb|CH_2| のような幅の広いラベルの後でも線が潰れません。
+
+\begin{verbatim}
+\KKchemchain{CH_2(-OH)-[6,1.15]CH(-OH)-[6,1.15]CH_2-OH}
+\end{verbatim}
+
+\begin{center}
+\KKglycerol\qquad\KKtriglyceride{R_1}{R_2}{R_3}
+\end{center}
+
+角度は \textsf{chemfig} の 45 度刻みの番号（0 = 右、2 = 上、4 = 左、6 = 下）です。
+角度の後の数値は長さの倍率です。
+
+\subsection{よく使う断片}
+
+鎖の中に置く部品を用意してあります。いずれも \textsf{chemfig} のコード片なので、
+\verb|\KKchemchain| の引数の中で使います。
+
+\begin{description}
+\item[\texttt{\char`\\KKcarbonyl}] 上向きの C=O。
+\item[\texttt{\char`\\KKcarbonyldown}] 下向きの C=O。
+\item[\texttt{\char`\\KKdative\{<角度>\}}] 配位結合（S$\to$O、P$\to$O、N$\to$O）の矢印。
+\end{description}
+
+縦向きの結合は横向きより長く取ってあります。ラベルの高さと矢尻のぶんを
+見込まないと詰まって見えるためです。
+
+\begin{verbatim}
+\KKchemchain{H-O-S(\KKdative{2}O)(\KKdative{6}O)-O-H}
+\end{verbatim}
+
+\begin{center}
+\KKsulfuricacid\qquad\KKnitricacid\qquad\KKphosphoricacid
+\end{center}
+
+\section{反応式}
+
+\subsection{\texttt{\char`\\KKscheme}}
+
+反応式は \verb|\KKscheme| の引数に \textsf{chemfig} の
+\verb|\arrow| を並べて書きます。矢印の書式は \textsf{chemfig} のままです。
+
+\begin{verbatim}
+\KKscheme{%
+  \KKname{\KKsalicylicacid}{サリチル酸}
+  \arrow{->[\ck{CH_3OH}][エステル化]}
+  \KKname{\KKmethylsalicylate}{サリチル酸メチル}}
+\end{verbatim}
+
+\KKscheme{%
+  \KKname{\KKsalicylicacid}{サリチル酸}
+  \arrow{->[\ck{CH_3OH}][エステル化]}
+  \KKname{\KKmethylsalicylate}{サリチル酸メチル}}
+
+第1引数（省略可）には \verb|\schemestart| のキー
+（\verb|arrow angle|、\verb|arrow coeff|、\verb|arrow style|）を渡せます。
+
+\subsection{\texttt{\char`\\KKbranchscheme}}
+
+1つの基質から2つの生成物へ分かれる図は、引数を7つ取る
+\verb|\KKbranchscheme| で書きます。矢印は斜めに立ち上がってから水平に伸び、
+ラベルは水平な部分の上下に置かれます。
+
+\begin{verbatim}
+\KKbranchscheme
+  {<基質>}
+  {<上の試薬>}{<上の反応名>}{<上の生成物>}
+  {<下の試薬>}{<下の反応名>}{<下の生成物>}
+\end{verbatim}
+
+\KKbranchscheme
+  {\KKname{\KKsalicylicacid}{サリチル酸}}
+  {\ck{CH_3OH}}{エステル化}{\KKname{\KKmethylsalicylate}{サリチル酸メチル}}
+  {\ck{(CH_3CO)_2O}}{アセチル化}{\KKname{\KKaspirin}{アセチルサリチル酸}}
+
+角度と枝の長さは \verb|branch angle|（既定 20 度）と
+\verb|branch coeff|（既定 2.7）で変えられます。
+
+\subsection{化合物名（\texttt{\char`\\KKname}）}
+
+\verb|\KKname{<構造>}{<名称>}| で構造式の下に名称を中央揃えで添えます。
+書体は \verb|name font| で変更できます。
+
+\section{注釈}
+
+\subsection{脱離部分の囲み（\texttt{\char`\\KKchemmark}）}
+
+縮合反応で取れる \verb|-OH| や \verb|-H| を点線の角丸枠で囲みます。
+囲みたい原子に \textsf{chemfig} の \verb|@{名前}| で目印を付け、
+その2つを対角として指定します。
+
+\begin{verbatim}
+\KKchemchain{R-C\KKcarbonyl-@{s}OH}\ +\ \KKchemchain{@{e}H-O-R'}%
+\KKchemmark{s}{e}
+\end{verbatim}
+
+\begin{center}
+\KKchemchain{R-C\KKcarbonyl-@{s}OH}\ +\ \KKchemchain{@{e}H-O-R'}%
+\KKchemmark{s}{e}
+\end{center}
+
+第1引数（省略可）には TikZ のキーを渡せます（色を変えるなど）。
+
+\subsection{水素結合（\texttt{\char`\\KKhbond}）}
+
+分子内水素結合の点線を、2つの目印の間に引きます。
+
+\begin{verbatim}
+\KKbenzene[2=@{oh}OH,3=C@{co}OOH]\KKhbond{oh}{co}
+\end{verbatim}
+
+\begin{center}
+\KKbenzene[2=@{oh}OH,3=C@{co}OOH]\KKhbond{oh}{co}
+\end{center}
+
+\subsection{×印（\texttt{\char`\\KKchemcross}）}
+
+「この反応は起こらない」ことを示す太い×を重ねます。
+第1引数（省略可）で色を変えられます（既定は \verb|black!35|）。
+
+\begin{center}
+\KKchemcross{\KKphenol}
+\end{center}
+
+\section{化学式のマクロ}
+
+\textsf{chemfig} は原子ラベルを数式モードで組むので、構造式の中では
+\verb|CH_3| のような添字付きの式がそのまま通ります。
+ただし反応矢印のラベルは \textsf{chemfig} の仕様で数式モードに入りません。
+そこでは次のマクロで包みます。
+
+\begin{description}
+\item[\texttt{\char`\\KKchemformula\{...\}}] 化学式を \verb|\mathrm| で組みます。
+\item[\texttt{\char`\\ck\{...\}}] 上の短い別名。打鍵を減らすためだけのものなので、
+      2文字の名前が他と衝突する文書では \verb|\KKchemformula| を使ってください。
+\item[\texttt{\char`\\ckm} / \texttt{\char`\\ckp}] イオンの右肩の $-$ と $+$。
+\end{description}
+
+\ck{CH_3COOH}、\ck{RCOO\ckm}、\ck{Na\ckp} のように使います。和文のラベルは
+包まずにそのまま書けます。
+
+\section{寸法の変更}
+
+\subsection{\texttt{\char`\\KKchemsetup}}
+
+寸法は \verb|\KKchemsetup| でまとめて変更します。
+
+\begin{verbatim}
+\KKchemsetup{ring sep=2.0em,bond width=0.09em,double bond sep=0.4em}
+\end{verbatim}
+
+\begingroup
+\KKchemsetup{ring sep=2.0em,bond width=0.09em,double bond sep=0.4em}
+\begin{center}
+\KKsalicylicacid\qquad\KKphenyl{COOH}
+\end{center}
+\endgroup
+
+グループの中で呼べば、変更はそのグループに閉じます。上の例も
+\verb|\begingroup| ... \verb|\endgroup| で囲んであるので、
+ここでは元の寸法に戻っています: \KKsalicylicacid
+
+\subsection{キーの一覧}
+
+\begin{description}
+\item[\texttt{ring sep}（1.35em）] 骨格だけの環の一辺（原子中心間距離）。
+\item[\texttt{label ring sep}（1.75em）] 頂点に C・O のラベルが載る環の一辺。
+\item[\texttt{chain sep}（0.75em）] 示性式の結合の長さ。可視線はここから隙間ぶん短くなります。
+\item[\texttt{vertical coeff}（1.15）] 縦向きの結合の伸ばし率。
+\item[\texttt{dative coeff}（1.5）] 配位結合の矢印の伸ばし率。
+\item[\texttt{mid bond coeff}（1.28）] 油脂の中央の横結合の倍率。
+\item[\texttt{bond offset}（0.13em）] ラベルと結合線の隙間。
+\item[\texttt{double bond sep}（0.26em）] 二重結合の線間。
+\item[\texttt{bond width}（0.05em）] 結合線の太さ。
+\item[\texttt{arrow label sep}（0.30em）] 反応矢印とラベルの隙間。
+\item[\texttt{arrow offset}（0.8em）] 化合物と矢印端の隙間。
+\item[\texttt{compound sep}（5.5em）] 反応式中の化合物どうしの間隔。
+\item[\texttt{kink}（1.8em）] 枝分かれ矢印の立ち上がり幅。
+\item[\texttt{branch angle}（20）／\texttt{branch coeff}（2.7）] 枝分かれ矢印の角度と長さ。
+\item[\texttt{inline raise}（0.35ex）] 本文中の横向きの環の持ち上げ量。
+\item[\texttt{name font}（\texttt{\char`\\normalsize}）] \verb|\KKname| の名称の書体。
+\end{description}
+
+\section{同梱の化合物マクロ}
+
+よく出る構造は、そのまま呼べるようにしてあります。中身は本書のマクロの
+組み合わせなので、\verb|.sty| の末尾を真似すれば別の化合物も足せます。
+
+\begin{description}
+\item[芳香族] \verb|\KKsalicylicacid|、\verb|\KKmethylsalicylate|、\verb|\KKaspirin|、
+      \verb|\KKbenzoicacid|、\verb|\KKphenol|、\verb|\KKphthalicacid|、
+      \verb|\KKisophthalicacid|、\verb|\KKterephthalicacid|
+\item[酸無水物・幾何異性体] \verb|\KKphthalicanhydride|、\verb|\KKmaleicanhydride|、
+      \verb|\KKmaleicacid|、\verb|\KKfumaricacid|
+\item[オキソ酸] \verb|\KKnitricacid|、\verb|\KKsulfuricacid|、\verb|\KKphosphoricacid|
+\item[油脂] \verb|\KKglycerol|、\verb|\KKtriglyceride{R_1}{R_2}{R_3}|、\verb|\KKestergeneric|
+\end{description}
+
+\begin{center}
+\KKmaleicacid\qquad\KKfumaricacid
+\end{center}
+
+\section{つまずきやすいところ}
+
+\begin{description}
+\item[丸括弧は枝になる] \textsf{chemfig} では \verb|(| \verb|)| が枝分かれの記法です。
+      \verb|CH_3(CH_2)_{11}| のような表記をそのまま
+      \verb|\KKchemchain| に渡すと枝として解釈されます。
+      構造を描かない化学式は \verb|\ck{...}| で書いてください。
+\item[矢印ラベルは数式モードでない] 前述のとおり \verb|\ck{...}| で包みます。
+\item[注釈は2回のコンパイル] \verb|\KKchemmark| と \verb|\KKhbond| は
+      1回目では位置が定まりません。
+\item[環と鎖で結合長の決め方が違う] 環は原子中心間距離が一定（正六角形になる）、
+      鎖は可視線の長さが一定（幅広のラベルでも線が潰れない）です。
+      環には \verb|\KKbenzene| / \verb|\KKchemring|、鎖には \verb|\KKchemchain| と
+      使い分けてください。混在しても各マクロが寸法を切り替えるので崩れません。
+\end{description}
+
+\section{ライセンス}
+
+MIT License。詳細はリポジトリの \verb|LICENSE.md| を参照してください。
+
+\end{document}

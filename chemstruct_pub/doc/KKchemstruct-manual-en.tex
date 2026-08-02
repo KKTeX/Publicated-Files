@@ -1,0 +1,382 @@
+% KKchemstruct user manual (English)
+%   lualatex KKchemstruct-manual-en.tex   (twice)
+% Run twice: \KKchemmark and \KKhbond need a second pass to settle.
+\documentclass[paper=a4paper,fontsize=10pt]{jlreq}
+\usepackage{KKchemstruct}
+
+\title{KKchemstruct User Manual}
+\author{KKTeX}
+\date{2 August 2026\quad v1.0.0}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Overview}
+
+\textsf{KKchemstruct} is a set of macros for typesetting the structural formulas
+of high-school chemistry (organic and inorganic). The drawing itself is done by
+\textsf{chemfig}; this package configures its dimensions, line widths and
+orientations to match the look of printed textbook figures, and adds a short
+notation for substituted benzenes, condensed formulas, reaction schemes and
+annotations.
+
+Every dimension is defined in \verb|em|, so the figures follow the body font
+size. There is no need to rewrite the numbers for each paper size.
+
+\subsection{Requirements}
+
+\begin{itemize}
+\item Engine: LuaLaTeX, or pLaTeX + dvipdfmx
+\item Packages: \textsf{chemfig}, \textsf{etoolbox}, \textsf{xkeyval}
+      (all part of TeX Live)
+\end{itemize}
+
+\subsection{Loading}
+
+Put \verb|KKchemstruct.sty| on the TeX search path or next to your document and
+write
+
+\begin{verbatim}
+\usepackage{KKchemstruct}
+\end{verbatim}
+
+There are no package options.
+
+\subsection{When two compilations are needed}
+
+\verb|\KKchemmark| and \verb|\KKhbond| refer to TikZ nodes, so they need two
+compilations to settle. On the first pass the frame or the dotted line appears
+in the wrong place; the second pass puts it right.
+
+\section{Benzene rings}
+
+\subsection{\texttt{\char`\\KKbenzene}}
+
+Substituted benzenes are written with \verb|\KKbenzene|. Positions are numbered
+1 to 6 clockwise, starting from the top vertex.
+
+\begin{verbatim}
+\KKbenzene[2=OH,3=COOH]
+\end{verbatim}
+
+\begin{center}
+\KKbenzene[2=OH,3=COOH]\qquad
+\KKbenzene[1=COOH,4=COOH]\qquad
+\KKbenzene[]
+\end{center}
+
+Substituents are set in math mode, so subscripts such as \verb|COOCH_3| work as
+written. Positions you leave out produce no branch at all.
+
+\subsection{Options}
+
+\begin{description}
+\item[\texttt{1}--\texttt{6}] the substituent at each position.
+\item[\texttt{angle}] rotation of the whole ring, in degrees. The default is no
+      rotation (vertices at top and bottom).
+\item[\texttt{sep}] the side length (distance between atom centres) of this ring only.
+\item[\texttt{kekule=b}] flips the inner double-bond strokes to the upper-right,
+      bottom and upper-left sides. Use it when a substituent collides with a stroke.
+\end{description}
+
+\begin{verbatim}
+\KKbenzene[1=OH,kekule=b]      \KKbenzene[2=OH,angle=30,sep=1.0em]
+\end{verbatim}
+
+\begin{center}
+\KKbenzene[1=OH,kekule=b]\qquad
+\KKbenzene[2=OH,angle=30,sep=1.0em]
+\end{center}
+
+\subsection{Rings set inline}
+
+To put a ring in running text, use the flat-top form, whose top and bottom sides
+are horizontal. It bonds at the left and right vertices, so it sits naturally in
+the middle of a chain.
+
+\begin{description}
+\item[\texttt{\char`\\KKphenylring}] the bare ring.
+\item[\texttt{\char`\\KKphenyl\{...\}}] a ring with a substituent to its right.
+\item[\texttt{\char`\\KKphenylene\{...\}}] adds a bond stub on the left as well,
+      so the ring can be inserted into a chain.
+\end{description}
+
+A ring such as \KKphenylring{} in running text does not disturb the leading.
+A substituent can be attached on the right, as in \KKphenyl{COOH}, and a ring can
+be dropped into a chain: \ck{CH_3(CH_2)_{11}}\KKphenylene{SO_3H}.
+
+The amount by which such rings are raised above the baseline is set with the
+\verb|inline raise| key:
+
+\begin{verbatim}
+\KKchemsetup{inline raise=0.35ex}
+\end{verbatim}
+
+\subsection{Fused rings (\texttt{\char`\\KKchemring})}
+
+For rings other than benzene, and for fused rings, pass raw \textsf{chemfig}
+notation to \verb|\KKchemring|. Only the ring dimensions (constant distance
+between atom centres) are applied. The optional first argument takes
+\textsf{chemfig} keys.
+
+\begin{verbatim}
+\KKchemring[atom sep=1.75em]{*6(=-*5(-C(=O)-O-C(=O)-)=-=-)}
+\end{verbatim}
+
+\begin{center}
+\KKphthalicanhydride\qquad\KKmaleicanhydride
+\end{center}
+
+Rings that carry C or O labels on their vertices need a longer side than
+skeleton-only rings, or the labels crowd each other. The default for those is
+\verb|label ring sep| (1.75em).
+
+\section{Condensed formulas}
+
+\subsection{\texttt{\char`\\KKchemchain}}
+
+Formulas in which labels run horizontally, such as
+\verb|CH_2-O-C(=[2]O)-R_1|, are written with \verb|\KKchemchain|. Here the
+\emph{visible} bond length is kept constant, so the line is not squeezed after a
+wide label such as \verb|CH_2|.
+
+\begin{verbatim}
+\KKchemchain{CH_2(-OH)-[6,1.15]CH(-OH)-[6,1.15]CH_2-OH}
+\end{verbatim}
+
+\begin{center}
+\KKglycerol\qquad\KKtriglyceride{R_1}{R_2}{R_3}
+\end{center}
+
+Angles use \textsf{chemfig} numbering in steps of 45 degrees (0 = right, 2 = up,
+4 = left, 6 = down). The number after the angle is a length coefficient.
+
+\subsection{Common fragments}
+
+Ready-made pieces for use inside a chain. They are \textsf{chemfig} code
+fragments, so they belong in the argument of \verb|\KKchemchain|.
+
+\begin{description}
+\item[\texttt{\char`\\KKcarbonyl}] an upward C=O.
+\item[\texttt{\char`\\KKcarbonyldown}] a downward C=O.
+\item[\texttt{\char`\\KKdative\{<angle>\}}] a dative bond arrow (S$\to$O, P$\to$O, N$\to$O).
+\end{description}
+
+Vertical bonds are drawn longer than horizontal ones: without allowing for the
+height of the labels and for the arrowhead, they look cramped.
+
+\begin{verbatim}
+\KKchemchain{H-O-S(\KKdative{2}O)(\KKdative{6}O)-O-H}
+\end{verbatim}
+
+\begin{center}
+\KKsulfuricacid\qquad\KKnitricacid\qquad\KKphosphoricacid
+\end{center}
+
+\section{Reaction schemes}
+
+\subsection{\texttt{\char`\\KKscheme}}
+
+A scheme is written by putting \textsf{chemfig} \verb|\arrow| commands into the
+argument of \verb|\KKscheme|. The arrow syntax is \textsf{chemfig}'s own.
+
+\begin{verbatim}
+\KKscheme{%
+  \KKname{\KKsalicylicacid}{salicylic acid}
+  \arrow{->[\ck{CH_3OH}][esterification]}
+  \KKname{\KKmethylsalicylate}{methyl salicylate}}
+\end{verbatim}
+
+\begingroup
+\KKchemsetup{compound sep=9em}
+\KKscheme{%
+  \KKname{\KKsalicylicacid}{salicylic acid}
+  \arrow{->[\ck{CH_3OH}][esterification]}
+  \KKname{\KKmethylsalicylate}{methyl salicylate}}
+\endgroup
+
+The optional first argument takes \verb|\schemestart| keys
+(\verb|arrow angle|, \verb|arrow coeff|, \verb|arrow style|).
+
+The default distance between compounds, \verb|compound sep|, is 5.5em, which
+suits short labels such as chemical formulas. A long word set over the arrow --
+\textsf{esterification} above -- is wider than that, and would run into the
+compound on its left; the example is therefore wrapped in
+
+\begin{verbatim}
+\begingroup\KKchemsetup{compound sep=9em} ... \endgroup
+\end{verbatim}
+
+\subsection{\texttt{\char`\\KKbranchscheme}}
+
+A figure in which one substrate branches into two products is written with
+\verb|\KKbranchscheme|, which takes seven arguments. Each arrow rises at an
+angle and then runs horizontally; the labels sit above and below the horizontal
+part.
+
+\begin{verbatim}
+\KKbranchscheme
+  {<substrate>}
+  {<upper reagent>}{<upper reaction>}{<upper product>}
+  {<lower reagent>}{<lower reaction>}{<lower product>}
+\end{verbatim}
+
+\KKbranchscheme
+  {\KKname{\KKsalicylicacid}{salicylic acid}}
+  {\ck{CH_3OH}}{esterification}{\KKname{\KKmethylsalicylate}{methyl salicylate}}
+  {\ck{(CH_3CO)_2O}}{acetylation}{\KKname{\KKaspirin}{acetylsalicylic acid}}
+
+The angle and the length of the branches are set with \verb|branch angle|
+(default 20 degrees) and \verb|branch coeff| (default 2.7).
+
+\subsection{Compound names (\texttt{\char`\\KKname})}
+
+\verb|\KKname{<structure>}{<name>}| centres a name under a structure. The font is
+set with \verb|name font|.
+
+\section{Annotations}
+
+\subsection{Marking a leaving group (\texttt{\char`\\KKchemmark})}
+
+The \verb|-OH| and \verb|-H| lost in a condensation can be enclosed in a dotted
+rounded frame. Tag the atoms with \textsf{chemfig}'s \verb|@{name}| and give the
+two tags as opposite corners.
+
+\begin{verbatim}
+\KKchemchain{R-C\KKcarbonyl-@{s}OH}\ +\ \KKchemchain{@{e}H-O-R'}%
+\KKchemmark{s}{e}
+\end{verbatim}
+
+\begin{center}
+\KKchemchain{R-C\KKcarbonyl-@{s}OH}\ +\ \KKchemchain{@{e}H-O-R'}%
+\KKchemmark{s}{e}
+\end{center}
+
+The optional first argument takes TikZ keys, for example to change the colour.
+
+\subsection{Hydrogen bonds (\texttt{\char`\\KKhbond})}
+
+Draws the dotted line of an intramolecular hydrogen bond between two tags.
+
+\begin{verbatim}
+\KKbenzene[2=@{oh}OH,3=C@{co}OOH]\KKhbond{oh}{co}
+\end{verbatim}
+
+\begin{center}
+\KKbenzene[2=@{oh}OH,3=C@{co}OOH]\KKhbond{oh}{co}
+\end{center}
+
+\subsection{Crossing out (\texttt{\char`\\KKchemcross})}
+
+Superimposes a heavy cross to show that a reaction does not take place. The
+optional first argument sets the colour (default \verb|black!35|).
+
+\begin{center}
+\KKchemcross{\KKphenol}
+\end{center}
+
+\section{Chemical formula macros}
+
+\textsf{chemfig} sets atom labels in math mode, so subscripted formulas such as
+\verb|CH_3| work as written inside a structure. Arrow labels, however, are not in
+math mode -- that is how \textsf{chemfig} works. Wrap those in one of the
+following.
+
+\begin{description}
+\item[\texttt{\char`\\KKchemformula\{...\}}] sets a formula with \verb|\mathrm|.
+\item[\texttt{\char`\\ck\{...\}}] a short alias for the above. It exists only to save
+      keystrokes, so use \verb|\KKchemformula| in documents where a two-letter
+      name would clash.
+\item[\texttt{\char`\\ckm} / \texttt{\char`\\ckp}] the superscript $-$ and $+$ of an ion.
+\end{description}
+
+Use them as in \ck{CH_3COOH}, \ck{RCOO\ckm} and \ck{Na\ckp}. Labels in prose need
+no wrapper.
+
+\section{Changing the dimensions}
+
+\subsection{\texttt{\char`\\KKchemsetup}}
+
+All dimensions are changed through \verb|\KKchemsetup|.
+
+\begin{verbatim}
+\KKchemsetup{ring sep=2.0em,bond width=0.09em,double bond sep=0.4em}
+\end{verbatim}
+
+\begingroup
+\KKchemsetup{ring sep=2.0em,bond width=0.09em,double bond sep=0.4em}
+\begin{center}
+\KKsalicylicacid\qquad\KKphenyl{COOH}
+\end{center}
+\endgroup
+
+Call it inside a group and the change stays in that group. The example above is
+wrapped in \verb|\begingroup| ... \verb|\endgroup|, so here the original
+dimensions are back in force: \KKsalicylicacid
+
+\subsection{List of keys}
+
+\begin{description}
+\item[\texttt{ring sep} (1.35em)] side of a skeleton-only ring (distance between atom centres).
+\item[\texttt{label ring sep} (1.75em)] side of a ring whose vertices carry C or O labels.
+\item[\texttt{chain sep} (0.75em)] bond length in condensed formulas; the visible
+      line is shorter than this by the gap at each end.
+\item[\texttt{vertical coeff} (1.15)] how much vertical bonds are lengthened.
+\item[\texttt{dative coeff} (1.5)] how much dative-bond arrows are lengthened.
+\item[\texttt{mid bond coeff} (1.28)] coefficient of the middle horizontal bond in a triglyceride.
+\item[\texttt{bond offset} (0.13em)] gap between a label and a bond line.
+\item[\texttt{double bond sep} (0.26em)] distance between the two lines of a double bond.
+\item[\texttt{bond width} (0.05em)] thickness of bond lines.
+\item[\texttt{arrow label sep} (0.30em)] gap between a reaction arrow and its label.
+\item[\texttt{arrow offset} (0.8em)] gap between a compound and the end of an arrow.
+\item[\texttt{compound sep} (5.5em)] distance between compounds in a scheme.
+\item[\texttt{kink} (1.8em)] the rise of a branching arrow.
+\item[\texttt{branch angle} (20) / \texttt{branch coeff} (2.7)] angle and length of branching arrows.
+\item[\texttt{inline raise} (0.35ex)] how far an inline ring is raised.
+\item[\texttt{name font} (\texttt{\char`\\normalsize})] font of the name set by \verb|\KKname|.
+\end{description}
+
+\section{Predefined compounds}
+
+Frequently used structures can be called directly. Each is just a combination of
+the macros described above, so you can add your own by following the pattern at
+the end of the \verb|.sty| file.
+
+\begin{description}
+\item[Aromatics] \verb|\KKsalicylicacid|, \verb|\KKmethylsalicylate|, \verb|\KKaspirin|,
+      \verb|\KKbenzoicacid|, \verb|\KKphenol|, \verb|\KKphthalicacid|,
+      \verb|\KKisophthalicacid|, \verb|\KKterephthalicacid|
+\item[Anhydrides and geometric isomers] \verb|\KKphthalicanhydride|,
+      \verb|\KKmaleicanhydride|,\\
+      \verb|\KKmaleicacid|, \verb|\KKfumaricacid|
+\item[Oxoacids] \verb|\KKnitricacid|, \verb|\KKsulfuricacid|, \verb|\KKphosphoricacid|
+\item[Fats] \verb|\KKglycerol|, \verb|\KKtriglyceride{R_1}{R_2}{R_3}|, \verb|\KKestergeneric|
+\end{description}
+
+\begin{center}
+\KKmaleicacid\qquad\KKfumaricacid
+\end{center}
+
+\section{Pitfalls}
+
+\begin{description}
+\item[Parentheses make branches] In \textsf{chemfig}, \verb|(| and \verb|)| are the
+      branch notation. Passing something like \verb|CH_3(CH_2)_{11}| straight to
+      \verb|\KKchemchain| makes it a branch. Write formulas that are not drawn as
+      structures with \verb|\ck{...}| instead.
+\item[Arrow labels are not in math mode] As above, wrap them in \verb|\ck{...}|.
+\item[Annotations need two passes] \verb|\KKchemmark| and \verb|\KKhbond| are not
+      positioned on the first compilation.
+\item[Rings and chains fix different lengths] Rings keep the distance between atom
+      centres constant, which is what makes a regular hexagon; chains keep the
+      visible line length constant, so wide labels do not squeeze the line. Use
+      \verb|\KKbenzene| / \verb|\KKchemring| for rings and \verb|\KKchemchain| for
+      chains. Mixing them is safe: each macro switches the dimensions itself.
+\end{description}
+
+\section{License}
+
+MIT License. See \verb|LICENSE.md| in the repository for the full text.
+
+\end{document}

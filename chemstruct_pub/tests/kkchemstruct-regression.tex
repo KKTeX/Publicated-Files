@@ -1,0 +1,87 @@
+\ifdefined\directlua
+  \documentclass[a4paper,11pt]{ltjsarticle}
+\else
+  \documentclass[a4paper,11pt,dvipdfmx]{jsarticle}
+\fi
+\usepackage[margin=20mm]{geometry}
+\usepackage{KKchemstruct}
+
+\newcommand{\bs}{\char`\\}
+\newcommand{\bl}{\char`\{}
+\newcommand{\br}{\char`\}}
+\newcommand{\demo}[2]{\par\medskip\noindent\texttt{#1}\par\smallskip\noindent#2\par}
+
+\begin{document}
+
+\section*{KKchemstruct regression test}
+
+\subsection*{1. ベンゼン環（\texttt{\bs KKbenzene}）}
+
+\demo{\bs KKbenzene[]}{\KKbenzene[]}
+\demo{\bs KKbenzene[2=OH,3=COOH]}{\KKbenzene[2=OH,3=COOH]}
+\demo{\bs KKbenzene[1=COOH,4=COOH]}{\KKterephthalicacid}
+\demo{\bs KKbenzene[1=OH,kekule=b]}{\KKbenzene[1=OH,kekule=b]}
+\demo{\bs KKbenzene[2=OH,angle=30,sep=1.0em]}{\KKbenzene[2=OH,angle=30,sep=1.0em]}
+
+\subsection*{2. 本文中に置く横向きの環}
+
+本文の中に \KKphenylring{} を置いても行送りが崩れないこと、
+\KKphenyl{COOH} のように右へ置換基が出ること、
+鎖の途中に \ck{CH_3(CH_2)_{11}}\KKphenylene{SO_3H} と挟めることを確認します。
+
+\subsection*{3. 示性式（\texttt{\bs KKchemchain}）}
+
+\demo{\bs KKchemchain\bl R\_1-C\bs KKcarbonyl-OH\br}{\KKestergeneric}
+\demo{\bs KKglycerol}{\KKglycerol}
+\demo{\bs KKtriglyceride\bl R\_1\br\bl R\_2\br\bl R\_3\br}{\KKtriglyceride{R_1}{R_2}{R_3}}
+\demo{\bs KKsulfuricacid（配位結合）}{\KKsulfuricacid}
+\demo{\bs KKnitricacid}{\KKnitricacid}
+\demo{\bs KKphosphoricacid}{\KKphosphoricacid}
+
+\subsection*{4. 縮合環・幾何異性体}
+
+\demo{\bs KKphthalicanhydride}{\KKphthalicanhydride}
+\demo{\bs KKmaleicanhydride}{\KKmaleicanhydride}
+\demo{\bs KKmaleicacid / \bs KKfumaricacid}%
+  {\KKmaleicacid\hspace{4em}\KKfumaricacid}
+
+\subsection*{5. 名称・注釈}
+
+\demo{\bs KKname}{\KKname{\KKsalicylicacid}{サリチル酸}}
+
+\demo{\bs KKchemmark（脱離部分の点線囲み）}{%
+  \KKchemchain{R-C\KKcarbonyl-@{s}OH}\ +\ \KKchemchain{@{e}H-O-R'}%
+  \KKchemmark{s}{e}}
+
+\demo{\bs KKhbond（分子内水素結合）}{%
+  \KKbenzene[2=@{oh}OH,3=C@{co}OOH]\KKhbond{oh}{co}}
+
+\demo{\bs KKchemcross}{\KKchemcross{\KKphenol}}
+
+\subsection*{6. 反応式}
+
+\KKscheme{%
+  \KKname{\KKsalicylicacid}{サリチル酸}
+  \arrow{->[\ck{CH_3OH}][エステル化]}
+  \KKname{\KKmethylsalicylate}{サリチル酸メチル}}
+
+\KKbranchscheme
+  {\KKname{\KKsalicylicacid}{サリチル酸}}
+  {\ck{CH_3OH}}{エステル化}{\KKname{\KKmethylsalicylate}{サリチル酸メチル}}
+  {\ck{(CH_3CO)_2O}}{アセチル化}{\KKname{\KKaspirin}{アセチルサリチル酸}}
+
+\subsection*{7. 寸法の一括変更（\texttt{\bs KKchemsetup}）}
+
+\begingroup
+\KKchemsetup{ring sep=2.0em,bond width=0.09em,double bond sep=0.4em}
+\KKsalicylicacid\hspace{4em}\KKphenyl{COOH}
+\endgroup
+
+変更はグループ内に閉じているので、ここでは元の寸法に戻ります: \KKsalicylicacid
+
+\subsection*{8. 化学式マクロ}
+
+\ck{CH_3COOH}、\ck{RCOO\ckm}、\ck{Na\ckp} と、
+数式モード中の $\ck{H_2O}$ が同じ体裁で組まれること。
+
+\end{document}
