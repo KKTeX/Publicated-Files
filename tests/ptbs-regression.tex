@@ -1,0 +1,43 @@
+\ifdefined\directlua
+  \documentclass[a4paper,11pt]{ltjsarticle}
+\else
+  \documentclass[a4paper,11pt,dvipdfmx]{jsarticle}
+\fi
+\usepackage[margin=22mm]{geometry}
+\usepackage{TetsuKeyBox}
+
+\begin{document}
+
+\section*{ptbs regression test}
+
+\begin{ptbs}{鉄則}[短い説明]
+通常のタイトルと説明です。段落先頭の字下げも確認します。
+
+二つ目の段落です。
+\end{ptbs}
+
+\begin{ptbs}{説明省略}
+第2引数を省略した場合です。
+\end{ptbs}
+
+\begin{ptbs}{空説明}[]
+第2引数を明示的に空にした場合です。
+\end{ptbs}
+
+\begin{ptbs}{これは三割を明らかに超えるとても長い鉄則タイトルです}[右側の説明領域]
+長いタイトルが1行に収まることを確認します。
+\end{ptbs}
+
+\begin{ptbs}{長い説明}[これはサブタイトルが長くなり、右側の説明領域で複数行に折り返された場合にも、文字が欠けず背景と外枠の配置が保たれることを確認するための文章です]
+長いサブタイトルが正しく折り返されることを確認します。
+\end{ptbs}
+
+\begin{ptbs}{追加キー}[色変更][colback=blue!5!white,colframe=blue!70!black,colbacktitle=blue!70!black]
+第3引数の追加キーが従来どおり適用されることを確認します。
+\end{ptbs}
+
+\begin{ptbs}{改ページ}[breakable]
+\foreach \n in {1,...,65}{これは改ページを確認するための第\n 段落です。\par}
+\end{ptbs}
+
+\end{document}

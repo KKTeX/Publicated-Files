@@ -1,0 +1,79 @@
+% This package is licensed under the MIT License.
+
+\ProvidesPackage{TetsuKeyBox}[2026/08/02, v1.1.0]
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{calc}
+\RequirePackage{graphicx}
+
+\newcommand{\ptbs@setparindent}[1]{%
+  \setlength{\parindent}{#1}\relax%
+}
+\newdimen\ptbs@parindent
+\newdimen\ptbs@zw
+\ifdefined\zw
+  \ptbs@zw=\zw
+\else
+  \ptbs@zw=1zw
+\fi
+\ptbs@parindent=\ptbs@zw
+
+% The title occupies at most 30% of the line.  Keeping the title on one line
+% also prevents the subtitle box from being stranded on a second title line.
+\newlength{\ptbs@bodylen}
+\newlength{\ptbs@titlelen}
+\newlength{\ptbs@titlemax}
+\newif\ifptbs@shrink
+\newcommand{\ptbs@titlefont}{\gtfamily\normalsize\selectfont}
+\newcommand{\ptbs@setlengths}[1]{%
+  \settowidth{\ptbs@titlelen}{{\ptbs@titlefont#1}}%
+  \setlength{\ptbs@titlemax}{.3\linewidth}%
+  \ifdim\ptbs@titlelen>\ptbs@titlemax
+    \ptbs@shrinktrue
+    \setlength{\ptbs@titlelen}{\ptbs@titlemax}%
+  \else
+    \ptbs@shrinkfalse
+  \fi
+  \setlength{\ptbs@bodylen}{\linewidth}%
+  \addtolength{\ptbs@bodylen}{-\ptbs@titlelen}%
+  \addtolength{\ptbs@bodylen}{-.3\ptbs@zw}%
+  \addtolength{\ptbs@bodylen}{-1pt}%
+  \addtolength{\ptbs@bodylen}{4mm}%
+}
+\newcommand{\ptbs@title}[1]{%
+  \ifptbs@shrink
+    \resizebox{\ptbs@titlelen}{\height}{{\ptbs@titlefont#1}}%
+  \else
+    #1%
+  \fi
+}
+\newcommand{\ptbs@subtext}[1]{%
+  \parbox{\ptbs@bodylen-.5\ptbs@zw-1mm}{%
+    \renewcommand{\baselinestretch}{.5}\selectfont\vphantom{A}#1}%
+}
+
+\DeclareTColorBox{ptbs}{ m O{\phantom{A}} O{} }
+{enhanced, breakable, boxsep=0mm,
+arc=.5mm, bottom=2mm, top=2mm, leftupper=4mm, rightupper=4mm,
+colbacktitle=black!100!white, colframe=black!100!white,
+coltitle=white, colback=black!10!white, boxrule=1pt,
+lefttitle=.3\ptbs@zw,
+% The nested subtitle box needs the 4mm correction in \ptbs@setlengths to
+% reach the outer frame.  Limit the corresponding overfull tolerance to the
+% title line so overfull text in the body is still reported.
+before title={\hfuzz=4.1mm},
+before upper={\ptbs@setparindent{\ptbs@parindent}},
+fonttitle=\ptbs@titlefont,
+fontupper=\gtfamily\normalsize,
+title={\ptbs@setlengths{#1}\ptbs@title{#1}\kern.3\ptbs@zw\kern1pt},
+after title={%
+  \tcbox[on line, boxsep=.25\ptbs@zw, boxrule=0pt,
+  top=.1\ptbs@zw, bottom=.1\ptbs@zw,
+    left=.5mm,
+    right=.5mm,
+    width=\ptbs@bodylen,
+    colback=black!30!white, arc=.5mm]
+  {\raisebox{.086\ptbs@zw}{\ptbs@subtext{#2}}}%
+  }%
+, #3}
+
+\endinput
