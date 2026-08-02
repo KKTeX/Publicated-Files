@@ -32,7 +32,7 @@ LaTeX (LuaLaTeX / pLaTeX 系) 向けに作成したスタイルファイル群�
 
 | ファイル | パッケージ名 | 概要 |
 | --- | --- | --- |
-| `sectioncustomize0.sty` | `sectioncustomize0` | `tikz` (shadows.blur) と `tcolorbox`、`needspace` を用いた見出し装飾。 |
+| `sectioncustomize0.sty` | `sectioncustomize0` | `tikz` (shadows.blur) と `tcolorbox`、`needspace` を用いた section〜chapter の見出し装飾。 |
 
 ## 使い方
 
@@ -59,6 +59,15 @@ LaTeX (LuaLaTeX / pLaTeX 系) 向けに作成したスタイルファイル群�
 TEXINPUTS=./textboxes_pub: lualatex -output-directory=/tmp tests/ptbs-regression.tex
 TEXINPUTS=./textboxes_pub: platex -kanji=utf8 -output-directory=/tmp tests/ptbs-regression.tex
 dvipdfmx -o /tmp/ptbs-regression.pdf /tmp/ptbs-regression.dvi
+```
+
+`tests/sectioncustomize0-regression.tex` は、chapter から subsubsection までと
+見出しが連続する場合の余白を確認します。
+
+```sh
+TEXINPUTS=./sectioncustomize_pub: lualatex -output-directory=/tmp tests/sectioncustomize0-regression.tex
+TEXINPUTS=./sectioncustomize_pub: platex -kanji=utf8 -output-directory=/tmp tests/sectioncustomize0-regression.tex
+dvipdfmx -o /tmp/sectioncustomize0-regression.pdf /tmp/sectioncustomize0-regression.dvi
 ```
 
 ## ライセンス

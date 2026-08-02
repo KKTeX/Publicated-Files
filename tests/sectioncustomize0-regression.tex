@@ -1,0 +1,35 @@
+\ifdefined\directlua
+  \documentclass[b5paper,11pt]{ltjsbook}
+\else
+  \documentclass[b5paper,11pt,dvipdfmx]{jsbook}
+\fi
+\usepackage[margin=18mm]{geometry}
+\usepackage{sectioncustomize0}
+\pagestyle{plain}
+\setcounter{secnumdepth}{3}
+
+\begin{document}
+
+\chapter{科学をひらく最初の一歩}
+
+章見出しは、左に斜めの章番号、右に原子モデルを配したデザインです。
+
+\section{物質の構造を見てみよう}
+
+セクションは、楕円の番号と二本の罫線を組み合わせた大見出しです。
+
+\subsection{原子と分子の基本}
+
+サブセクションは、黒い番号バッジと細い横罫線で示されます。
+
+\subsubsection{電子の配置}
+
+サブサブセクションは、番号とタイトルを一本の太い横罫線でつなぎます。
+
+\section{見出しが連続する場合}
+\subsection{直後に subsection を置く}
+\subsubsection{さらに subsubsection を続ける}
+
+連続見出し時の前後アキが過剰にならないことを確認します。
+
+\end{document}

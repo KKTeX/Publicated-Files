@@ -1,34 +1,61 @@
+% This package is licensed under the MIT License.
+% Heading font sizes are fixed; use with a base font size of up to 12pt.
+
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{sectioncustomize0}[2025/10/23, Version 1.1.2]
+\ProvidesPackage{sectioncustomize0}[2026/08/02, Version 1.2.0]
 
 \RequirePackage{tikz}
-\usetikzlibrary{shadows.blur}
+  \usetikzlibrary{shadows.blur}
 \RequirePackage[most]{tcolorbox}
 \RequirePackage{needspace}
 
-\newcommand{\fft@section@zero}[1]{\textgt{\textbf{#1}}}
+% Public-edition replacements for the private font and heading-state packages.
+\newcommand{\sectioncustomize@mediumfont}{\gtfamily\bfseries}
+\newcommand{\sectioncustomize@boldfont}{\gtfamily\bfseries}
+
+\newif\ifsectioncustomize@lastisheading
+\sectioncustomize@lastisheadingfalse
+
+\AddToHook{para/before}{%
+  \global\sectioncustomize@lastisheadingfalse
+}
+
+\newcommand{\sectioncustomize@heading@pre}{%
+  \ifsectioncustomize@lastisheading
+  \else
+    \vspace{2\baselineskip}%
+  \fi
+}
+
+\newcommand{\sectioncustomize@heading@post}{%
+  \global\sectioncustomize@lastisheadingtrue
+}
+
+\AtBeginDocument{%
+  \global\sectioncustomize@lastisheadingfalse
+}
 
 \DeclareTColorBox{DummyBox@section@zero}{ O{black} O{} }{%
-  enhanced,  before skip=0mm, after skip=2mm,
-  colback=white, colframe=#1, left=-.3mm, right=0mm, boxsep=0mm,
+  enhanced, before skip=0mm, after skip=2mm,
+  colback=white, colframe=#1, left=-3mm, right=0mm, boxsep=0mm,
   #2
 }
 
 \DeclareTColorBox{DummyBox@subsection@zero}{ O{white} O{} }{%
   enhanced, before skip=0mm, after skip=1.5mm,
-  colback=white, colframe=#1, left=-.7mm, right=.4mm, boxsep=0mm,
+  colback=white, colframe=#1, left=-2.5mm, right=.4mm, boxsep=0mm,
   #2
 }
 
 \DeclareTColorBox{DummyBox@subsubsection@zero}{ O{black} O{} }{%
   enhanced, before skip=1mm, after skip=1.5mm,
-  colback=white, colframe=#1, left=0mm, right=0mm, boxsep=0mm,
+  colback=white, colframe=#1, left=-1.1mm, right=-.05mm, boxsep=0mm,
   #2
 }
 
 \DeclareTColorBox{DummyBox@chapter@zero}{ O{black} O{} }{%
   enhanced, before skip=1mm, after skip=1.5mm,
-  colback=white, colframe=#1, left=-.5mm, right=.4mm, boxsep=0mm,
+  colback=white, colframe=#1, left=-5mm, right=.2mm, boxsep=0mm,
   #2
 }
 
@@ -37,155 +64,156 @@
 \definecolor{mygray@section2@zero}{RGB}{190, 190, 190}
 \definecolor{mygray@section3@zero}{RGB}{26, 26, 26}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%フラグ定義
-\newif\ifjl@lastisheading
-\jl@lastisheadingfalse
-
-%段落開始直前でリセット（本文段落）
-\AddToHook{para/before}{%
-  \global\jl@lastisheadingfalse
+% section
+\renewcommand*\thesection{\arabic{section}}
+\RenewDocumentCommand{\section}{ m }{%
+  \sectioncustomize@heading@pre%
+  \refstepcounter{section}%
+  \addcontentsline{toc}{section}{\thesection\quad #1}%
+  \noindent\needspace{5\baselineskip}%
+  \begin{DummyBox@section@zero}[white][bottom=0mm,top=0mm]
+    \begin{tikzpicture}
+      \draw[fill=mygray@section1@zero, draw=none, anchor=west,
+        blur shadow={shadow blur steps=40,shadow xshift=0pt,shadow yshift=0pt}
+      ] (0.24,0) ellipse [x radius=0.7cm, y radius=0.5cm];
+      \node at (0.24,0) {%
+        {\fontsize{14pt}{0pt}\selectfont\sectioncustomize@boldfont\color{white}\S}%
+        {\fontsize{17.2pt}{0pt}\selectfont\sectioncustomize@boldfont\color{white}\raisebox{-2.2pt}{\thesection}}%
+      };
+      \draw[line width=1pt, color=mygray@section2@zero] (1.4,0.497) -- (\columnwidth -3.92mm,0.497);
+      \draw[fill=mygray@section1@zero] (1.4,0.497) circle [radius=0.5mm];
+      \draw[line width=1pt, color=mygray@section2@zero] (1.1,-0.5) -- (\columnwidth -6.89mm,-0.5);
+      \draw[fill=mygray@section1@zero] (1.1,-0.5) circle [radius=0.5mm];
+      \draw[color=mygray@section2@zero, line width=1pt] ({\columnwidth - 4mm},0.5)
+        .. controls ({\columnwidth},0.3) and ({\columnwidth - 9mm},-0.3) .. ({\columnwidth - 7mm},-0.5);
+      \draw[color=mygray@section2@zero, line width=1pt] ({\columnwidth - 5mm},0.5)
+        .. controls ({\columnwidth - 1mm},0.3) and ({\columnwidth - 10mm},-0.3) .. ({\columnwidth - 8mm},-0.5);
+      \node[overlay,anchor=west] at (1.5,0) {%
+        \fontsize{15pt}{0pt}\selectfont\sectioncustomize@mediumfont #1%
+      };
+    \end{tikzpicture}
+  \end{DummyBox@section@zero}%
+  \sectioncustomize@heading@post%
 }
 
-%前置用
-\newcommand\jl@heading@pre{%
-  \ifjl@lastisheading
-    % 見出し連続時は何もしない
-  \else
-    % それ以外は２行分の空き
-    \vspace{2\baselineskip}%
-  \fi
+% subsection
+\RenewDocumentCommand{\subsection}{ m }{%
+  \sectioncustomize@heading@pre%
+  \refstepcounter{subsection}%
+  \addcontentsline{toc}{subsection}{\thesubsection\quad #1}%
+  \needspace{3\baselineskip}%
+  \begin{DummyBox@subsection@zero}[white][top=0mm,bottom=-.5mm]
+    \begin{tikzpicture}
+      \begin{scope}[xshift=-2.5mm]
+        \draw[line width=1pt, color=mygray@section1@zero] (1.795,0.36) -- (\columnwidth+2.5mm,0.36);
+        \draw[line width=1pt, color=mygray@section3@zero] (1.66,0.64) -- (1.81,0.355);
+        \draw[line width=1pt, color=white!50!black, xshift=-.7mm] (1.66,0.64) -- (1.81,0.355);
+        \draw[fill=mygray@section1@zero] (\columnwidth+2.5mm,0.36) circle [radius=0.5mm];
+        \node[anchor=west] at (1.9,0.65) {\fontsize{13pt}{0pt}\selectfont\sectioncustomize@mediumfont #1};
+        \draw[line width=1pt, color=white!20!black] (\columnwidth-7.5mm,0.8) -- (\columnwidth+2.5mm,0.8);
+        \draw[line width=1pt, color=white!50!black] (\columnwidth-4.5mm,0.7) -- (\columnwidth+2.5mm,0.7);
+        \draw[line width=1pt, color=white!80!black] (\columnwidth-1.5mm,0.6) -- (\columnwidth+2.5mm,0.6);
+        \node[anchor=west] at (0.2,0.55) {
+          \tcbox[on line, enhanced,
+            arc=4.5pt, colback=mygray@section3@zero, coltext=white,
+            boxsep=0pt, left=2.5pt, right=2.5pt, top=2pt, bottom=2pt,
+            colframe=mygray@section3@zero,
+            halo=0.5mm with white!80!black, fuzzy halo=0.25mm with white!50!black
+          ]
+          {\fontsize{10pt}{0pt}\selectfont\sectioncustomize@boldfont\thesubsection}
+        };
+      \end{scope}
+    \end{tikzpicture}
+  \end{DummyBox@subsection@zero}%
+  \sectioncustomize@heading@post%
 }
 
-%後置用
-\newcommand\jl@heading@post{%
-  \global\jl@lastisheadingtrue
+% subsubsection
+\newcommand{\firstrule@sec@zero}{%
+  \textcolor{mygray@section0@zero}{\raisebox{1.1mm}{\rule{0.5cm}{1.5pt}}}%
 }
-
-%開始時
-\AtBeginDocument{%
-  \global\jl@lastisheadingfalse
+\newcommand{\ruleFill@sec@zero}[2]{%
+  \leaders\hbox{\textcolor{mygray@section0@zero}{\raisebox{1.1mm}{\rule{#1}{#2}}}}\hfill%
 }
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-%カスタムセクション%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%セクション
-\renewcommand*\thesection{\arabic{section}} %作り直した
-\renewcommand{\section}[1]{\jl@heading@pre\refstepcounter{section}\addcontentsline{toc}{section}{\thesection\quad #1}
-\noindent\needspace{5\baselineskip}%
-\begin{DummyBox@section@zero}[white][bottom=-1mm,top=0mm]
-\begin{tikzpicture}
-  \draw[fill=mygray@section1@zero, draw=none, anchor=west,blur shadow={shadow blur steps=40,shadow xshift=0pt,shadow yshift=0pt}] (0.24,0) ellipse [x radius=0.7cm, y radius=0.5cm];
-  \node at (0.24,0) {\Large \bfseries \gtfamily \color{white} \S\LARGE \raisebox{-2pt}{\thesection}};
-  \draw[line width=1pt, color=mygray@section2@zero] (1.4,0.497) -- (\columnwidth -3.92mm,0.497);
-  \draw[fill=mygray@section1@zero] (1.4 , 0.497) circle [radius=0.5mm];
-  \draw[line width=1pt, color=mygray@section2@zero] (1.1,-0.5) -- (\columnwidth -6.89mm,-0.5);
-  \draw[fill=mygray@section1@zero] (1.1 , -0.5) circle [radius=0.5mm];
-  \draw[color=mygray@section2@zero, line width=1pt] ({\dimexpr\columnwidth - 4mm}, 0.5)
-  .. controls ({\dimexpr\columnwidth}, 0.3) and ({\dimexpr\columnwidth - 9mm}, -0.3) .. ({\dimexpr\columnwidth - 7mm}, -0.5);
-  \draw[color=mygray@section2@zero, line width=1pt] ({\dimexpr\columnwidth - 5mm}, 0.5) 
-  .. controls ({\dimexpr\columnwidth -1mm}, 0.3) and ({\dimexpr\columnwidth - 10mm}, -0.3) .. ({\dimexpr\columnwidth - 8mm}, -0.5);
-  \node[overlay,anchor=west] at (1.5,0) {\Large \bfseries \gtfamily #1};
-\end{tikzpicture}
-\end{DummyBox@section@zero}
-\jl@heading@post
-}
-
-
-% サブセクション
-\renewcommand{\subsection}[1]{\jl@heading@pre\refstepcounter{subsection}\addcontentsline{toc}{subsection}{\thesubsection\quad #1}%
-\needspace{3\baselineskip}%
-\begin{DummyBox@subsection@zero}[white][top=0mm,bottom=-1mm]
-\begin{tikzpicture}
-  \begin{scope}[xshift=-2.5mm]
-    \draw[line width=1pt, color=mygray@section1@zero] (1.795,0.36) -- (\columnwidth+2.5mm,0.36);
-    \draw[line width=1pt, color=mygray@section3@zero] (1.66,0.64) -- (1.81,0.355);
-    \draw[line width=1pt, color=white!50!black, xshift=-.7mm] (1.66,0.64) -- (1.81,0.355);
-    \draw[fill=mygray@section1@zero] (\columnwidth+2.5mm,0.36) circle [radius=0.5mm];
-    \node[anchor=west] at (1.9,0.6) {\large\gtfamily\bfseries #1};
-    \draw[line width=1pt, color=white!20!black] (\columnwidth-7.5mm,0.8) -- (\columnwidth+2.5mm,0.8);
-    \draw[line width=1pt, color=white!50!black] (\columnwidth-4.5mm,0.7) -- (\columnwidth+2.5mm,0.7);
-    \draw[line width=1pt, color=white!80!black] (\columnwidth-1.5mm,0.6) -- (\columnwidth+2.5mm,0.6);
-    \node[anchor=west] at (0.2,0.55) {
-      \tcbox[on line,enhanced,
-        arc=4.5pt,colback=mygray@section3@zero,coltext=white,
-        boxsep=0pt,left=2.5pt,right=2.5pt,top=2pt,bottom=2pt,colframe=mygray@section3@zero,
-        halo=0.5mm with white!80!black,fuzzy halo=0.25mm with white!50!black
-        ]
-        {\gtfamily\bfseries\thesubsection}
-    };
-  \end{scope}
-\end{tikzpicture}
-\end{DummyBox@subsection@zero}\jl@heading@post
-}
-
-% サブサブセクション
-\newcommand{\ruleFill}[2]{%
-  \leaders\hbox{\textcolor{mygray@section0@zero}{\raisebox{0.8mm}{\rule{#1}{#2}}}}\hfill
-}
-\renewcommand{\subsubsection}[1]{\jl@heading@pre\refstepcounter{subsubsection}%
-  \addcontentsline{toc}{subsubsection}{▷\hspace{.3em} #1}%
+\RenewDocumentCommand{\subsubsection}{ m }{%
+  \sectioncustomize@heading@pre%
+  \refstepcounter{subsubsection}%
+  \addcontentsline{toc}{subsubsection}{▷\hspace{.3em}#1}%
   \needspace{4\baselineskip}%
-  \begin{DummyBox@subsubsection@zero}[white][top=.3mm,bottom=-.5mm]
-  \noindent\hspace*{-\parindent-1mm}
-  \tcbox[on line, enhanced,  
-    arc=2pt,colback=mygray@section0@zero,coltext=white,
-    boxsep=0pt,left=2.5pt,right=2.5pt,top=2pt,bottom=2pt,colframe=mygray@section0@zero,
-  ]
-  {\small\bfseries\gtfamily \thesubsubsection}\hspace*{-1mm}
-  \textcolor{mygray@section0@zero}{\raisebox{0.8mm}{\rule{0.5cm}{1.5pt}}}\hspace*{0.85mm}{\small\gtfamily\bfseries #1}\hspace*{0.85mm}\textcolor{mygray@section0@zero}{\ruleFill{0.001mm}{1.5pt}}\tikz[baseline,overlay,xshift=-0.02mm,yshift=1.1mm]{\draw[fill=mygray@section1@zero] (0,0) circle (0.5mm);}
-  \end{DummyBox@subsubsection@zero}
-  \jl@heading@post
+  \begin{DummyBox@subsubsection@zero}[white][top=.3mm,bottom=.3mm]
+    \noindent\raisebox{.2mm}{\tcbox[on line, enhanced,
+      arc=2pt, colback=mygray@section0@zero, coltext=white,
+      boxsep=0pt, left=2.5pt, right=2.5pt, top=1.2pt, bottom=1.2pt,
+      colframe=mygray@section0@zero
+    ]
+    {\fontsize{10pt}{0pt}\selectfont\sectioncustomize@boldfont\thesubsubsection}}%
+    \hspace*{-1mm}%
+    \firstrule@sec@zero%
+    \hspace*{0.85mm}{\fontsize{12pt}{0pt}\selectfont\sectioncustomize@mediumfont #1}\hspace*{0.85mm}%
+    \ruleFill@sec@zero{.01mm}{1.5pt}%
+    \tikz[baseline, overlay, xshift=-0.02mm, yshift=1.4mm]{\draw[fill=mygray@section1@zero] (0,0) circle (0.5mm);}
+  \end{DummyBox@subsubsection@zero}%
+  \sectioncustomize@heading@post%
 }
 
-% チャプター
-\renewcommand{\chapter}[1]{%
-  \jl@heading@pre\refstepcounter{chapter}        
-  \clearpage        
-  \addcontentsline{toc}{chapter}{\protect\numberline{\thechapter}#1}
-  \begin{DummyBox@chapter@zero}[white][top=-1mm,bottom=-.5mm]
-  \begin{tikzpicture}
-    \begin{scope}[scale=1.1]
-      \fill[fill=gray!60,rotate around={45:(7.5mm,-7.5mm)}] (7.5mm,-7.5mm) ellipse (8.8mm and 4.3mm);
-      \filldraw[draw=white, line width=.8pt, fill=black!60] (12mm,-.8mm) circle (.8mm);
-      \filldraw[draw=white, line width=.8pt, fill=black!60] (3mm,-14.2mm) circle (.8mm);
-      \fill[black] (0,0) -- ++(5mm,0) -- ++(10mm,-10mm) -- ++(0,-5mm) -- ++(-5mm,0) -- ++(-10mm,10mm) -- cycle;
-      \node[anchor=north west] at ([shift={(.5mm,-.5mm)}]0,0) {\color{white}\fft@section@zero{第}};
-      \node[anchor=south east] at ([shift={(-.5mm,.5mm)}]15mm,-15mm) {\color{white}\fft@section@zero{章}};
-      \node[anchor=center] at (7.5mm,-7.5mm) {\LARGE\color{white}\fft@section@zero{\thechapter}};
-    \end{scope}
-      \draw[color=white!20!black, line width=1.3pt] (\columnwidth, -12mm) -- (20mm,-12mm);
+% Force the chapter number into the same square used by KKsymbols' \ichimoji.
+\newcommand{\sectioncustomize@chapter@number}[1]{%
+  \resizebox*{1em}{1em}{#1}%
+}
+
+% chapter (only for document classes that define it)
+\ifdefined\chapter
+\RenewDocumentCommand{\chapter}{ m }{%
+  \sectioncustomize@heading@pre%
+  \refstepcounter{chapter}%
+  \clearpage%
+  \addcontentsline{toc}{chapter}{\protect\numberline{\thechapter}#1}%
+  \begin{DummyBox@chapter@zero}[white][top=-1mm,bottom=0mm]
+    \begin{tikzpicture}
+      \begin{scope}[scale=1.1]
+        \fill[fill=gray!60,rotate around={45:(7.5mm,-7.5mm)}] (7.5mm,-7.5mm) ellipse (8.8mm and 4.3mm);
+        \filldraw[draw=white, line width=.8pt, fill=black!60] (12mm,-.8mm) circle (.8mm);
+        \filldraw[draw=white, line width=.8pt, fill=black!60] (3mm,-14.2mm) circle (.8mm);
+        \fill[black] (0,0) -- ++(5mm,0) -- ++(10mm,-10mm) -- ++(0,-5mm) -- ++(-5mm,0) -- ++(-10mm,10mm) -- cycle;
+        \node[anchor=north west] at ([shift={(.4mm,-.4mm)}]0,0) {%
+          \fontsize{12pt}{0pt}\selectfont\color{white}\sectioncustomize@mediumfont 第
+        };
+        \node[anchor=south east] at ([shift={(-.4mm,.4mm)}]15mm,-15mm) {%
+          \fontsize{12pt}{0pt}\selectfont\color{white}\sectioncustomize@mediumfont 章
+        };
+        \node[anchor=center] at (7.5mm,-7.5mm) {%
+          \fontsize{12pt}{0pt}\selectfont\color{white}\sectioncustomize@mediumfont\sectioncustomize@chapter@number{\thechapter}
+        };
+      \end{scope}
+      \draw[color=white!20!black, line width=1.3pt] (\columnwidth,-12mm) -- (20mm,-12mm);
       \draw[fill=mygray@section1@zero] (20mm,-12mm) circle [radius=.6mm];
-      \draw[fill=mygray@section1@zero] (\columnwidth, -12mm) circle [radius=.6mm];
-    \node[anchor=south west] at (28mm, -11mm) {\LARGE\fft@section@zero{#1}};
-    \node[anchor=center] at (\columnwidth-1cm,-8mm) {%
-      \begin{tikzpicture}[scale=.4, line width=0.8pt, rotate=90]
-        % 原子核
-        \begin{scope}[scale=1.2]
-          \foreach \a in {-60,60,180} {
-            \fill[gray] ({7pt*cos(\a)}, {7pt*sin(\a)}) circle (5pt);
-          }
-          \foreach \a in {0,120,240} {
-            \fill[cyan] ({7pt*cos(\a)}, {7pt*sin(\a)}) circle (5pt);
-          }
-          \fill[gray] (0,0) circle (5pt);
-        \end{scope}
-
-        % 電子軌道 3つ
-        \draw[line width=.5pt,black!60] (0,0) ellipse (2cm and 0.7cm);
-        \draw[,line width=.5pt,rotate=60,black!60] (0,0) ellipse (2cm and 0.7cm);
-        \draw[,line width=.5pt,rotate=120,black!60] (0,0) ellipse (2cm and 0.7cm);
-
-        \filldraw[fill=gray, draw=white, line width=.6pt] ({2*cos(-130)}, {0.7*sin(-130)}) circle (4pt);
-        \filldraw[fill=gray, draw=white, line width=.6pt, rotate=60] ({2*cos(50)}, {0.7*sin(50)}) circle (4pt);
-        \filldraw[fill=gray, draw=white, line width=.6pt, rotate=120] ({2*cos(-130)}, {0.7*sin(-130)}) circle (4pt);
-      \end{tikzpicture}
-    };
-  \end{tikzpicture}
-  \end{DummyBox@chapter@zero}\jl@heading@post
+      \draw[fill=mygray@section1@zero] (\columnwidth,-12mm) circle [radius=.6mm];
+      \node[anchor=south west] at (28mm,-11mm) {%
+        \fontsize{18pt}{0pt}\selectfont\sectioncustomize@mediumfont #1
+      };
+      \node[anchor=center] at (\columnwidth-1cm,-8mm) {%
+        \begin{tikzpicture}[scale=.4, line width=0.8pt, rotate=90]
+          \begin{scope}[scale=1.2]
+            \foreach \a in {-60,60,180} {
+              \fill[gray] ({7pt*cos(\a)},{7pt*sin(\a)}) circle (5pt);
+            }
+            \foreach \a in {0,120,240} {
+              \fill[cyan] ({7pt*cos(\a)},{7pt*sin(\a)}) circle (5pt);
+            }
+            \fill[gray] (0,0) circle (5pt);
+          \end{scope}
+          \draw[line width=.5pt,black!60] (0,0) ellipse (2cm and 0.7cm);
+          \draw[line width=.5pt,rotate=60,black!60] (0,0) ellipse (2cm and 0.7cm);
+          \draw[line width=.5pt,rotate=120,black!60] (0,0) ellipse (2cm and 0.7cm);
+          \filldraw[fill=gray, draw=white, line width=.6pt] ({2*cos(-130)},{0.7*sin(-130)}) circle (4pt);
+          \filldraw[fill=gray, draw=white, line width=.6pt, rotate=60] ({2*cos(50)},{0.7*sin(50)}) circle (4pt);
+          \filldraw[fill=gray, draw=white, line width=.6pt, rotate=120] ({2*cos(-130)},{0.7*sin(-130)}) circle (4pt);
+        \end{tikzpicture}
+      };
+    \end{tikzpicture}
+  \end{DummyBox@chapter@zero}%
+  \sectioncustomize@heading@post%
 }
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+\fi
 
 \endinput
