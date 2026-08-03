@@ -7,10 +7,7 @@ LaTeX (LuaLaTeX / pLaTeX 系) 向けに作成したスタイルファイル群�
 ```
 textboxes_pub/        装飾テキストボックス（ChartBox, PracticeBox, TetsuKeyBox）
 sectioncustomize_pub/ 見出しのカスタマイズ（sectioncustomize0）
-chemstruct_pub/       化学構造式（KKchemstruct）
-  doc/                取扱説明書（日本語版・英語版、.tex と .pdf）
-  tests/              回帰テストと出力
-tests/                textboxes_pub / sectioncustomize_pub の回帰テスト
+tests/                回帰テストと出力
 Qiita/                解説記事の原稿
 ```
 
@@ -46,54 +43,12 @@ Qiita/                解説記事の原稿
 | --- | --- | --- |
 | `sectioncustomize0.sty` | `sectioncustomize0` | `tikz` (shadows.blur) と `tcolorbox`、`needspace` を用いた section〜chapter の見出し装飾。 |
 
-### `chemstruct_pub/`
-高校化学の構造式を組むためのマクロ集。
+## 別リポジトリに分離したパッケージ
 
-| ファイル | パッケージ名 | 概要 |
-| --- | --- | --- |
-| `KKchemstruct.sty` | `KKchemstruct` | `chemfig` を参考書の図版に合わせて設定し、置換ベンゼン・示性式・反応式・注釈をまとめて扱えるようにしたもの。 |
+化学構造式用の `KKchemstruct` は、単独のリポジトリに履歴ごと移しました。
 
-寸法はすべて `em` 指定なので、本文サイズを変えても比率が保たれます。
-数値は `\KKchemsetup{ring sep=1.35em,bond width=0.05em,...}` で一括変更でき、
-グループ内で呼べば変更はそのグループに閉じます。
-
-#### 主なマクロ
-
-| マクロ | 用途 |
-| --- | --- |
-| `\KKbenzene[2=OH,3=COOH]` | 置換ベンゼン。位置は真上を 1 として時計回りに 1〜6。`angle=`（回転）、`sep=`（一辺）、`kekule=b`（二重結合の反転）も指定可。 |
-| `\KKphenyl{COOH}` / `\KKphenylene{SO_3H}` / `\KKphenylring` | 本文中に流し込む横向き（flat-top）の環。 |
-| `\KKchemring[<chemfigキー>]{...}` | 縮合環など、chemfig の生の記法で書く環（原子中心間距離が一定）。 |
-| `\KKchemchain[<chemfigキー>]{...}` | 示性式。可視線の長さが一定になるので `CH_2` のような広いラベルでも潰れません。 |
-| `\KKcarbonyl` / `\KKcarbonyldown` / `\KKdative{<角度>}` | 鎖の中で使う断片（上下向きの C=O、配位結合の矢印）。 |
-| `\KKscheme{...}` / `\KKbranchscheme{...}` | 反応式と、1 つの基質から 2 つの生成物へ分かれる反応式。 |
-| `\KKname{<構造>}{<名称>}` | 構造式の下に化合物名を添える。 |
-| `\KKchemmark{<節点>}{<節点>}` / `\KKhbond` / `\KKchemcross` | 脱離部分の点線囲み・水素結合の点線・「反応しない」を示す×印。 |
-| `\ck{<式>}`（`\KKchemformula`）、`\ckm` / `\ckp` | 数式モードに入らない場所（矢印ラベルなど）で使う化学式とイオンの右肩。 |
-
-`\KKsalicylicacid`、`\KKphthalicanhydride`、`\KKtriglyceride{R_1}{R_2}{R_3}` など、
-頻出化合物のマクロも同梱しています（`.sty` の末尾の節）。
-
-```latex
-\KKbenzene[2=OH,3=COOH]                     % サリチル酸
-\KKchemchain{H-O-S(\KKdative{2}O)(\KKdative{6}O)-O-H}
-\KKscheme{\KKsalicylicacid\arrow{->[\ck{CH_3OH}][エステル化]}\KKmethylsalicylate}
-```
-
-`\KKchemmark` と `\KKhbond` は TikZ のノード参照を使うため、位置が定まるまでに
-2 回コンパイルが要ります。
-
-全マクロの説明・オプション一覧・作例は取扱説明書にあります。
-
-- [`chemstruct_pub/doc/KKchemstruct-manual-ja.pdf`](./chemstruct_pub/doc/KKchemstruct-manual-ja.pdf)（日本語版）
-- [`chemstruct_pub/doc/KKchemstruct-manual-en.pdf`](./chemstruct_pub/doc/KKchemstruct-manual-en.pdf)（英語版）
-
-原稿は同じディレクトリの `.tex`（`jlreq` クラス）です。組み直すときは
-リポジトリ直下で次のように実行してください（注釈の位置決めのため 2 回）。
-
-```sh
-TEXINPUTS=./chemstruct_pub: lualatex -output-directory=/tmp chemstruct_pub/doc/KKchemstruct-manual-ja.tex
-```
+- [KKTeX/KKchemstruct](https://github.com/KKTeX/KKchemstruct) — `chemfig` を用いた
+  構造式マクロ集（置換ベンゼン・示性式・反応式・注釈、日英の取扱説明書つき）
 
 ## 使い方
 
@@ -104,15 +59,12 @@ TEXINPUTS=./chemstruct_pub: lualatex -output-directory=/tmp chemstruct_pub/doc/K
 \usepackage{ChartBox}
 \usepackage{PracticeBox}     % LuaLaTeX 必須
 \usepackage{sectioncustomize0}
-\usepackage{KKchemstruct}
 ```
 
 ## 動作環境
 
-- TeX エンジン: LuaLaTeX を推奨 (`PracticeBox` は LuaLaTeX 必須)。
-  `KKchemstruct` は LuaLaTeX / pLaTeX + dvipdfmx の両方で動作確認済み。
-- 主な依存パッケージ: `tcolorbox`, `tikz`, `calc`, `varwidth`, `needspace`,
-  `chemfig`, `etoolbox`, `xkeyval`
+- TeX エンジン: LuaLaTeX を推奨 (`PracticeBox` は LuaLaTeX 必須)
+- 主な依存パッケージ: `tcolorbox`, `tikz`, `calc`, `varwidth`, `needspace`
 
 ## 動作確認
 
@@ -134,18 +86,7 @@ TEXINPUTS=./sectioncustomize_pub: platex -kanji=utf8 -output-directory=/tmp test
 dvipdfmx -o /tmp/sectioncustomize0-regression.pdf /tmp/sectioncustomize0-regression.dvi
 ```
 
-`chemstruct_pub/tests/kkchemstruct-regression.tex` は、置換ベンゼン、横向きの環、
-示性式、縮合環、注釈、反応式、寸法の一括変更を一通り確認します。`\KKchemmark` と
-`\KKhbond` の位置決めのため、2 回コンパイルしてください。
-
-```sh
-TEXINPUTS=./chemstruct_pub: lualatex -output-directory=/tmp chemstruct_pub/tests/kkchemstruct-regression.tex
-TEXINPUTS=./chemstruct_pub: platex -kanji=utf8 -output-directory=/tmp chemstruct_pub/tests/kkchemstruct-regression.tex
-dvipdfmx -o /tmp/kkchemstruct-regression.pdf /tmp/kkchemstruct-regression.dvi
-```
-
-各テストの出力 PDF は `tests/output/`（`KKchemstruct` は
-`chemstruct_pub/tests/output/`）に置いてあります。
+各テストの出力 PDF は `tests/output/` に置いてあります。
 
 ## ライセンス
 
