@@ -1,0 +1,177 @@
+% KKchemstruct.sty を同じディレクトリか TeX の検索パスへ配置し、
+% LuaLaTeX で2回コンパイルしてください。
+\documentclass[a4paper,11pt]{ltjsarticle}
+\usepackage[margin=22mm]{geometry}
+\usepackage{KKchemstruct}
+\usepackage[most]{tcolorbox}
+\pagestyle{empty}
+
+\definecolor{qaccent}{HTML}{0EA5E9}      % sky-500
+\definecolor{qaccentDark}{HTML}{0369A1}  % sky-700
+\definecolor{qsoft}{HTML}{F0F9FF}        % sky-50
+\definecolor{qtext}{HTML}{1E293B}        % slate-800
+
+\newtcolorbox{ExamplePanel}[1]{
+  enhanced,
+  colback=qsoft,
+  colframe=qaccent,
+  boxrule=.6pt,
+  arc=1.5mm,
+  left=5mm,
+  right=5mm,
+  top=4mm,
+  bottom=4mm,
+  title={#1},
+  fonttitle=\sffamily\bfseries,
+  coltitle=white,
+}
+
+\newcommand{\pagetitle}[1]{%
+  \begin{center}
+    {\sffamily\bfseries\Large\color{qaccentDark}#1}\par
+    \vspace{1mm}
+    {\color{qaccent}\rule{.72\linewidth}{.7pt}}
+  \end{center}
+  \vspace{5mm}}
+
+\begin{document}
+
+% Figure 1: quick start
+\pagetitle{KKchemstruct クイックスタート}
+
+\begin{ExamplePanel}{置換ベンゼン}
+  \begin{center}
+    \KKname{\KKsalicylicacid}{サリチル酸}
+    \hspace{5em}
+    \KKname{\KKaspirin}{アセチルサリチル酸}
+  \end{center}
+\end{ExamplePanel}
+
+\vspace{5mm}
+
+\begin{ExamplePanel}{示性式とオキソ酸}
+  \begin{center}
+    \KKname{\KKglycerol}{グリセリン}
+    \hspace{4em}
+    \KKname{\KKsulfuricacid}{硫酸}
+    \hspace{4em}
+    \KKname{\KKphosphoricacid}{リン酸}
+  \end{center}
+\end{ExamplePanel}
+
+\vspace{5mm}
+\begin{center}
+  \small\ttfamily
+  \string\KKsalicylicacid\qquad
+  \string\KKglycerol\qquad
+  \string\KKsulfuricacid
+\end{center}
+
+\newpage
+
+% Figure 2: benzene and chain
+\pagetitle{ベンゼン環と示性式}
+
+\begin{ExamplePanel}{置換位置は真上を 1 として時計回り}
+  \begin{center}
+    \KKname{\KKbenzene[2=OH,3=COOH]}{2=OH, 3=COOH}
+    \hspace{4em}
+    \KKname{\KKbenzene[1=COOH,4=COOH]}{1=COOH, 4=COOH}
+    \hspace{4em}
+    \KKname{\KKbenzene[]}{無置換}
+  \end{center}
+\end{ExamplePanel}
+
+\vspace{5mm}
+
+\begin{ExamplePanel}{環の調整と横向きの環}
+  \begin{center}
+    \KKname{\KKbenzene[1=OH,kekule=b]}{kekule=b}
+    \hspace{5em}
+    \KKname{\KKbenzene[2=OH,angle=30,sep=1.0em]}{angle=30, sep=1.0em}
+  \end{center}
+
+  \medskip
+  本文中にも \KKphenylring{} や \KKphenyl{COOH} を自然に置けます。
+\end{ExamplePanel}
+
+\vspace{5mm}
+
+\begin{ExamplePanel}{示性式は見える結合線の長さをそろえる}
+  \begin{center}
+    \KKname{\KKchemchain{R_1-C\KKcarbonyl-OH}}{カルボン酸の一般形}
+    \hspace{5em}
+    \KKname{\KKtriglyceride{R_1}{R_2}{R_3}}{油脂}
+  \end{center}
+\end{ExamplePanel}
+
+\newpage
+
+% Figure 3: reactions
+\pagetitle{反応式}
+
+\begin{ExamplePanel}{\texttt{\string\KKscheme}: 1 本の反応矢印}
+  \KKscheme{%
+    \KKname{\KKsalicylicacid}{サリチル酸}
+    \arrow{->[\ck{CH_3OH}][エステル化]}
+    \KKname{\KKmethylsalicylate}{サリチル酸メチル}}
+\end{ExamplePanel}
+
+\vspace{8mm}
+
+\begin{ExamplePanel}{\texttt{\string\KKbranchscheme}: 2 本へ枝分かれ}
+  \KKchemsetup{compound sep=3.8em,branch coeff=2.2}
+  \KKbranchscheme
+    {\KKname{\KKsalicylicacid}{サリチル酸}}
+    {\ck{CH_3OH}}{エステル化}
+    {\KKname{\KKmethylsalicylate}{サリチル酸メチル}}
+    {\ck{(CH_3CO)_2O}}{アセチル化}
+    {\KKname{\KKaspirin}{アセチルサリチル酸}}
+\end{ExamplePanel}
+
+\vspace{5mm}
+\begin{center}
+  \small
+  矢印ラベルの化学式は \texttt{\string\ck\{CH\_3OH\}} のように書きます。
+\end{center}
+
+\newpage
+
+% Figure 4: annotations and sizing
+\pagetitle{注釈と寸法変更}
+
+\begin{ExamplePanel}{注釈}
+  \begin{center}
+    \KKchemchain{R-C\KKcarbonyl-@{leavingA}OH}\ +\
+    \KKchemchain{@{leavingB}H-O-R'}%
+    \KKchemmark{leavingA}{leavingB}
+
+    \vspace{9mm}
+
+    \KKbenzene[2=@{hydrogenO}OH,3=C@{carbonylO}OOH]%
+    \KKhbond{hydrogenO}{carbonylO}
+    \hspace{6em}
+    \KKchemcross{\KKphenol}
+  \end{center}
+\end{ExamplePanel}
+
+\vspace{7mm}
+
+\begin{ExamplePanel}{\texttt{\string\KKchemsetup} はグループ内だけにも適用できる}
+  \begin{center}
+    \KKname{\KKsalicylicacid}{既定値}
+    \hspace{6em}
+    \begingroup
+      \KKchemsetup{ring sep=2.0em,bond width=0.09em,double bond sep=0.4em}
+      \KKname{\KKsalicylicacid}{変更後}
+    \endgroup
+  \end{center}
+\end{ExamplePanel}
+
+\vspace{5mm}
+\begin{center}
+  \small
+  \texttt{\string\KKchemmark} と \texttt{\string\KKhbond} を使う文書は 2 回コンパイルします。
+\end{center}
+
+\end{document}

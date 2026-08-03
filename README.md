@@ -8,7 +8,7 @@ LaTeX (LuaLaTeX / pLaTeX 系) 向けに作成したスタイルファイル群�
 textboxes_pub/        装飾テキストボックス（ChartBox, PracticeBox, TetsuKeyBox）
 sectioncustomize_pub/ 見出しのカスタマイズ（sectioncustomize0）
 tests/                回帰テストと出力
-Qiita/                解説記事の原稿
+Qiita/                解説記事の再現用 LaTeX と PDF
 ```
 
 ## 収録パッケージ
@@ -49,6 +49,17 @@ Qiita/                解説記事の原稿
 
 - [KKTeX/KKchemstruct](https://github.com/KKTeX/KKchemstruct) — `chemfig` を用いた
   構造式マクロ集（置換ベンゼン・示性式・反応式・注釈、日英の取扱説明書つき）
+
+## Qiita 記事の作成例
+
+| 作成例 | LaTeX | PDF |
+| --- | --- | --- |
+| オシャレな `tcolorbox` を誰でも作る方法 | [`.tex`](./Qiita/オシャレなtcolorboxを誰でも作る方法（LaTeX確認シリーズ%23５）/qiita-tcolorbox-examples.tex) | [`.pdf`](./Qiita/オシャレなtcolorboxを誰でも作る方法（LaTeX確認シリーズ%23５）/qiita-tcolorbox-examples.pdf) |
+| `chemfig` で化学構造式を短く書く「KKchemstruct」の使い方 | [`.tex`](./Qiita/chemfigで化学構造式を短く書く「KKchemstruct」の使い方（LaTeX確認シリーズ%23８）/qiita-kkchemstruct-examples.tex) | [`.pdf`](./Qiita/chemfigで化学構造式を短く書く「KKchemstruct」の使い方（LaTeX確認シリーズ%23８）/qiita-kkchemstruct-examples.pdf) |
+
+`KKchemstruct` の作成例をコンパイルする場合は、先に
+[`KKTeX/KKchemstruct`](https://github.com/KKTeX/KKchemstruct) の
+`KKchemstruct.sty` を文書と同じディレクトリか TeX の検索パスへ配置してください。
 
 ## 使い方
 
