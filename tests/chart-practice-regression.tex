@@ -1,0 +1,49 @@
+\documentclass[a4paper,11pt]{ltjsarticle}
+\usepackage[margin=22mm]{geometry}
+\usepackage{ChartBox}
+\usepackage{PracticeBox}
+
+\newcommand{\regressiontext}{%
+  本文の字下げ、和文と欧文 TeX の混植、罫線との間隔を確認するための文章です。
+  二行以上に折り返した場合も、文字が枠やタイトルと重ならないことを確認します。\par}
+
+\begin{document}
+
+\section*{ChartBox regression}
+
+\begin{mydec8}{分類}{項目}{標準}{1}
+\regressiontext
+\end{mydec8}
+
+\begin{mydec8}[blue]{長い分類名}{比較項目}{三段階評価}{3}
+\regressiontext
+\end{mydec8}
+
+\begin{mydec8}[teal]{短}{確認}{四つ星}{4}
+\regressiontext
+\end{mydec8}
+
+\begin{mydec8}[violet]{改頁}{長文}{breakable}{2}
+\regressiontext\regressiontext\regressiontext\regressiontext
+\regressiontext\regressiontext\regressiontext\regressiontext
+\regressiontext\regressiontext\regressiontext\regressiontext
+\end{mydec8}
+
+\section*{PracticeBox regression}
+
+\begin{practicebox}{演習問題}[基本]
+\regressiontext
+\end{practicebox}
+
+\begin{practicebox}{確認テスト}[追加キー][colback=blue!5!white]
+\regressiontext
+\end{practicebox}
+
+\begin{practicebox}{総合演習}[breakable]
+\regressiontext\regressiontext\regressiontext\regressiontext
+\regressiontext\regressiontext\regressiontext\regressiontext
+\regressiontext\regressiontext\regressiontext\regressiontext
+\regressiontext\regressiontext\regressiontext\regressiontext
+\end{practicebox}
+
+\end{document}
