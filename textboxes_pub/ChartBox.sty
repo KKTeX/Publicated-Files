@@ -1,16 +1,26 @@
 % This package is licensed under the MIT License.
 
-\ProvidesPackage{ChartBox}[2025/09/16, v1.0.1]
+\ProvidesPackage{ChartBox}[2026/08/04, v1.1.1]
 \RequirePackage[most]{tcolorbox}
 
-\newcommand{\bstar}{★} \newcommand{\nstar}{☆}
+% Keep the original public helper names for compatibility, but avoid redefining
+% them when another package already provides the same commands.
+\providecommand{\bstar}{★}
+\providecommand{\nstar}{☆}
+
+\newdimen\ChartBox@zw
+\ifdefined\zw
+  \ChartBox@zw=\zw
+\else
+  \ChartBox@zw=1em
+\fi
 
 \ExplSyntaxOn
 \NewDocumentCommand \StarForChart@mydec { m }
   {
     \int_compare:nNnT {#1} > 0
       {
-        \prg_replicate:nn { 3 - #1 } { \nstar }
+        \prg_replicate:nn { \int_max:nn { 0 } { 3 - #1 } } { \nstar }
         \prg_replicate:nn {#1} { \bstar }
       }
   }
@@ -19,49 +29,69 @@
 \newlength{\ChartShikiTitleLen@mydec}
 \newlength{\ChartShikiSTitleLen@mydec}
 \newlength{\ChartShikiSSTitleLen@mydec}
-\DeclareTColorBox{mydec8}{ O{red} m m m m }{
-  before={%
-    \noindent\settowidth{\ChartShikiTitleLen@mydec}{{\mbox{\large #2}}}
-    \settowidth{\ChartShikiSTitleLen@mydec}{{\mbox{\large #3}}}
-    \settowidth{\ChartShikiSSTitleLen@mydec}{{\mbox{\large #4}}}
-    \vspace*{3mm}
-  },
-  before upper={\setlength{\parindent}{1em}},
-  enhanced, empty, left=2mm, right=2mm, right skip=.7em, left skip=-.1em, breakable,
-  underlay unbroken={%
-    %タイトル
-    \fill[#1!80] (frame.north west) -- ([xshift=\ChartShikiTitleLen@mydec+.5em]frame.north west) -- ++(-.5em,-1.5em) -- ([yshift=-1.5em]frame.north west);
-    \node[anchor=north west,inner sep=.3mm] at ([yshift=-.05em]frame.north west) {\large\gtfamily\textcolor{white}{#2}};
-    \fill[#1!20] ([xshift=\ChartShikiTitleLen@mydec+.5em]frame.north west) -- ([xshift=\ChartShikiTitleLen@mydec+.8em]frame.north west) -- ++ (-.5em,-1.5em) -- ++ (-.3em,0em);
-    \node[anchor=north west,inner sep=.3mm] at ([xshift=\ChartShikiTitleLen@mydec+1em,yshift=-.05em]frame.north west) {\large\gtfamily #3};
-    \fill[#1!20] ([xshift=\ChartShikiTitleLen@mydec+2.4em+\ChartShikiSTitleLen@mydec]frame.north west) -- ([xshift=-6em]frame.north east) -- ++(-.5em,-1.5em) -- ([xshift=\ChartShikiTitleLen@mydec+1.9em+\ChartShikiSTitleLen@mydec,yshift=-1.5em]frame.north west);
-    \node[anchor=north west,inner sep=.3mm] at ([xshift=\ChartShikiTitleLen@mydec+2.4em+\ChartShikiSTitleLen@mydec,yshift=-.05em]frame.north west) {\large\hirakakutffamily #4};
-    %外枠
-    \draw[#1, line width=1.5pt] (frame.north west) -- (frame.south west);
-    \draw[#1, line width=.3pt] ([yshift=-.17pt]frame.north west) -- ([yshift=-.17pt]frame.north east);
-    \draw[#1, line width=.3pt] ([yshift=.17pt]frame.south west) -- ([yshift=.17pt]frame.south east);
-    \draw[#1, line width=.3pt] ([yshift=.18pt-1.5em]frame.north west) -- ([yshift=.18pt-1.5em]frame.north east);
-    \node[anchor=north east, inner sep=.3mm] at ([yshift=-.14em]frame.north east) {\textcolor{#1!80}{\StarForChart@mydec{#5}}};
-  },
-  underlay first={%
-    %タイトル
-    \fill[#1!80] (frame.north west) -- ([xshift=\ChartShikiTitleLen@mydec+.5em]frame.north west) -- ++(-.5em,-1.5em) -- ([yshift=-1.5em]frame.north west);
-    \node[anchor=north west,inner sep=.3mm] at ([yshift=-.05em]frame.north west) {\large\gtfamily\textcolor{white}{#2}};
-    \fill[#1!20] ([xshift=\ChartShikiTitleLen@mydec+.5em]frame.north west) -- ([xshift=\ChartShikiTitleLen@mydec+.8em]frame.north west) -- ++ (-.5em,-1.5em) -- ++ (-.3em,0em);
-    \node[anchor=north west,inner sep=.3mm] at ([xshift=\ChartShikiTitleLen@mydec+1em,yshift=-.05em]frame.north west) {\large\gtfamily #3};
-    \fill[#1!20] ([xshift=\ChartShikiTitleLen@mydec+2.4em+\ChartShikiSTitleLen@mydec]frame.north west) -- ([xshift=-6em]frame.north east) -- ++(-.5em,-1.5em) -- ([xshift=\ChartShikiTitleLen@mydec+1.9em+\ChartShikiSTitleLen@mydec,yshift=-1.5em]frame.north west);
-    \node[anchor=north west,inner sep=.3mm] at ([xshift=\ChartShikiTitleLen@mydec+2.4em+\ChartShikiSTitleLen@mydec,yshift=-.05em]frame.north west) {\large\hirakakutffamily #4};
-    \draw[#1, line width=1.5pt] (frame.north west) -- (frame.south west);
-    \draw[#1, line width=.3pt] ([yshift=-.17pt]frame.north west) -- ([yshift=-.17pt]frame.north east);
-    \draw[#1, line width=.3pt] ([yshift=.18pt-1.5em]frame.north west) -- ([yshift=.18pt-1.5em]frame.north east);
-    \node[anchor=north east, inner sep=.3mm] at ([yshift=-.14em]frame.north east) {\textcolor{#1!80}{\StarForChart@mydec{#5}}};
-  },
-  underlay middle={%
-    \draw[#1, line width=1.5pt] (frame.north west) -- (frame.south west);
-  },
-  underlay last={%
-    \draw[#1, line width=1.5pt] (frame.north west) -- (frame.south west);
-  },
-  top=5mm,bottom=1mm
+\newcommand{\ChartBox@titlefont}{\large\gtfamily}
+\newcommand{\ChartBox@firsttitleextra}{.2\ChartBox@zw}
+\newcommand{\ChartBox@titletext}[1]{\vphantom{国}\smash{#1}}
+
+\newcommand{\ChartBox@header}[5]{%
+  \fill[#1!80] (frame.north west) --
+    ([xshift=\ChartShikiTitleLen@mydec+.5\ChartBox@zw+\ChartBox@firsttitleextra]frame.north west) --
+    ++(-.5\ChartBox@zw, -1.5\ChartBox@zw) -- ([yshift=-1.5\ChartBox@zw]frame.north west);
+  \node[anchor=north west, inner sep=.3mm] at ([yshift=-.05\ChartBox@zw]frame.north west)
+    {\ChartBox@titlefont\ChartBox@titletext{\textcolor{white}{#2}}};
+  \fill[#1!20]
+    ([xshift=\ChartShikiTitleLen@mydec+.5\ChartBox@zw+\ChartBox@firsttitleextra]frame.north west) --
+    ([xshift=\ChartShikiTitleLen@mydec+.8\ChartBox@zw+\ChartBox@firsttitleextra]frame.north west) --
+    ++(-.5\ChartBox@zw, -1.5\ChartBox@zw) -- ++(-.3\ChartBox@zw, 0mm);
+  \node[anchor=north west, inner sep=.3mm] at
+    ([xshift=\ChartShikiTitleLen@mydec+1\ChartBox@zw+\ChartBox@firsttitleextra,
+      yshift=-.05\ChartBox@zw]frame.north west)
+    {\ChartBox@titlefont\ChartBox@titletext{#3}};
+  \fill[#1!20]
+    ([xshift=\ChartShikiTitleLen@mydec+2.4\ChartBox@zw+\ChartBox@firsttitleextra+\ChartShikiSTitleLen@mydec]frame.north west) --
+    ([xshift=-6\ChartBox@zw]frame.north east) -- ++(-.5\ChartBox@zw, -1.5\ChartBox@zw) --
+    ([xshift=\ChartShikiTitleLen@mydec+1.9\ChartBox@zw+\ChartBox@firsttitleextra+\ChartShikiSTitleLen@mydec,
+      yshift=-1.5\ChartBox@zw]frame.north west);
+  \node[anchor=north west, inner sep=.3mm] at
+    ([xshift=\ChartShikiTitleLen@mydec+2.4\ChartBox@zw+\ChartBox@firsttitleextra+\ChartShikiSTitleLen@mydec,
+      yshift=-.05\ChartBox@zw]frame.north west)
+    {\ChartBox@titlefont\ChartBox@titletext{#4}};
+  \draw[#1, line width=1.5pt] (frame.north west) -- (frame.south west);
+  \draw[#1, line width=.3pt]
+    ([yshift=-.17pt]frame.north west) -- ([yshift=-.17pt]frame.north east);
+  \draw[#1, line width=.3pt]
+    ([yshift=.18pt-1.5\ChartBox@zw]frame.north west) --
+    ([yshift=.18pt-1.5\ChartBox@zw]frame.north east);
+  \node[anchor=north east, inner sep=.3mm] at ([yshift=-.14\ChartBox@zw]frame.north east)
+    {\textcolor{#1!80}{\StarForChart@mydec{#5}}};
+}
+
+\NewDocumentEnvironment{mydec8}{ O{red} m m m m }{%
+  \settowidth{\ChartShikiTitleLen@mydec}{{\mbox{\ChartBox@titlefont #2}}}%
+  \settowidth{\ChartShikiSTitleLen@mydec}{{\mbox{\ChartBox@titlefont #3}}}%
+  \settowidth{\ChartShikiSSTitleLen@mydec}{{\mbox{\ChartBox@titlefont #4}}}%
+  \begin{tcolorbox}[
+    before={\noindent\vspace*{3mm}},
+    before upper={\setlength{\parindent}{\ChartBox@zw}},
+    enhanced, empty, left=2mm, right=2mm,
+    right skip=.7\ChartBox@zw, left skip=-.1\ChartBox@zw, breakable,
+    underlay unbroken={%
+      \ChartBox@header{#1}{#2}{#3}{#4}{#5}%
+      \draw[#1, line width=.3pt]
+        ([yshift=.17pt]frame.south west) -- ([yshift=.17pt]frame.south east);
+    },
+    underlay first={\ChartBox@header{#1}{#2}{#3}{#4}{#5}},
+    underlay middle={%
+      \draw[#1, line width=1.5pt] (frame.north west) -- (frame.south west);
+    },
+    underlay last={%
+      \draw[#1, line width=1.5pt] (frame.north west) -- (frame.south west);
+      \draw[#1, line width=.3pt]
+        ([yshift=.17pt]frame.south west) -- ([yshift=.17pt]frame.south east);
+    },
+    top=5mm, bottom=1mm
+  ]%
+}{%
+  \end{tcolorbox}%
 }
 \endinput

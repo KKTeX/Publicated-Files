@@ -19,7 +19,7 @@ Qiita/                解説記事の再現用 LaTeX と PDF
 | ファイル | パッケージ名 | 概要 |
 | --- | --- | --- |
 | `ChartBox.sty` | `ChartBox` | ★/☆ による評価マークを伴うチャート用ボックス。 |
-| `PracticeBox.sty` | `PracticeBox` | 練習問題向けのボックス。Lua を利用した文字処理を含むため LuaLaTeX で使用。 |
+| `PracticeBox.sty` | `PracticeBox` | 練習問題向けのボックス。タイトル文字を交互の白黒マスで表示。 |
 | `TetsuKeyBox.sty` | `TetsuKeyBox` | タイトル横にサブタイトル領域を持つ「鉄則」型ボックス。 |
 
 いずれも `tcolorbox` (`most` ライブラリ) に依存します。
@@ -35,6 +35,28 @@ Qiita/                解説記事の再現用 LaTeX と PDF
 第1引数はタイトル、第2引数（省略可）は右側の説明、第3引数（省略可）は
 `tcolorbox` の追加設定です。長いタイトルはタイトル行の30%を上限として
 横方向に縮小され、説明を省略または空にした場合も右側の領域を維持します。
+
+#### `mydec8`（ChartBox）
+
+```latex
+\begin{mydec8}[blue]{分類}{項目}{説明}{3}
+本文をここに書きます。
+\end{mydec8}
+```
+
+色、第1見出し、第2見出し、第3見出し、評価数の順に指定します。色は省略時 `red`、
+評価数が1〜3なら不足分を `☆`、指定数を `★` で表示します。
+
+#### `practicebox`（PracticeBox）
+
+```latex
+\begin{practicebox}{演習問題}[基本]
+本文をここに書きます。
+\end{practicebox}
+```
+
+第1引数は白黒マスで表示するタイトル、第2引数（省略可）は右側の補足、
+第3引数（省略可）は `tcolorbox` の追加設定です。
 
 ### `sectioncustomize_pub/`
 セクション見出しのカスタマイズ用パッケージ。
@@ -68,13 +90,13 @@ Qiita/                解説記事の再現用 LaTeX と PDF
 ```latex
 \usepackage{TetsuKeyBox}
 \usepackage{ChartBox}
-\usepackage{PracticeBox}     % LuaLaTeX 必須
+\usepackage{PracticeBox}
 \usepackage{sectioncustomize0}
 ```
 
 ## 動作環境
 
-- TeX エンジン: LuaLaTeX を推奨 (`PracticeBox` は LuaLaTeX 必須)
+- TeX エンジン: LuaLaTeX を推奨
 - 主な依存パッケージ: `tcolorbox`, `tikz`, `calc`, `varwidth`, `needspace`
 
 ## 動作確認
@@ -86,6 +108,13 @@ Qiita/                解説記事の再現用 LaTeX と PDF
 TEXINPUTS=./textboxes_pub: lualatex -output-directory=/tmp tests/ptbs-regression.tex
 TEXINPUTS=./textboxes_pub: platex -kanji=utf8 -output-directory=/tmp tests/ptbs-regression.tex
 dvipdfmx -o /tmp/ptbs-regression.pdf /tmp/ptbs-regression.dvi
+```
+
+`tests/chart-practice-regression.tex` は、評価数、和文タイトル、追加キー、
+両ボックスの改ページを LuaLaTeX で確認します。
+
+```sh
+TEXINPUTS=./textboxes_pub: lualatex -output-directory=/tmp tests/chart-practice-regression.tex
 ```
 
 `tests/sectioncustomize0-regression.tex` は、chapter から subsubsection までと
