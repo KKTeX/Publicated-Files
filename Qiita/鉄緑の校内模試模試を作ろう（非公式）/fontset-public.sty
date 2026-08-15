@@ -1,0 +1,41 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{fontset-public}[2026/08/14 Harano Aji public font setup]
+
+\RequirePackage[no-math]{fontspec}
+\RequirePackage[no-math,match,scale=1]{luatexja-fontspec}
+\RequirePackage[haranoaji,deluxe]{luatexja-preset}
+
+\setmainfont{HaranoAjiMincho-Regular}[BoldFont=HaranoAjiMincho-Bold]
+\setmainjfont{HaranoAjiMincho-Regular}[BoldFont=HaranoAjiMincho-Bold]
+
+\newfontfamily\HaranoGothicRegularLatin{HaranoAjiGothic-Regular}
+\newjfontfamily\HaranoGothicRegularJapanese{HaranoAjiGothic-Regular}
+\newfontfamily\HaranoGothicMediumLatin{HaranoAjiGothic-Medium}
+\newjfontfamily\HaranoGothicMediumJapanese{HaranoAjiGothic-Medium}
+\newfontfamily\HaranoGothicBoldLatin{HaranoAjiGothic-Bold}
+\newjfontfamily\HaranoGothicBoldJapanese{HaranoAjiGothic-Bold}
+\newfontfamily\HaranoGothicHeavyLatin{HaranoAjiGothic-Heavy}
+\newjfontfamily\HaranoGothicHeavyJapanese{HaranoAjiGothic-Heavy}
+
+\newcommand\HaranoGothicRegular{\HaranoGothicRegularLatin\HaranoGothicRegularJapanese}
+\newcommand\HaranoGothicMedium{\HaranoGothicMediumLatin\HaranoGothicMediumJapanese}
+\newcommand\HaranoGothicBold{\HaranoGothicBoldLatin\HaranoGothicBoldJapanese}
+\newcommand\HaranoGothicHeavy{\HaranoGothicHeavyLatin\HaranoGothicHeavyJapanese}
+
+% 元のソース側をほぼ変えずに済むよう、互換名を残して原ノ味へ写像する。
+\NewDocumentCommand{\HiraginoKakuGothic}{m}{%
+  \ifcase#1\HaranoGothicRegular
+  \or\HaranoGothicRegular
+  \or\HaranoGothicRegular
+  \or\HaranoGothicRegular
+  \or\HaranoGothicRegular
+  \or\HaranoGothicMedium
+  \or\HaranoGothicBold
+  \or\HaranoGothicHeavy
+  \or\HaranoGothicHeavy
+  \else\HaranoGothicRegular
+  \fi
+}
+
+\endinput
+

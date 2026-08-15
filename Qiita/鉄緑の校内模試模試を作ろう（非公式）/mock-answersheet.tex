@@ -1,0 +1,75 @@
+\documentclass[paper=b4,fontsize=10pt,landscape]{jlreq}
+
+\usepackage{multicol,fontset-public,eso-pic}
+\usepackage[unit=2\zw,tensenoff=0pt]{KKran}
+\usepackage[left=25mm,right=25mm,top=25mm,bottom=25mm]{geometry}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+\newcommand{\PageBorder}{%
+  \AtPageLowerLeft{%
+    \begin{tikzpicture}[overlay]
+      \draw[line width=.7pt]
+        (15mm,15mm) rectangle
+        (\dimexpr\paperwidth-15mm\relax,\dimexpr\paperheight-15mm\relax);
+    \end{tikzpicture}
+  }
+}
+
+\pagestyle{empty}
+\AddToShipoutPictureBG{\PageBorder}
+
+\newcommand{\AnswerPage}[1]{%
+  \clearpage
+  \noindent\begin{minipage}[t][\textheight][t]{\textwidth}
+    \begin{minipage}[t]{.5\textwidth}
+      \begin{center}
+        \LARGE\makebox[5\zw][s]{第#1問}
+      \end{center}
+    \end{minipage}
+  \end{minipage}\par
+}
+
+\begin{document}
+\begin{multicols*}{2}
+  \begin{center}
+    \LARGE\makebox[5\zw][s]{第1問}
+  \end{center}
+  \vspace{\baselineskip}
+  \begin{center}
+    \KKran[1pt]{%
+      \大問番号[0]{25}[]
+      \小問番号[1]{3.125}\小問欄{20}{3.125}\GoDown{3.125}
+      \小問番号[1]{3.125}\小問欄{20}{3.125}\GoDown{3.125}
+      \小問番号[1]{3.125}\小問欄{20}{3.125}\GoDown{3.125}
+      \小問番号[1]{3.125}\小問欄{20}{3.125}\GoDown{3.125}
+      \小問番号[1]{3.125}\小問欄{20}{3.125}\GoDown{3.125}
+      \小問番号[1]{3.125}\小問欄{20}{3.125}\GoDown{3.125}
+      \小問番号[1]{3.125}\小問欄{20}{3.125}\GoDown{3.125}
+      \小問番号[1]{3.125}\小問欄{20}{3.125}
+    }
+  \end{center}
+
+  \columnbreak
+
+  \begin{center}
+    \LARGE\makebox[5\zw][s]{第2問}
+  \end{center}
+  \vspace{\baselineskip}
+  \begin{center}
+    \KKran[1pt]{%
+      \大問番号[0]{7.5}[]
+      \小問番号[1]{2.5}\小問欄{9.5}{2.5}\小問番号[1]{2.5}\小問欄{9.5}{2.5}\GoDown{2.5}
+      \小問番号[1]{2.5}\小問欄{9.5}{2.5}\小問番号[1]{2.5}\小問欄{9.5}{2.5}\GoDown{2.5}
+      \小問番号[1]{2.5}\小問欄{9.5}{2.5}
+    }
+  \end{center}
+\end{multicols*}
+
+\AnswerPage{3}
+\AnswerPage{4}
+\AnswerPage{5}
+\AnswerPage{6}
+
+\end{document}
+
