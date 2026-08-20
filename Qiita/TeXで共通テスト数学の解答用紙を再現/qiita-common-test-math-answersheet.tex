@@ -168,6 +168,10 @@
       (1.648,3.96) -- (3.914,1.152) -- (9.064,6.624);
   \end{tikzpicture}%
 }
+\newcommand{\CTcheckW}{11.1}
+\newcommand{\CTcheckHeadH}{3.6}
+\newcommand{\CTcheckBodyH}{8.0}
+\newcommand{\CTcheckH}{11.6}
 
 \newcommand{\CTboxnum}[1]{%
   {\fontsize{7}{7}\selectfont
@@ -372,16 +376,16 @@
   }%
 }
 
-\newcommand{\CTcheckBox}[5]{%
+\newcommand{\CTcheckBox}[2]{%
   \KKran[\CTkkOuter]{%
-    \大問番号[0]{\fpeval{#2+#3}}[]%
-    \小問欄{#1}{#2}[center={%
-      \parbox[c][#2mm][c]{\fpeval{#1-2.6}mm}{%
+    \大問番号[0]{\CTcheckH}[]%
+    \小問欄{\CTcheckW}{\CTcheckHeadH}[center={%
+      \parbox[c][\CTcheckHeadH mm][c]{\fpeval{\CTcheckW-2.6}mm}{%
         \centering\fontsize{3.2}{3.7}\selectfont\color{ctink}%
-        \makebox[\linewidth][c]{#4}\\[-0.15mm]%
-        \makebox[\linewidth][c]{#5}}}]%
-    \GoDown{#2}%
-    \小問欄{#1}{#3}[center={\CTcheck}]%
+        \makebox[\linewidth][c]{#1}\\[-0.15mm]%
+        \makebox[\linewidth][c]{#2}}}]%
+    \GoDown{\CTcheckHeadH}%
+    \小問欄{\CTcheckW}{\CTcheckBodyH}[center={\CTcheck}]%
   }%
 }
 
@@ -415,8 +419,8 @@
   \CTplace{\CTsbOuterL}{\CTsbOuterTop}{\CTsbOuterW}{\CTsbOuterH}{\CTsubjectOuter}
   \CTplace{\CTsbL}{\CTsbTop}{66.5}{\CTsbTotalH}{\CTsubjectTable}
 
-  \CTplace{159.5}{187}{13.7}{11.2}%
-    {\CTcheckBox{13.7}{3.6}{7.6}%
+  \CTplace{160.8}{187.2}{\CTcheckW}{\CTcheckH}%
+    {\CTcheckBox
       {解\hfill 答\hfill 科\hfill 目\hfill マ\hfill ー\hfill ク}%
       {チ\hfill ェ\hfill ッ\hfill ク\hfill 欄}}
 
@@ -435,8 +439,8 @@
 
   \CTplace{\CTexL}{\CTexTop}{\CTexW}{\CTexTotalH}{\CTexamNoTable}
 
-  \CTplace{45.2}{85.6}{11.1}{11.6}%
-    {\CTcheckBox{11.1}{3.6}{8.0}%
+  \CTplace{45.2}{85.6}{\CTcheckW}{\CTcheckH}%
+    {\CTcheckBox
       {受\hfill 験\hfill 番\hfill 号\hfill マ\hfill ー\hfill ク}%
       {チ\hfill ェ\hfill ッ\hfill ク\hfill 欄}}
 
@@ -448,8 +452,8 @@
   \CTplace{7.6}{55.3}{53.7}{35.4}{\CTnameOuter}
   \CTplace{\CTnmL}{\CTnmTop}{51}{\CTnmTotalH}{\CTnameTable}
 
-  \CTplace{49}{18.8}{11.5}{9.5}%
-    {\CTcheckBox{11.5}{3.2}{6.3}%
+  \CTplace{49.2}{18.8}{\CTcheckW}{\CTcheckH}%
+    {\CTcheckBox
       {氏\hfill 名\hfill 記\hfill 入}%
       {チ\hfill ェ\hfill ッ\hfill ク\hfill 欄}}
 
