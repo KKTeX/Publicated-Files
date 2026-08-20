@@ -1,0 +1,630 @@
+% =====================================================================
+%  qiita-common-test-math-answersheet.tex
+%
+%  共通テスト数学 マーク式解答用紙（第1面）
+%  ―― 非公式・学習用テンプレート ――
+%
+%  * 公式の様式ではありません。実際の試験で使用されるものでもありません。
+%  * ロゴ・団体名は含みません。記入内容はすべてダミーです。
+%
+%  コンパイル:
+%    lualatex -interaction=nonstopmode -halt-on-error \
+%             qiita-common-test-math-answersheet.tex
+%
+%  依存:
+%    LuaLaTeX / LuaTeX-ja (ltjsarticle) / TikZ / eso-pic
+%    KKran v1.1.6 (TeX Live 2026) と、それが内部で読み込む KKsymbols
+%
+%  設計方針:
+%    - マーク楕円は自作しない。KKran のマークシート機能
+%        \MarkArrayMake{配列名}{|要素1|...|要素n|}   … Lua 配列を登録
+%        \マークシート{配置幅}{\配列名マーク配列}     … 横一列に均等配置
+%      だけで出す。内部的には KKsymbols の \jegg（白楕円）が並ぶ。
+%    - 罫のある構造はすべて \KKran / \大問番号 / \小問欄 / \GoDown で組む。
+%      3 本の解答欄も、受験番号欄も、氏名欄も、解答科目欄も同じ枠組み。
+%    - 組み上がった KKran ブロックを、用紙全面の TikZ キャンバス
+%      （x=1mm, y=1mm）へ絶対座標で置く。TikZ は紙面配置と、KKran に
+%      API がない矢印・網掛け・手書きチェックなどの装飾だけに使う。
+%    - 寸法・行ラベル・選択肢配列はすべて §1 のパラメータに集約してある。
+% =====================================================================
+\documentclass[a4paper,11pt]{ltjsarticle}
+
+\usepackage[a4paper,landscape,margin=15mm]{geometry}
+\usepackage{lmodern}                       % 極小サイズでも欧文がスケールする
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{calc,arrows.meta}
+\usepackage{eso-pic}
+
+%  unit=1mm にすると、\小問欄{43}{5.4} も \マークシート{40}{…} も
+%  そのまま「mm」で書ける。wakuwidth は \小問欄 の罫、tensenwakuwidth は
+%  左辺（点線になりうる辺）の罫。tensenoff=0pt で点線を実線に潰す。
+\usepackage[
+  unit=1mm,
+  kaitouhyouji=1,
+  tensenoff=0pt,
+  wakuwidth=0.3pt,
+  tensenwakuwidth=0.3pt
+]{KKran}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+
+% 参照紙面の書体感に合わせて全体を角ゴシック／サンセリフに寄せる
+\renewcommand{\familydefault}{\sfdefault}
+\renewcommand{\kanjifamilydefault}{\gtdefault}
+
+
+% =====================================================================
+%  §1  パラメータ
+% =====================================================================
+
+% ---- 1.1 配色 -------------------------------------------------------
+\definecolor{ctline}{HTML}{111827}   % gray-900   罫線・黒ベタ
+\definecolor{ctink}{HTML}{1F2937}    % gray-800   本文
+\definecolor{cthead}{HTML}{475569}   % slate-600  見出し（青みのあるグレー）
+\definecolor{ctmark}{HTML}{4B5563}   % gray-600   マーク楕円
+\definecolor{ctshade}{HTML}{E2E8F0}  % slate-200  旧課程欄の網掛け
+\definecolor{ctnote}{HTML}{64748B}   % slate-500  矢印・欄外注記
+
+% ---- 1.2 用紙と外枠（数値はすべて mm） ------------------------------
+\newcommand{\CTframeL}{3}      \newcommand{\CTframeR}{294}
+\newcommand{\CTframeB}{3}      \newcommand{\CTframeT}{207}
+\newcommand{\CTkkOuter}{0.9pt} % \KKran の第1引数（ブロック外周の太さ）
+
+% ---- 1.3 解答欄ブロック（3 本のマークグリッド） ---------------------
+\newcommand{\CTblkAX}{62.2}    % 第1問ブロック 左端
+\newcommand{\CTblkBX}{137.7}   % 第2問ブロック 左端
+\newcommand{\CTblkCX}{212.9}   % 第3問ブロック 左端
+\newcommand{\CTgridTop}{169.1}% ブロック上端
+\newcommand{\CTblkW}{71.85}    % ブロック幅 = \CTlabW + \CTmarkW
+\newcommand{\CTlabW}{4.35}     % 小問番号（ア・イ・ウ…）の幅
+\newcommand{\CTmarkW}{67.5}    % マーク欄の幅（小問番号欄と合わせて 71.85mm）
+\newcommand{\CTsheetW}{65.5}   % \マークシート の配置幅（マーク欄より 2mm 内側）
+\newcommand{\CTheadH}{5.4}     % 「n 解 答 欄」見出し行の高さ
+\newcommand{\CTchdH}{4.6}      % 選択肢見出し行の高さ
+\newcommand{\CTrowH}{5.05}     % マーク 1 行の高さ
+\newcommand{\CTblkHeadH}{\fpeval{\CTheadH+\CTchdH}}
+\newcommand{\CTblkBodyH}{\fpeval{30*\CTrowH}}
+\newcommand{\CTblkTotalH}{\fpeval{\CTheadH+\CTchdH+30*\CTrowH}}
+
+% ---- 1.4 受験番号欄 -------------------------------------------------
+\newcommand{\CTexL}{11.3}      % 左端
+\newcommand{\CTexTop}{165.9}   % 解答欄と分けた専用上端
+\newcommand{\CTexW}{45}        % 全幅（5 列 × 9mm）
+\newcommand{\CTexColW}{9}
+\newcommand{\CTexSheetW}{7.6}  % 1 マスぶんの \マークシート 配置幅
+\newcommand{\CTexTitleH}{6.85} % 「受 験 番 号 欄」行
+\newcommand{\CTexHeadH}{3.65}  % 「千位／百位／十位／一位／英字」行
+\newcommand{\CTexWriteH}{8.9}  % 手書き記入行
+\newcommand{\CTexRowH}{5.48}   % マーク 1 行
+\newcommand{\CTexTotalH}{\fpeval{\CTexTitleH+\CTexHeadH+\CTexWriteH+11*\CTexRowH}}
+
+% ---- 1.5 氏名・試験場コード欄 ---------------------------------------
+\newcommand{\CTnmL}{8.6}       \newcommand{\CTnmTop}{53.9}
+\newcommand{\CTnmLabW}{11.6}   \newcommand{\CTnmFreeW}{39.4}
+\newcommand{\CTnmCodeLabW}{10.2}
+\newcommand{\CTnmCodeW}{6.8}   % 十万位〜一位 の 1 列
+\newcommand{\CTnmKanaH}{7.5}
+\newcommand{\CTnmNameH}{12.5}
+\newcommand{\CTnmCodeHeadH}{6.15}
+\newcommand{\CTnmCodeWriteH}{6.15}
+\newcommand{\CTnmTotalH}{\fpeval{\CTnmKanaH+\CTnmNameH+\CTnmCodeHeadH+\CTnmCodeWriteH}}
+
+% ---- 1.6 解答科目欄 -------------------------------------------------
+\newcommand{\CTsbOuterL}{88.4} \newcommand{\CTsbOuterTop}{205.2}
+\newcommand{\CTsbPad}{1.5}
+\newcommand{\CTsbL}{\fpeval{\CTsbOuterL+\CTsbPad}}
+\newcommand{\CTsbTop}{\fpeval{\CTsbOuterTop-\CTsbPad}}
+\newcommand{\CTsbColW}{13.3}   \newcommand{\CTsbTitleH}{5}
+\newcommand{\CTsbBodyH}{27.4}
+\newcommand{\CTsbTotalH}{\fpeval{\CTsbTitleH+\CTsbBodyH}}
+\newcommand{\CTsbOuterW}{\fpeval{5*\CTsbColW+2*\CTsbPad}}
+\newcommand{\CTsbOuterH}{\fpeval{\CTsbTotalH+2*\CTsbPad}}
+
+% ---- 1.7 書体サイズ -------------------------------------------------
+%  \jegg の楕円は「現在の和文フォントの全角幅 \zw」を基準に描かれるので、
+%  マークの大きさはフォントサイズで決める。ltjsarticle では
+%  \zw ≒ 0.925 × フォントサイズ。12.9pt → \zw ≒ 4.20mm、
+%  15 個並べて 63.0mm。配置幅 65.5mm との差が \hfill で均等に散る。
+\newcommand{\CTfMark}{\fontsize{12.9}{12.9}\selectfont}   % 解答欄のマーク
+\newcommand{\CTfExMark}{\fontsize{13}{13}\selectfont}     % 受験番号・マーク例
+\newcommand{\CTfSbMark}{\fontsize{17}{17}\selectfont}     % 解答科目欄の大○
+\newcommand{\CTfChoice}{\fontsize{5.4}{5.4}\selectfont}
+\newcommand{\CTfBlkHead}{\fontsize{11}{11}\selectfont}
+\newcommand{\CTfBlkNum}{\bfseries\fontsize{14}{14}\selectfont}
+\newcommand{\CTfTitle}{\fontsize{17}{17}\selectfont}
+\newcommand{\CTfBoxHead}{\fontsize{7.5}{7.5}\selectfont}
+\newcommand{\CTfNoteHd}{\bfseries\fontsize{6}{6}\selectfont}
+\newcommand{\CTfNote}{\fontsize{5.6}{10.8}\selectfont}
+\newcommand{\CTfCallout}{\fontsize{8.5}{10.2}\selectfont}
+\newcommand{\CTfNarrow}{\fontsize{6}{10.2}\selectfont}
+\newcommand{\CTfSmall}{\fontsize{5.2}{5.6}\selectfont}
+\newcommand{\CTfXSmall}{\fontsize{4.2}{4.6}\selectfont}
+\newcommand{\CTfSubject}{\fontsize{6.5}{6.5}\selectfont}
+\newcommand{\CTfMicro}{\fontsize{3.2}{3.9}\selectfont}
+\newcommand{\CTfFoot}{\fontsize{4.4}{4.4}\selectfont}
+
+% ---- 1.8 TikZ スタイル（配置と装飾だけに使う） ----------------------
+\tikzset{
+  ctfr/.style    = {draw=ctline, line width=0.4pt},
+  ctthin/.style  = {draw=ctline, line width=0.3pt},
+  ctarrow/.style = {draw=ctnote, line width=1.6mm,
+                    -{Triangle[length=2.6mm,width=4.2mm]}},
+}
+
+
+% =====================================================================
+%  §2  マーク配列の登録（\MarkArrayMake）
+% =====================================================================
+%  \MarkArrayMake{名前}{|a|b|c|} は Lua 側に配列を積み、
+%  \名前マーク配列[n] という TeX マクロを生やす。n 番目だけ黒く塗られる。
+%  空欄の解答用紙なので、原則として [n] は渡さない（＝全部白）。
+
+% ---- 2.1 解答欄の選択肢：− 0 1 2 3 4 5 6 7 8 9 a b c d（15 個） -----
+\MarkArrayMake{解答}{|-|0|1|2|3|4|5|6|7|8|9|a|b|c|d|}
+
+% ---- 2.2 受験番号欄用：1 マスに 1 個だけ置くための単元素配列 --------
+%  \マークシート は横一列にしか並べられないので、縦に積む受験番号欄は
+%  「1 要素の配列を 1 セルずつ」置いて列を作る。これで \jegg の描画は
+%  すべて正式機能（\マークシート）経由のままにできる。
+\MarkArrayMake{単-}{|-|}
+\MarkArrayMake{単0}{|0|}\MarkArrayMake{単1}{|1|}\MarkArrayMake{単2}{|2|}
+\MarkArrayMake{単3}{|3|}\MarkArrayMake{単4}{|4|}\MarkArrayMake{単5}{|5|}
+\MarkArrayMake{単6}{|6|}\MarkArrayMake{単7}{|7|}\MarkArrayMake{単8}{|8|}
+\MarkArrayMake{単9}{|9|}
+\MarkArrayMake{単A}{|A|}\MarkArrayMake{単B}{|B|}\MarkArrayMake{単C}{|C|}
+\MarkArrayMake{単H}{|H|}\MarkArrayMake{単K}{|K|}\MarkArrayMake{単M}{|M|}
+\MarkArrayMake{単R}{|R|}\MarkArrayMake{単U}{|U|}\MarkArrayMake{単X}{|X|}
+\MarkArrayMake{単Y}{|Y|}\MarkArrayMake{単Z}{|Z|}
+
+% ---- 2.3 解答科目欄の大きな ○（中身なしの 1 要素配列） --------------
+\MarkArrayMake{科目}{| |}
+
+% ---- 2.4 マーク例 ---------------------------------------------------
+%  良い例は \マークシート の第3引数（正解位置）で 1 番目を黒く塗る。
+%  悪い例は「楕円の中に何が書いてあるか」で見せるので、配列の要素に
+%  ・（小さすぎる）／レ（レ点）／×（ばつ）をそのまま入れる。
+\MarkArrayMake{良例}{| |}
+\MarkArrayMake{悪例}{|・|レ|$\times$|}
+
+% ---- 2.5 マークシートの呼び出しラッパ -------------------------------
+\newcommand{\CTanswerMarks}{%
+  {\color{ctmark}\CTfMark\マークシート{\CTsheetW}{\解答マーク配列}}}
+\newcommand{\CTexMarkOne}[1]{%
+  {\color{ctmark}\CTfExMark
+   \マークシート{\CTexSheetW}{\csname 単#1マーク配列\endcsname}}}
+\newcommand{\CTsubjectMark}{%
+  {\color{ctmark}\CTfSbMark\マークシート{6}{\科目マーク配列}}}
+
+
+% =====================================================================
+%  §3  部品コマンド（配置・装飾のみ）
+% =====================================================================
+
+% ---- 3.0 KKran ブロックの配置 ---------------------------------------
+%  \KKran が返す箱は、描画領域の周りに左右対称の余白を持つ
+%  （\KKran[0.9pt] のとき片側およそ 1.4mm）。anchor=north west で置くと
+%  その余白ぶん絵が右へずれるので、「中心」を指定して置く。
+%  余白は上下左右対称なので、箱の中心＝描画領域の中心になる。
+%  \CTplace{左端}{上端}{幅}{高さ}{ブロック}
+\newcommand{\CTplace}[5]{%
+  \node[anchor=center, inner sep=0pt] at ({#1+0.5*#3},{#2-0.5*#4}) {#5};%
+}
+
+% ---- 3.1 均等割り見出し（和文間の kanjiskip を伸ばす） --------------
+\newcommand{\CTspread}[2]{\makebox[#1][s]{#2}}
+
+% ---- 3.2 選択肢見出し行 ---------------------------------------------
+%  \jegg は 1 個あたり \zw の送りを持つので、同じフォントサイズで
+%  \makebox[1\zw] を \hfill でつなげば楕円の真上に文字が乗る。
+\newcommand{\CTch}[1]{\makebox[1\zw]{\CTfChoice\color{ctink}#1}}
+\newcommand{\CTchoiceHead}{%
+  {\CTfMark
+   \makebox[\CTsheetW mm]{%
+     \CTch{-}\hfill\CTch{0}\hfill\CTch{1}\hfill\CTch{2}\hfill\CTch{3}%
+     \hfill\CTch{4}\hfill\CTch{5}\hfill\CTch{6}\hfill\CTch{7}%
+     \hfill\CTch{8}\hfill\CTch{9}\hfill\CTch{a}\hfill\CTch{b}%
+     \hfill\CTch{c}\hfill\CTch{d}}}%
+}
+
+% ---- 3.3 大問番号（白地の独立した TikZ 枠） ------------------------
+%  公式見本では解答欄の小問セルに入っておらず、見出し左の独立部品。
+%  \CTblkNumAt{解答ブロック左端}{番号}
+\newcommand{\CTblkNumAt}[2]{%
+  \fill[white] ({#1-1.6},{\CTgridTop+0.1}) rectangle
+    ({#1+3.9},{\CTgridTop-5.4});
+  \draw[ctline, line width=0.55pt]
+    ({#1-1.6},{\CTgridTop+0.1}) rectangle
+    ({#1+3.9},{\CTgridTop-5.4});
+  \node[anchor=center, inner sep=0pt, text=cthead, font=\CTfBlkNum]
+    at ({#1+1.15},{\CTgridTop-2.65}) {#2};%
+}
+
+% ---- 3.4 チェックマーク（受験者が書き込む前提の記入例） -------------
+\newcommand{\CTcheck}[2]{%
+  \begin{tikzpicture}[x=1mm,y=1mm]
+    \pgfmathsetmacro{\ckw}{#1-0.8}%
+    \pgfmathsetmacro{\ckh}{#2-0.8}%
+    \path (0,0) rectangle (\ckw,\ckh);
+    \draw[ctink, line width=0.5pt, line cap=round, line join=round]
+      ({0.16*\ckw},{0.55*\ckh}) -- ({0.38*\ckw},{0.16*\ckh})
+      -- ({0.88*\ckw},{0.92*\ckh});
+  \end{tikzpicture}%
+}
+
+% ---- 3.5 注意事項の中の黒地番号（KKsymbols の正式記号） ------------
+\newcommand{\CTboxnum}[1]{%
+  {\fontsize{7}{7}\selectfont
+   \kuroseihou{\fontsize{4.5}{4.5}\selectfont #1}}%
+}
+
+% ---- 3.6 丸数字（外形は KKsymbols の \maru、TikZ は配置だけ） ------
+\newcommand{\CTcircnum}[3]{%
+  \node[anchor=center, inner sep=0pt, text=ctink] at (#1,#2)
+    {{\gtfamily\mdseries\fontsize{15}{15}\selectfont\maru{#3}}};%
+}
+
+% ---- 3.7 角丸の指示ボックス -----------------------------------------
+%  \CTcallout{左端}{上端}{幅}{高さ}{本文の折返し幅}{本文}
+\newcommand{\CTcallout}[6]{%
+  \draw[ctthin, rounded corners=1.6mm] ({#1},{#2})
+    rectangle ({#1+#3},{#2-#4});
+  \node[anchor=center, inner sep=0pt] at ({#1+0.5*#3},{#2-0.5*#4})
+    {\parbox{#5}{\CTfCallout\color{ctink}#6}};%
+}
+
+% ---- 3.8 解答科目欄の文字と ○（\小問欄 の正式アンカー用） --------
+%  north west / south west にセル全幅の makebox を渡し、中央へ置く。
+%  文字や ○ の位置決めに独自 TikZ 座標は使わない。
+%  旧課程列だけはセル全面の網掛けが必要なので、セルと同寸の背景を
+%  center に置き、その前面で罫線を描き直す。白抜けも罫線の埋没も防ぐ。
+\newcommand{\CTshadeCell}[3]{%
+  \begin{tikzpicture}[baseline=(ctshadeText.base), inner sep=0pt, outer sep=0pt]
+    \node[fill=ctshade, draw=black, line width=\CTkkOuter,
+          minimum width=#1mm, minimum height=#2mm,
+          inner sep=0pt, outer sep=0pt] (ctshadeBg) {};
+    \node[inner sep=0pt, outer sep=0pt] (ctshadeText) at (ctshadeBg.center) {#3};
+  \end{tikzpicture}%
+}
+\newcommand{\CTsubjectVGlue}{\par\vfill}
+\newcommand{\CTsubjectStack}[1]{%
+  \parbox[t][18mm][s]{3.8mm}{%
+    \centering\vspace*{2.5mm}%
+    \CTfSubject\color{ctink}#1\par}%
+}
+\newcommand{\CTsubjectTopOne}[1]{%
+  \makebox[\CTsbColW mm][c]{\CTsubjectStack{#1}}%
+}
+\newcommand{\CTsubjectTopPair}[2]{%
+  \makebox[\CTsbColW mm][c]{%
+    \makebox[9mm][s]{\CTsubjectStack{#1}\hfill\CTsubjectStack{#2}}}%
+}
+\newcommand{\CTsubjectBottom}{%
+  \makebox[\CTsbColW mm][c]{\raisebox{0.8mm}{\CTsubjectMark}}%
+}
+% =====================================================================
+%  §4  解答欄ブロック（\KKran + \小問欄 + \GoDown + \マークシート）
+% =====================================================================
+%  1 行 = \小問番号 ＋ マーク欄。ラベルも \小問番号 の正式引数で渡す。
+\newcommand{\CTanswerRow}[1]{%
+  \小問番号[\CTlabW]{\CTrowH}[{\CTfSmall\color{ctink}#1}]%
+  \小問欄{\CTmarkW}{\CTrowH}[center={\CTanswerMarks}]%
+  \GoDown{\CTrowH}%
+}
+
+%  ア〜ホの 30 行。\KKran の中身は \foreach で回せない
+%  （\GoDown が \edef で位置を更新するため、ループのグループを抜けると
+%   行送りが巻き戻る）ので、行はマクロに展開して 3 ブロックで使い回す。
+\newcommand{\CTanswerRows}{%
+  \CTanswerRow{ア}\CTanswerRow{イ}\CTanswerRow{ウ}\CTanswerRow{エ}%
+  \CTanswerRow{オ}\CTanswerRow{カ}\CTanswerRow{キ}\CTanswerRow{ク}%
+  \CTanswerRow{ケ}\CTanswerRow{コ}\CTanswerRow{サ}\CTanswerRow{シ}%
+  \CTanswerRow{ス}\CTanswerRow{セ}\CTanswerRow{ソ}\CTanswerRow{タ}%
+  \CTanswerRow{チ}\CTanswerRow{ツ}\CTanswerRow{テ}\CTanswerRow{ト}%
+  \CTanswerRow{ナ}\CTanswerRow{ニ}\CTanswerRow{ヌ}\CTanswerRow{ネ}%
+  \CTanswerRow{ノ}\CTanswerRow{ハ}\CTanswerRow{ヒ}\CTanswerRow{フ}%
+  \CTanswerRow{ヘ}\CTanswerRow{ホ}%
+}
+
+%  見出しには小問欄を置かない。公式見本どおり、右側の解答見出しだけを
+%  独立 KKran ブロックにし、大問番号は TikZ で別置きする。
+\newcommand{\CTanswerHeader}{%
+  \KKran[\CTkkOuter]{%
+    \大問番号[0]{\CTblkHeadH}[]%
+    \小問欄{\CTmarkW}{\CTheadH}%
+      [center={\CTfBlkHead\color{cthead}\CTspread{42mm}{解答欄}}]%
+    \GoDown{\CTheadH}%
+    \小問欄{\CTmarkW}{\CTchdH}[center={\CTchoiceHead}]%
+  }%
+}
+\newcommand{\CTanswerBody}{%
+  \KKran[\CTkkOuter]{%
+    \大問番号[0]{\CTblkBodyH}[]%
+    \CTanswerRows%
+  }%
+}
+
+
+% =====================================================================
+%  §5  左情報欄と上部帯の KKran ブロック
+% =====================================================================
+
+% ---- 5.1 マーク例 ---------------------------------------------------
+\newcommand{\CTmarkExampleTable}{%
+  \KKran[\CTkkOuter]{%
+    \大問番号[0]{10}[]%
+    \小問欄{10.5}{3.8}[center={\CTfSmall\color{ctink}良い例}]%
+    \小問欄{16.5}{3.8}[center={\CTfSmall\color{ctink}悪い例}]%
+    \GoDown{3.8}%
+    \小問欄{10.5}{6.2}%
+      [center={{\CTfExMark\マークシート{5}{\良例マーク配列}[1]}}]%
+    \小問欄{16.5}{6.2}%
+      [center={{\color{ctmark}\CTfExMark\マークシート{14.5}{\悪例マーク配列}}}]%
+  }%
+}
+
+% ---- 5.2 受験番号欄 -------------------------------------------------
+%  マーク欄は 11 行 × 5 列。1 セルにつき単元素配列を 1 つ置く。
+\newcommand{\CTexamRow}[5]{%
+  \小問欄{\CTexColW}{\CTexRowH}[center={\CTexMarkOne{#1}}]%
+  \小問欄{\CTexColW}{\CTexRowH}[center={\CTexMarkOne{#2}}]%
+  \小問欄{\CTexColW}{\CTexRowH}[center={\CTexMarkOne{#3}}]%
+  \小問欄{\CTexColW}{\CTexRowH}[center={\CTexMarkOne{#4}}]%
+  \小問欄{\CTexColW}{\CTexRowH}%
+    [center={\CTexMarkOne{#5}},
+     east={\makebox[0pt][l]{\hspace{1.2mm}\CTfSmall\color{ctink}#5}}]%
+  \GoDown{\CTexRowH}%
+}
+\newcommand{\CTexamNoTable}{%
+  \KKran[\CTkkOuter]{%
+    \大問番号[0]{\CTexTotalH}[]%
+    \小問欄{\CTexW}{\CTexTitleH}%
+      [center={\CTfBoxHead\color{cthead}\CTspread{34mm}{受験番号欄}}]%
+    \GoDown{\CTexTitleH}%
+    \小問欄{\CTexColW}{\CTexHeadH}[center={\CTfSmall\color{ctink}千位}]%
+    \小問欄{\CTexColW}{\CTexHeadH}[center={\CTfSmall\color{ctink}百位}]%
+    \小問欄{\CTexColW}{\CTexHeadH}[center={\CTfSmall\color{ctink}十位}]%
+    \小問欄{\CTexColW}{\CTexHeadH}[center={\CTfSmall\color{ctink}一位}]%
+    \小問欄{\CTexColW}{\CTexHeadH}[center={\CTfSmall\color{ctink}英字}]%
+    \GoDown{\CTexHeadH}%
+    \小問欄{\CTexColW}{\CTexWriteH}\小問欄{\CTexColW}{\CTexWriteH}%
+    \小問欄{\CTexColW}{\CTexWriteH}\小問欄{\CTexColW}{\CTexWriteH}%
+    \小問欄{\CTexColW}{\CTexWriteH}%
+    \GoDown{\CTexWriteH}%
+    \CTexamRow{-}{0}{0}{0}{A}%
+    \CTexamRow{1}{1}{1}{1}{B}%
+    \CTexamRow{2}{2}{2}{2}{C}%
+    \CTexamRow{3}{3}{3}{3}{H}%
+    \CTexamRow{4}{4}{4}{4}{K}%
+    \CTexamRow{5}{5}{5}{5}{M}%
+    \CTexamRow{6}{6}{6}{6}{R}%
+    \CTexamRow{7}{7}{7}{7}{U}%
+    \CTexamRow{8}{8}{8}{8}{X}%
+    \CTexamRow{9}{9}{9}{9}{Y}%
+    \CTexamRow{-}{-}{-}{-}{Z}%
+  }%
+}
+
+% ---- 5.3 フリガナ・氏名・試験場コード欄 -----------------------------
+\newcommand{\CTnameTable}{%
+  \KKran[\CTkkOuter]{%
+    \大問番号[0]{\CTnmTotalH}[]%
+    \小問欄{\CTnmLabW}{\CTnmKanaH}[center={\CTfSmall\color{ctink}フリガナ}]%
+    \小問欄{\CTnmFreeW}{\CTnmKanaH}%
+    \GoDown{\CTnmKanaH}%
+    \小問欄{\CTnmLabW}{\CTnmNameH}%
+      [center={\CTfSmall\color{ctink}\CTspread{7mm}{氏名}}]%
+    \小問欄{\CTnmFreeW}{\CTnmNameH}%
+    \GoDown{\CTnmNameH}%
+    \小問欄{\CTnmCodeLabW}{\CTnmCodeHeadH}[center={\CTfSmall\color{ctink}試験場}]%
+    \小問欄{\CTnmCodeW}{\CTnmCodeHeadH}[center={\CTfMicro\color{ctink}十万位}]%
+    \小問欄{\CTnmCodeW}{\CTnmCodeHeadH}[center={\CTfMicro\color{ctink}万位}]%
+    \小問欄{\CTnmCodeW}{\CTnmCodeHeadH}[center={\CTfMicro\color{ctink}千位}]%
+    \小問欄{\CTnmCodeW}{\CTnmCodeHeadH}[center={\CTfMicro\color{ctink}百位}]%
+    \小問欄{\CTnmCodeW}{\CTnmCodeHeadH}[center={\CTfMicro\color{ctink}十位}]%
+    \小問欄{\CTnmCodeW}{\CTnmCodeHeadH}[center={\CTfMicro\color{ctink}一位}]%
+    \GoDown{\CTnmCodeHeadH}%
+    \小問欄{\CTnmCodeLabW}{\CTnmCodeWriteH}[center={\CTfSmall\color{ctink}コード}]%
+    \小問欄{\CTnmCodeW}{\CTnmCodeWriteH}\小問欄{\CTnmCodeW}{\CTnmCodeWriteH}%
+    \小問欄{\CTnmCodeW}{\CTnmCodeWriteH}\小問欄{\CTnmCodeW}{\CTnmCodeWriteH}%
+    \小問欄{\CTnmCodeW}{\CTnmCodeWriteH}\小問欄{\CTnmCodeW}{\CTnmCodeWriteH}%
+  }%
+}
+
+% 参照紙面では記入表の周囲に少し余白を持つ太い外枠がある。
+\newcommand{\CTnameOuter}{%
+  \KKran[1.2pt]{%
+    \大問番号[0]{35.4}[]%
+    \小問欄{53.7}{35.4}%
+  }%
+}
+
+% ---- 5.4 解答科目欄 -------------------------------------------------
+%  科目名は一般的な表記のダミー。ロゴ・団体名は含めない。
+\newcommand{\CTsubjectTable}{%
+  \KKran[\CTkkOuter]{%
+    \大問番号[0]{\CTsbTotalH}[]%
+    \小問欄{53.2}{\CTsbTitleH}%
+      [center={\CTfBoxHead\color{cthead}\CTspread{43mm}{解答科目欄}}]%
+    \小問欄{\CTsbColW}{\CTsbTitleH}%
+      [center={\CTshadeCell{\CTsbColW}{\CTsbTitleH}{\CTfXSmall\color{ctink}旧課程}}]%
+    \GoDown{\CTsbTitleH}%
+    \小問欄{\CTsbColW}{\CTsbBodyH}%
+      [north west={\CTsubjectTopOne{数\CTsubjectVGlue 学\CTsubjectVGlue Ⅱ}},
+       south west={\CTsubjectBottom}]%
+    \小問欄{\CTsbColW}{\CTsbBodyH}%
+      [north west={\CTsubjectTopPair
+        {数\CTsubjectVGlue 学\CTsubjectVGlue B}
+        {数\CTsubjectVGlue 学\CTsubjectVGlue Ⅱ\CTsubjectVGlue ・}},
+       south west={\CTsubjectBottom}]%
+    \小問欄{\CTsbColW}{\CTsbBodyH}%
+      [north west={\CTsubjectTopPair
+        {会\CTsubjectVGlue 計}
+        {簿\CTsubjectVGlue 記\CTsubjectVGlue ・}},
+       south west={\CTsubjectBottom}]%
+    \小問欄{\CTsbColW}{\CTsbBodyH}%
+      [north west={\CTsubjectTopPair
+        {基\CTsubjectVGlue 礎}
+        {情\CTsubjectVGlue 報\CTsubjectVGlue 関\CTsubjectVGlue 係}},
+       south west={\CTsubjectBottom}]%
+    \小問欄{\CTsbColW}{\CTsbBodyH}%
+      [center={\CTshadeCell{\CTsbColW}{\CTsbBodyH}{}},
+       north west={\CTsubjectTopPair
+        {基\CTsubjectVGlue 礎}
+        {工\CTsubjectVGlue 業\CTsubjectVGlue 数\CTsubjectVGlue 理}},
+       south west={\CTsubjectBottom}]%
+  }%
+}
+
+\newcommand{\CTsubjectOuter}{%
+  \KKran[1.2pt]{%
+    \大問番号[0]{35.4}[]%
+    \小問欄{69.5}{35.4}%
+  }%
+}
+
+% ---- 5.5 マークチェック欄（小さな確認枠） ---------------------------
+%  \CTcheckBox{幅}{見出し高}{チェック高}{1行目}{2行目}
+\newcommand{\CTcheckBox}[5]{%
+  \KKran[\CTkkOuter]{%
+    \大問番号[0]{\fpeval{#2+#3}}[]%
+    \小問欄{#1}{#2}[center={%
+      \parbox[c][#2mm][c]{\fpeval{#1-2.6}mm}{%
+        \centering\fontsize{3.2}{3.7}\selectfont\color{ctink}%
+        \makebox[\linewidth][c]{#4}\\[-0.15mm]%
+        \makebox[\linewidth][c]{#5}}}]%
+    \GoDown{#2}%
+    \小問欄{#1}{#3}[center={\CTcheck{#1}{#3}}]%
+  }%
+}
+
+
+% =====================================================================
+%  §6  紙面の描画（TikZ は配置と KKran にない装飾を担当する）
+% =====================================================================
+\newcommand{\CTsheet}{%
+\begin{tikzpicture}[overlay, x=1mm, y=1mm, inner sep=0pt, outer sep=0pt]
+
+  % ---- 6.0 外枠と左端のタイミングマーク ----------------------------
+  \draw[ctfr, line width=0.6pt]
+    (\CTframeL,\CTframeB) rectangle (\CTframeR,\CTframeT);
+  \fill[ctline] (3,129) rectangle (4.5,169);
+  \fill[ctline] (3,106.5) rectangle (4.5,110);
+  \fill[ctline] (3,9) rectangle (4.5,49);
+
+  % ==================================================================
+  %  6.1 上部帯（外枠高の約 19%）
+  % ==================================================================
+
+  % --- マーク例 ---
+  \node[anchor=south west, font=\CTfSmall, text=ctink] at (13.7,200.0)
+    {マーク例};
+  \CTplace{13.7}{199.2}{27}{10}{\CTmarkExampleTable}
+
+  % --- ① 受験番号の指示 ---
+  \CTcircnum{9.3}{179.2}{1}
+  \CTcallout{12.2}{185.1}{44.5}{11.9}{31mm}%
+    {受験番号を記入し、その下のマーク欄にマークしなさい。}
+  \draw[ctarrow] (34.7,173) -- (34.7,169.5);
+
+  % --- ③ 解答科目の指示 ---
+  \CTcircnum{55.7}{197.9}{3}
+  \node[anchor=north west] at (59.1,200.6)
+    {\parbox{21.8mm}{\CTfNarrow\color{ctink}%
+      ・1科目だけマークしなさい。\par
+      ・解答科目欄が無マーク又は複数マークの場合は、0点となることがあります。}};
+  \draw[ctarrow] (82.3,186) -- (88.1,186);
+
+  % --- 解答科目欄 ---
+  \CTplace{\CTsbOuterL}{\CTsbOuterTop}{\CTsbOuterW}{\CTsbOuterH}{\CTsubjectOuter}
+  \CTplace{\CTsbL}{\CTsbTop}{66.5}{\CTsbTotalH}{\CTsubjectTable}
+
+  % --- 解答科目マークのチェック欄 ---
+  %  ※ 参照紙面ではこの極小文字が判読できないため、表記は仮のもの。
+  \CTplace{159.5}{187}{13.7}{11.2}%
+    {\CTcheckBox{13.7}{3.6}{7.6}%
+      {解\hfill 答\hfill 科\hfill 目\hfill マ\hfill ー\hfill ク}%
+      {チ\hfill ェ\hfill ッ\hfill ク\hfill 欄}}
+
+  % --- 表題 ---
+  \node[anchor=north east, text=ctink] at (282,204.5)
+    {\CTfTitle\CTspread{89mm}{数学②解答用紙・第1面}};
+
+  % --- 注意事項 ---
+  \node[anchor=north west, text=cthead] at (189,198) {\CTfNoteHd 注意事項};
+  \node[anchor=north west] at (189,194.6)
+    {\parbox{96mm}{\CTfNote\color{ctink}%
+      \makebox[3.4mm][l]{1}問題番号 \CTboxnum{4}\,\CTboxnum{5} の解答欄は、この用紙の第2面にあります。\\
+      \makebox[3.4mm][l]{2}選択問題は、選択した問題番号の解答欄に解答しなさい。\\
+      \makebox[3.4mm][l]{3}訂正は、消しゴムできれいに消し、消しくずを残してはいけません。\\
+      \makebox[3.4mm][l]{4}所定欄以外にはマークしたり、記入したりしてはいけません。\\
+      \makebox[3.4mm][l]{5}汚したり、折りまげたりしてはいけません。}};
+
+  % ==================================================================
+  %  6.2 左情報欄（外枠幅の約 21%）
+  % ==================================================================
+
+  % --- 受験番号欄 ---
+  \CTplace{\CTexL}{\CTexTop}{\CTexW}{\CTexTotalH}{\CTexamNoTable}
+
+  % --- 受験番号マークのチェック欄 ---
+  \CTplace{45.2}{85.6}{11.1}{11.6}%
+    {\CTcheckBox{11.1}{3.6}{8.0}%
+      {受\hfill 験\hfill 番\hfill 号\hfill マ\hfill ー\hfill ク}%
+      {チ\hfill ェ\hfill ッ\hfill ク\hfill 欄}}
+
+  % --- ② 氏名・試験場コードの指示 ---
+  \CTcircnum{6.2}{66.4}{2}
+  \CTcallout{9.3}{69.9}{50.8}{7.3}{45mm}%
+    {氏名・フリガナ、試験場コードを記入しなさい。}
+  \draw[ctarrow] (34.7,61.4) -- (34.7,55.9);
+
+  % --- フリガナ・氏名・試験場コード欄 ---
+  \CTplace{7.6}{55.3}{53.7}{35.4}{\CTnameOuter}
+  \CTplace{\CTnmL}{\CTnmTop}{51}{\CTnmTotalH}{\CTnameTable}
+
+  % --- 氏名記入のチェック欄 ---
+  \CTplace{49}{18.8}{11.5}{9.5}%
+    {\CTcheckBox{11.5}{3.2}{6.3}%
+      {氏\hfill 名\hfill 記\hfill 入}%
+      {チ\hfill ェ\hfill ッ\hfill ク\hfill 欄}}
+
+  % ==================================================================
+  %  6.3 解答欄ブロック 3 本
+  % ==================================================================
+  \CTplace{\fpeval{\CTblkAX+\CTlabW}}{\CTgridTop}%
+    {\CTmarkW}{\CTblkHeadH}{\CTanswerHeader}
+  \CTplace{\CTblkAX}{\fpeval{\CTgridTop-\CTblkHeadH}}%
+    {\CTblkW}{\CTblkBodyH}{\CTanswerBody}
+  \CTblkNumAt{\CTblkAX}{1}
+
+  \CTplace{\fpeval{\CTblkBX+\CTlabW}}{\CTgridTop}%
+    {\CTmarkW}{\CTblkHeadH}{\CTanswerHeader}
+  \CTplace{\CTblkBX}{\fpeval{\CTgridTop-\CTblkHeadH}}%
+    {\CTblkW}{\CTblkBodyH}{\CTanswerBody}
+  \CTblkNumAt{\CTblkBX}{2}
+
+  \CTplace{\fpeval{\CTblkCX+\CTlabW}}{\CTgridTop}%
+    {\CTmarkW}{\CTblkHeadH}{\CTanswerHeader}
+  \CTplace{\CTblkCX}{\fpeval{\CTgridTop-\CTblkHeadH}}%
+    {\CTblkW}{\CTblkBodyH}{\CTanswerBody}
+  \CTblkNumAt{\CTblkCX}{3}
+
+  % ---- 欄外の但し書き（目立たせない） ------------------------------
+  \node[anchor=south west, font=\CTfFoot, text=ctnote]
+    at ({\CTframeL+2.5},4.0)
+    {非公式・学習用テンプレート／実際の試験で使用されるものではありません};
+\end{tikzpicture}%
+}
+
+
+% =====================================================================
+%  §7  出力
+% =====================================================================
+\AddToShipoutPictureBG{\AtPageLowerLeft{\CTsheet}}
+
+\begin{document}
+\thispagestyle{empty}
+\null
+\end{document}
