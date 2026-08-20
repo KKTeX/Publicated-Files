@@ -79,7 +79,7 @@ Qiita/                解説記事の再現用 LaTeX と PDF
 | オシャレな `tcolorbox` を誰でも作る方法 | [`.tex`](./Qiita/オシャレなtcolorboxを誰でも作る方法（LaTeX確認シリーズ%23５）/qiita-tcolorbox-examples.tex) | [`.pdf`](./Qiita/オシャレなtcolorboxを誰でも作る方法（LaTeX確認シリーズ%23５）/qiita-tcolorbox-examples.pdf) |
 | `chemfig` で化学構造式を短く書く「KKchemstruct」の使い方 | [`.tex`](./Qiita/chemfigで化学構造式を短く書く「KKchemstruct」の使い方（LaTeX確認シリーズ%23８）/qiita-kkchemstruct-examples.tex) | [`.pdf`](./Qiita/chemfigで化学構造式を短く書く「KKchemstruct」の使い方（LaTeX確認シリーズ%23８）/qiita-kkchemstruct-examples.pdf) |
 | 鉄緑の校内模試模試を作ろう（非公式） | [問題冊子](./Qiita/鉄緑の校内模試模試を作ろう（非公式）/mock-exam.tex)・[解答用紙](./Qiita/鉄緑の校内模試模試を作ろう（非公式）/mock-answersheet.tex) | [問題冊子](./Qiita/鉄緑の校内模試模試を作ろう（非公式）/mock-exam.pdf)・[解答用紙](./Qiita/鉄緑の校内模試模試を作ろう（非公式）/mock-answersheet.pdf) |
-| `KKran` で共通テスト数学の解答用紙を再現する（非公式） | [`.tex`](./Qiita/KKranで共通テスト数学の解答用紙を再現する（非公式）/qiita-common-test-math-answersheet.tex) | [`.pdf`](./Qiita/KKranで共通テスト数学の解答用紙を再現する（非公式）/qiita-common-test-math-answersheet.pdf) |
+| TeXで共通テスト数学の解答用紙を再現 | [`.tex`](./Qiita/TeXで共通テスト数学の解答用紙を再現/qiita-common-test-math-answersheet.tex) | [`.pdf`](./Qiita/TeXで共通テスト数学の解答用紙を再現/qiita-common-test-math-answersheet.pdf) |
 
 `KKchemstruct` の作成例をコンパイルする場合は、先に
 [`KKTeX/KKchemstruct`](https://github.com/KKTeX/KKchemstruct) の
