@@ -161,14 +161,11 @@
     at ({#1+1.15},{\CTgridTop-2.65}) {#2};%
 }
 
-\newcommand{\CTcheck}[2]{%
+\newcommand{\CTcheck}{%
   \begin{tikzpicture}[x=1mm,y=1mm]
-    \pgfmathsetmacro{\ckw}{#1-0.8}%
-    \pgfmathsetmacro{\ckh}{#2-0.8}%
-    \path (0,0) rectangle (\ckw,\ckh);
+    \path (0,0) rectangle (10.3,7.2);
     \draw[ctink, line width=0.5pt, line cap=round, line join=round]
-      ({0.16*\ckw},{0.55*\ckh}) -- ({0.38*\ckw},{0.16*\ckh})
-      -- ({0.88*\ckw},{0.92*\ckh});
+      (1.648,3.96) -- (3.914,1.152) -- (9.064,6.624);
   \end{tikzpicture}%
 }
 
@@ -384,7 +381,7 @@
         \makebox[\linewidth][c]{#4}\\[-0.15mm]%
         \makebox[\linewidth][c]{#5}}}]%
     \GoDown{#2}%
-    \小問欄{#1}{#3}[center={\CTcheck{#1}{#3}}]%
+    \小問欄{#1}{#3}[center={\CTcheck}]%
   }%
 }
 
