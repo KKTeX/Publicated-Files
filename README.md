@@ -80,7 +80,7 @@ Qiita/                解説記事の再現用 LaTeX と PDF
 | `chemfig` で化学構造式を短く書く「KKchemstruct」の使い方 | [`.tex`](./Qiita/chemfigで化学構造式を短く書く「KKchemstruct」の使い方（LaTeX確認シリーズ%23８）/qiita-kkchemstruct-examples.tex) | [`.pdf`](./Qiita/chemfigで化学構造式を短く書く「KKchemstruct」の使い方（LaTeX確認シリーズ%23８）/qiita-kkchemstruct-examples.pdf) |
 | 鉄緑の校内模試模試を作ろう（非公式） | [問題冊子](./Qiita/鉄緑の校内模試模試を作ろう（非公式）/mock-exam.tex)・[解答用紙](./Qiita/鉄緑の校内模試模試を作ろう（非公式）/mock-answersheet.tex) | [問題冊子](./Qiita/鉄緑の校内模試模試を作ろう（非公式）/mock-exam.pdf)・[解答用紙](./Qiita/鉄緑の校内模試模試を作ろう（非公式）/mock-answersheet.pdf) |
 | TeXで共通テスト数学の解答用紙を再現 | [`.tex`](./Qiita/TeXで共通テスト数学の解答用紙を再現/qiita-common-test-math-answersheet.tex) | [`.pdf`](./Qiita/TeXで共通テスト数学の解答用紙を再現/qiita-common-test-math-answersheet.pdf) |
-| 東大の解答用紙をTikZで再現（非公式） | [理科](./Qiita/東大の解答用紙をTikZで再現（非公式）/qiita-todai-rika-answer-sheet.tex)・[数学（理系）](./Qiita/東大の解答用紙をTikZで再現（非公式）/qiita-todai-sugaku-rikei-answer-sheet.tex) | [理科](./Qiita/東大の解答用紙をTikZで再現（非公式）/qiita-todai-rika-answer-sheet-a3.pdf)・[数学（理系）](./Qiita/東大の解答用紙をTikZで再現（非公式）/qiita-todai-sugaku-rikei-answer-sheet-a3.pdf) |
+| 東大の解答用紙をTikZで再現（非公式） | [理科](./Qiita/東大の解答用紙をTikZで再現（非公式）/rika.tex)・[数学（理系）](./Qiita/東大の解答用紙をTikZで再現（非公式）/sugaku.tex) | [理科](./Qiita/東大の解答用紙をTikZで再現（非公式）/rika-a3.pdf)・[数学（理系）](./Qiita/東大の解答用紙をTikZで再現（非公式）/sugaku-a3.pdf) |
 
 `KKchemstruct` の作成例をコンパイルする場合は、先に
 [`KKTeX/KKchemstruct`](https://github.com/KKTeX/KKchemstruct) の

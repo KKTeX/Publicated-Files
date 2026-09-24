@@ -1,6 +1,6 @@
 % 東大数学（理系）解答用紙をtikzで再現
 %
-%   lualatex -interaction=nonstopmode -halt-on-error qiita-todai-sugaku-rikei-answer-sheet.tex
+%   lualatex -interaction=nonstopmode -halt-on-error sugaku.tex
 %
 % 座標はすべて mm。用紙の左上を原点とし、y は下向きを正にとる。
 % 解答用紙は 2 枚（第1解答用紙＝青、第2解答用紙＝橙）で、どちらも同じ体裁。
@@ -13,7 +13,7 @@
 %%                 A4 縦の中央に置いた 1 ページ（原寸）
 %%   practice-b5 … practice-a4 をそのまま JIS B5 縦に縮小した 1 ページ
 %% ファイルを書き換えずに作る場合：
-%%   lualatex -jobname=qiita-todai-sugaku-rikei-answer-sheet-a4 "\newcommand\TDpaper{a4}\input{qiita-todai-sugaku-rikei-answer-sheet}"
+%%   lualatex -jobname=sugaku-a4 "\newcommand\TDpaper{a4}\input{sugaku}"
 \providecommand\TDpaper{a3}
 \documentclass{ltjsarticle}
 \usepackage[margin=0mm]{geometry}

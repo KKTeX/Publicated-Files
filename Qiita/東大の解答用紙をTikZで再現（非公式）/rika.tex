@@ -1,6 +1,6 @@
 % 東大理科解答用紙をtikzで再現
 %
-%   lualatex -interaction=nonstopmode -halt-on-error qiita-todai-rika-answer-sheet.tex
+%   lualatex -interaction=nonstopmode -halt-on-error rika.tex
 %
 % 座標はすべて mm。用紙の左上を原点とし、y は下向きを正にとる。
 
@@ -12,7 +12,7 @@
 %%                 A4 横の中央に置いた 1 ページ（原寸）
 %%   practice-b5 … practice-a4 をそのまま JIS B5 横に縮小した 1 ページ
 %% ファイルを書き換えずに作る場合：
-%%   lualatex -jobname=qiita-todai-rika-answer-sheet-a4 "\newcommand\TDpaper{a4}\input{qiita-todai-rika-answer-sheet}"
+%%   lualatex -jobname=rika-a4 "\newcommand\TDpaper{a4}\input{rika}"
 \providecommand\TDpaper{a3}
 \documentclass{ltjsarticle}
 \usepackage[margin=0mm]{geometry}
