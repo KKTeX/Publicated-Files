@@ -1,0 +1,357 @@
+% 東大理科解答用紙をtikzで再現
+%
+%   lualatex -interaction=nonstopmode -halt-on-error qiita-todai-rika-answer-sheet.tex
+%
+% 座標はすべて mm。用紙の左上を原点とし、y は下向きを正にとる。
+
+%% 用紙の切り替え（次の行の a3 を書き換える）
+%%   a3 … A3 縦・表裏 2 ページ（本番と同じ判型）
+%%   a4 … 解答欄を A4 横の中央に置いた 4 ページ（原寸）
+%%   b5 … a4 をそのまま JIS B5 横に縮小した 4 ページ（257/297 ≒ 86.5%）
+%%   practice-a4 … 練習用（オリジナル）。日付・番号・氏名の記入欄と、問番号を空けた 25 行の解答欄を
+%%                 A4 横の中央に置いた 1 ページ（原寸）
+%%   practice-b5 … practice-a4 をそのまま JIS B5 横に縮小した 1 ページ
+%% ファイルを書き換えずに作る場合：
+%%   lualatex -jobname=qiita-todai-rika-answer-sheet-a4 "\newcommand\TDpaper{a4}\input{qiita-todai-rika-answer-sheet}"
+\providecommand\TDpaper{a3}
+\documentclass{ltjsarticle}
+\usepackage[margin=0mm]{geometry}
+% ltjsarticle は和文を欧文の 0.924715 倍で組む。指定した pt 数どおりに組むため等倍に戻す。
+\usepackage[scale=1]{luatexja-fontspec}
+\usepackage{tikz}
+\usepackage{eso-pic}
+
+\pagestyle{empty}
+% 「第1問」「◇K6(100－60)」の和欧間に四分アキを入れない。
+% プリアンブルで設定しても \begin{document} で戻るので、開始時に設定する。
+\AtBeginDocument{\ltjsetparameter{xkanjiskip=0pt}}
+
+%% ---- フォント（TeX Live 同梱の原ノ味フォント） ------------------------
+\setmainfont{HaranoAjiMincho-Regular}
+\setmainjfont{HaranoAjiMincho-Regular}
+\newjfontfamily\TDgothicBold{HaranoAjiGothic-Bold}  % 「注意：」
+\newjfontfamily\TDgothic{HaranoAjiGothic-Regular}   % 受験番号欄の見出し
+\newfontfamily\TDnumeral{TeX Gyre Heros}            % 「第1問」の数字
+
+%% ---- 色と線種 -------------------------------------------------------
+\definecolor{TDink}{HTML}{A96800} % 罫線・文字の色
+\tikzset{
+  TDpage/.style   = {overlay, x=1mm, y=-1mm, color=TDink,
+                     inner sep=0pt, outer sep=0pt},
+  TDbar/.style    = {line width=3pt},   % 用紙を区切る太線
+  TDframe/.style  = {line width=.5mm},  % 解答欄の外枠・問番号枠
+  TDrule/.style   = {line width=.17mm}, % 解答欄の罫線・目盛り
+  TDouter/.style  = {line width=2pt},   % 小さな表の外枠
+  TDinner/.style  = {line width=1pt},   % 小さな表の中線・面表示の枠
+  TDdigit/.style  = {draw=TDink!75!white, line width=.75pt,
+                     dash pattern=on 1.5pt off 1.5pt}, % 桁区切り
+  TDcut/.style    = {line width=.85pt, dash pattern=on 1.7pt off 1.7pt,
+                     rounded corners=6mm},              % 切り取り線
+  TDtext/.style   = {anchor=base west}, % 行頭のベースラインに合わせて置く
+  TDcenter/.style = {anchor=base},      % ベースラインの中央に合わせて置く
+}
+
+\ExplSyntaxOn
+
+%% ---- 用紙 -----------------------------------------------------------
+\tl_new:N \l__td_scale_tl % 描画全体の縮小率
+\tl_set:Nn \l__td_scale_tl { 1 }
+\str_case:Vn \TDpaper
+  {
+    { a3 } { \geometry { paperwidth = 297mm, paperheight = 420mm } }
+    { a4 } { \geometry { paperwidth = 297mm, paperheight = 210mm } }
+    { practice-a4 } { \geometry { paperwidth = 297mm, paperheight = 210mm } }
+    { b5 }
+      {
+        \geometry { paperwidth = 257mm, paperheight = 182mm }
+        \tl_set:Nn \l__td_scale_tl { 257 / 297 } % A4 版をそのまま縮める
+      }
+    { practice-b5 }
+      {
+        \geometry { paperwidth = 257mm, paperheight = 182mm }
+        \tl_set:Nn \l__td_scale_tl { 257 / 297 }
+      }
+  }
+
+%% ---- 部品 -----------------------------------------------------------
+%% 位置の引数は TikZ の座標（{x, y} や座標名）で受け取る。
+
+% 文字サイズ（pt）
+\cs_new_protected:Npn \td_fs:n #1 { \fontsize {#1} {#1} \selectfont }
+
+% 1 字ずつ縦に積む：#1=文字サイズ(pt) #2=1 字目の位置（ベースラインの中央） #3=送り #4=字
+\cs_new_protected:Npn \td_stack:nnnn #1#2#3#4
+  {
+    \foreach \TDch [count=\TDi from 0] in {#4}
+      { \path (#2) ++(0, \TDi * #3) node[TDcenter, font=\td_fs:n {#1}] {\TDch}; }
+  }
+
+% 解答欄：#1=左上 #2=行数 #3=問番号（空なら問番号枠を付けない）
+% 点数欄を置く位置（点数欄の左上）を、座標 score-r（右下）と score-l（左下）として残す。
+\tl_new:N \l__td_tick_tl
+\cs_new_protected:Npn \td_answer_box:nnn #1#2#3
+  {
+    \begin{scope}[shift={(#1)}]
+      % 点数欄（22.925 × 22mm）は、下端から 2.13mm 上に置く
+      \coordinate (score-l) at (0, #2 * 6.105 - 2.13 - 22);
+      \coordinate (score-r) at (249.17 - 22.925, #2 * 6.105 - 2.13 - 22);
+      % ここから先は、x を目盛り（幅 249.17mm の 35 等分）、y を行（6.105mm）の単位にとる
+      \begin{scope}[x=249.17mm/35, y=-6.105mm]
+        % 罫線
+        \foreach \r in {1, ..., \int_eval:n {#2 - 1}}
+          { \draw[TDrule] (0, \r) -- (35, \r); }
+        % 上下の目盛り。5 目盛りごとに 2mm、それ以外は 1mm
+        \foreach \k in {1, ..., 34}
+          {
+            \tl_set:Ne \l__td_tick_tl { \int_compare:nTF { \int_mod:nn {\k} {5} = 0 } {2} {1} }
+            \draw[TDrule] (\k, 0)  -- ++(0, -\l__td_tick_tl mm);
+            \draw[TDrule] (\k, #2) -- ++(0,  \l__td_tick_tl mm);
+          }
+        % 問番号枠（3 目盛り × 2 行）。中を白く塗って、下の罫線と目盛りを隠す
+        \tl_if_blank:nF {#3}
+          {
+            \fill[white] (0, 0) rectangle (3, 2);
+            \draw[TDframe] (0, 2) -| (3, 0);
+            \node[TDcenter, font=\td_fs:n {9}] at (1.5, 1.4)
+              {
+                第 \skip_horizontal:n {3.2pt}
+                { \fontsize {17.6} {17.6} \TDnumeral #3 }
+                \skip_horizontal:n {3.2pt} 問
+              };
+          }
+        % 外枠
+        \draw[TDframe] (0, 0) rectangle (35, #2);
+      \end{scope}
+    \end{scope}
+  }
+
+% 点数欄：#1=左上 #2=問番号
+\cs_new_protected:Npn \td_score_box:nn #1#2
+  {
+    \begin{scope}[shift={(#1)}]
+      \fill[white] (0, 0) rectangle (22.925, 22); % 下の罫線を隠す
+      \draw[TDinner] (5.896, 0) -- (5.896, 22);
+      \draw[TDouter] (0, 0) rectangle (22.925, 22);
+      \td_stack:nnnn {10} {3.04, 6.99} {5.292} {#2, 点, 数}
+    \end{scope}
+  }
+
+% 受験番号欄：#1=左上。x は 1 桁分（幅 31.933mm の 6 等分）を単位にとる
+\cs_new_protected:Npn \td_exam_box:n #1
+  {
+    \begin{scope}[shift={(#1)}, x=31.933mm/6]
+      \foreach \k in {1, ..., 5}
+        { \draw[TDdigit] (\k, 9.525) -- (\k, 20.108); }
+      \draw[TDinner] (0, 9.525) -- (6, 9.525);
+      \draw[TDouter] (0, 0) rectangle (6, 20.108);
+      \node[TDcenter, font=\td_fs:n {9} \TDgothic] at (3, 6.15) {受　験　番　号};
+    \end{scope}
+  }
+
+% 科類・氏名・受験番号の記入欄：#1=左上
+% 列は左から「科類」「理科　類」「氏名」記入欄「受験番号」6 桁
+\cs_new_protected:Npn \td_info_table:n #1
+  {
+    \begin{scope}[shift={(#1)}]
+      \foreach \x in {6.42, 36.85, 43.20, 124.25}
+        { \draw[TDinner] (\x, 0) -- (\x, 14.8); }
+      \draw[TDouter] (117.84, 0) -- (117.84, 14.8); % 氏名と受験番号の境だけ太線
+      \foreach \k in {1, ..., 5}
+        { \draw[TDdigit] (124.25 + \k * 4.563, 0) -- ++(0, 14.8); }
+      \draw[TDouter] (0, 0) rectangle (151.63, 14.8);
+      \td_stack:nnnn {8} {3.21, 6.36} {4.233} {科, 類}
+      \node[TDcenter, font=\td_fs:n {10}] at (21.64, 8.75)
+        { 理 \skip_horizontal:n {.6667\zw} 科 \skip_horizontal:n {3\zw} 類 };
+      \td_stack:nnnn {8} {40.03, 6.36} {4.233} {氏, 名}
+      \td_stack:nnnn {8} {121.05, 4.05} {2.822} {受, 験, 番, 号}
+    \end{scope}
+  }
+
+% 氏名欄（上の記入欄から氏名の列だけを取り出した形）：#1=左上
+\cs_new_protected:Npn \td_name_box:n #1
+  {
+    \begin{scope}[shift={(#1)}]
+      \draw[TDinner] (6.35, 0) -- (6.35, 14.8);
+      \draw[TDouter] (0, 0) rectangle (81, 14.8);
+      \td_stack:nnnn {8} {3.26, 6.36} {4.233} {氏, 名}
+    \end{scope}
+  }
+
+% 切り取りタブ（角丸長方形の下側だけが紙面に出る形）：#1=左端の x #2=科目名
+\cs_new_protected:Npn \td_tab:nn #1#2
+  {
+    \begin{scope}[shift={(#1, 0)}]
+      \draw[TDcut] (0, 0) -- (0, 14.58) -- (20, 14.58) -- (20, 0);
+      \node[TDcenter, font=\td_fs:n {8}] at (10, 19.53) {#2};
+    \end{scope}
+  }
+
+% 「表面」「裏面」：#1=枠の中心 #2=文字（ベースラインは枠の中心より 2.7mm 下）
+\cs_new_protected:Npn \td_face_box:nn #1#2
+  {
+    \begin{scope}[shift={(#1)}]
+      \draw[TDinner] (-9.736, -5.546) rectangle (9.736, 5.546);
+      \node[TDcenter, font=\td_fs:n {22}] at (0, 2.7) {#2};
+    \end{scope}
+  }
+
+%% ---- A3 表面 --------------------------------------------------------
+\cs_new_protected:Npn \td_front:
+  {
+    \draw[TDbar] (0, 55.47) -- (297, 55.47);   % 横の太線
+    \draw[TDbar] (257.68, 0) -- (257.68, 420); % 右の縦太線
+
+    % 左上：前期日程の丸印・面表示・記入の指示
+    \draw[TDinner] (26.545, 11.049) circle [radius=6.75];
+    \node[font=\td_fs:n {25}] at (26.545, 11.049) {前};
+    \td_face_box:nn {26.545, 29.867} {表面}
+    \node[TDtext, font=\td_fs:n {9}] at (17.25, 41.47) {受験番号、科類、氏名を};
+    \node[TDtext, font=\td_fs:n {9}] at (17.25, 46.41) {明確に記入しなさい。};
+
+    % 上端：切り取りタブと記入欄
+    \foreach \x / \s in {62.33/物理, 88.91/化学, 115.48/生物, 142.06/地学}
+      { \td_tab:nn {\x} {\s} }
+    \node[TDtext, font=\td_fs:n {9}] at (63.03, 32.05)
+      { { \TDgothicBold 注意： } この解答用紙で解答する科目の分を正しく切り取りなさい。 };
+    \td_info_table:n {63.03, 34.99}
+
+    % 右上：受験番号欄。右の余白列の中心（x = 277.7）にそろえる
+    \td_exam_box:n {277.7 - 31.933 / 2, 29.87}
+
+    % 科目名と注意書き
+    \node[TDtext, font=\td_fs:n {24}] at (42.98, 72.87) {理　科};
+    \node[TDtext, font=\td_fs:n {24}] at (80.35, 72.87) {(};
+    \node[TDtext, font=\td_fs:n {24}] at (105.58, 72.87) {)};
+    \node[TDtext, font=\td_fs:n {10}] at (82.21, 65.31) {解答する科目名};
+    \node[TDtext, font=\td_fs:n {8}] at (117.74, 63.99)
+      { { \TDgothicBold 注意： } 左欄にこの解答用紙で解答する科目を明確に記入しなさい。 };
+    \node[TDtext, font=\td_fs:n {8}] at (117.74, 68.22)
+      {
+        \skip_horizontal:n {3\zw}
+        必ず１科目につき１枚の解答用紙を使用し、表面に第1問と第2問、裏面に第3問を解答しなさい。
+      };
+    \node[TDtext, font=\td_fs:n {8}] at (117.74, 72.45)
+      { \skip_horizontal:n {3\zw} 設問番号や解答は明確に記入しなさい。 };
+
+    % 解答欄。点数欄は解答欄の右下と、右の余白列の同じ高さに置く
+    \td_answer_box:nnn {4.18, 76.87} {25} {1}
+    \td_score_box:nn {score-r} {1}
+    \td_score_box:nn {277.7 - 22.925 / 2, 0 |- score-r} {1}
+    \td_answer_box:nnn {4.18, 234.61} {25} {2}
+    \td_score_box:nn {score-r} {2}
+    \td_score_box:nn {277.7 - 22.925 / 2, 0 |- score-r} {2}
+
+    \node[TDtext, font=\td_fs:n {7}] at (262.23, 415.70) {◇K6(100－60)};
+  }
+
+%% ---- A3 裏面 --------------------------------------------------------
+\cs_new_protected:Npn \td_back:
+  {
+    \draw[TDbar] (0, 55.47) -- (297, 55.47); % 横の太線
+    \draw[TDbar] (39.50, 0) -- (39.50, 420); % 左の縦太線
+
+    % 切り取りタブは表面と重なるよう左右反転した位置に置く（タブの幅は 20mm）
+    \foreach \x / \s in {62.33/物理, 88.91/化学, 115.48/生物, 142.06/地学}
+      { \td_tab:nn {297 - 20 - \x} {\s} }
+
+    % 受験番号欄は左の余白列の中心（x = 19.7）にそろえる
+    \td_exam_box:n {19.7 - 31.933 / 2, 25.96}
+    \td_face_box:nn {61.951, 40.342} {裏面}
+    \node[TDtext, font=\td_fs:n {9}] at (94.44, 39.02)
+      { { \TDgothicBold 注意： } 左欄に受験番号を明確に記入しなさい。 };
+
+    \node[TDtext, font=\td_fs:n {24}] at (85.00, 72.87) {理　科};
+    \td_answer_box:nnn {43.25, 76.77} {50} {3}
+    \td_score_box:nn {score-l} {3}
+    \td_score_box:nn {19.7 - 22.925 / 2, 0 |- score-l} {3}
+
+    \node[TDtext, font=\td_fs:n {7}] at (16.67, 415.70) {◇K6(100－61)};
+  }
+
+%% ---- A4・B5 の 1 ページ ----------------------------------------------
+% A4 横（297 × 210mm）の紙面に描く。B5 版は、これを \td_sheet:n でそのまま縮小する。
+% #1=問番号（空なら問番号枠なし） #2=点数欄の位置（r=右下, l=左下, 空=なし）
+% #3=点数欄の番号
+\cs_new_protected:Npn \td_answer_page:nnn #1#2#3
+  {
+    % 25 行の解答欄を紙面の中央に置く
+    \td_answer_box:nnn { {(297 - 249.17) / 2}, {(210 - 25 * 6.105) / 2} } {25} {#1}
+    \tl_if_blank:nF {#2} { \td_score_box:nn {score-#2} {#3} }
+    % 氏名欄は、右端を解答欄にそろえ、上の余白（約 28.7mm）の上下中央に置く
+    \td_name_box:n { {(297 + 249.17) / 2 - 81}, 6.94 }
+  }
+
+%% ---- 練習用の 1 ページ（オリジナル） ---------------------------------
+% 記入欄（日付・番号・氏名）：#1=左上。幅 176.27mm（数学の練習用と同じ）・高さ 14.8mm
+% 各欄の左端に見出しの列（幅 6.35mm）を置き、欄と欄の境は太線にする
+\cs_new_protected:Npn \td_practice_info:n #1
+  {
+    \begin{scope}[shift={(#1)}]
+      \foreach \x in {0, 48, 86}
+        { \draw[TDinner] (\x + 6.35, 0) -- ++(0, 14.8); }
+      \foreach \x in {48, 86}
+        { \draw[TDouter] (\x, 0) -- ++(0, 14.8); }
+      \draw[TDouter] (0, 0) rectangle (176.27, 14.8);
+      \td_stack:nnnn {8} {3.26, 6.36} {4.233} {日, 付}
+      \td_stack:nnnn {8} {51.26, 6.36} {4.233} {番, 号}
+      \td_stack:nnnn {8} {89.26, 6.36} {4.233} {氏, 名}
+      \node[TDcenter, font=\td_fs:n {10}] at (26, 8.75) {月};
+      \node[TDcenter, font=\td_fs:n {10}] at (43, 8.75) {日};
+    \end{scope}
+  }
+
+% A4 横に、記入欄と 25 行の解答欄を間 5mm で縦に並べ、ひとまとめにして紙面の中央に置く。
+% 記入欄は右端を解答欄にそろえる。問番号と点数欄の番号は空けて、手書きできるようにする
+% （問番号の代わりに幅 8mm の空白を渡すと、問番号枠だけが描かれる）。
+\cs_new_protected:Npn \td_practice_page:
+  {
+    \td_practice_info:n { {(297 + 249.17) / 2 - 176.27}, {(210 - 19.8 - 25 * 6.105) / 2} }
+    \td_answer_box:nnn { {(297 - 249.17) / 2}, {(210 + 19.8 - 25 * 6.105) / 2} } {25}
+      { \skip_horizontal:n {8mm} }
+    \td_score_box:nn {score-r} {}
+  }
+
+%% ---- 出力 -----------------------------------------------------------
+% #1 の描画を、用紙左上を原点とする TikZ 座標で現在のページに敷く
+\cs_new_protected:Npn \td_sheet:n #1
+  {
+    \AddToShipoutPictureBG*
+      {
+        \AtPageUpperLeft
+          {
+            \begin{tikzpicture}[TDpage]
+              \begin{scope}[transform~canvas={scale=\l__td_scale_tl}]
+                #1
+              \end{scope}
+            \end{tikzpicture}
+          }
+      }
+    \null \clearpage
+  }
+
+\NewDocumentCommand \MakeAnswerSheets { }
+  {
+    \str_case:VnF \TDpaper
+      {
+        { a3 }
+          {
+            \td_sheet:n { \td_front: }
+            \td_sheet:n { \td_back: }
+          }
+        { practice-a4 } { \td_sheet:n { \td_practice_page: } }
+        { practice-b5 } { \td_sheet:n { \td_practice_page: } }
+      }
+      {
+        % 第3問（50 行）は 25 行ずつ 2 ページに分ける
+        \td_sheet:n { \td_answer_page:nnn {1} {r} {1} }
+        \td_sheet:n { \td_answer_page:nnn {2} {r} {2} }
+        \td_sheet:n { \td_answer_page:nnn {3} {}  {}  }
+        \td_sheet:n { \td_answer_page:nnn {}  {l} {3} }
+      }
+  }
+
+\ExplSyntaxOff
+
+\begin{document}
+\MakeAnswerSheets
+\end{document}
