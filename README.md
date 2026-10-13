@@ -9,6 +9,7 @@ textboxes_pub/        装飾テキストボックス（ChartBox, PracticeBox, Te
 sectioncustomize_pub/ 見出しのカスタマイズ（sectioncustomize0）
 tests/                回帰テストと出力
 Qiita/                解説記事の再現用 LaTeX と PDF
+tikzify/              図版を TikZ に起こす Claude Code 用スキル
 ```
 
 ## 収録パッケージ
@@ -64,6 +65,22 @@ Qiita/                解説記事の再現用 LaTeX と PDF
 | ファイル | パッケージ名 | 概要 |
 | --- | --- | --- |
 | `sectioncustomize0.sty` | `sectioncustomize0` | `tikz` (shadows.blur) と `tcolorbox`、`needspace` を用いた section〜chapter の見出し装飾。 |
+
+## Claude Code 用スキル
+
+### `tikzify/`
+手書きの図、スキャン、スクリーンショット、PDF / SVG / EPS の図版を TikZ に起こし、
+自分の LaTeX 文書へ `\input` で挿入できる形(`.tikz` と必要なパッケージだけの
+`.preamble.tex`)で納品する [Claude Code](https://docs.claude.com/en/docs/claude-code) 用スキルです。
+cm 座標グリッドでの読み取り、元画像との重ね合わせによる照合、画素からの実測、
+文書への挿入までをスクリプトで支援します。
+
+```sh
+cp -R tikzify ~/.claude/skills/
+```
+
+詳細は [`tikzify/README.md`](./tikzify/README.md) と [`tikzify/SKILL.md`](./tikzify/SKILL.md) を参照してください。
+Python 3.7 以上、ImageMagick 7、poppler、TeX 環境が必要です。
 
 ## 別リポジトリに分離したパッケージ
 

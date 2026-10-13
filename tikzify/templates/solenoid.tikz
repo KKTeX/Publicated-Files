@@ -1,0 +1,20 @@
+% ソレノイド(円筒に巻いたコイル): らせんは座標をなぞらず式で描く。
+%   x = 始点 + ピッチ*t/360 + a*sin t,  y = 中心 - 半径*cos t   (t=0 が円筒の下端)
+%   a は円筒を斜めから見た投影(0 で正弦波、|a| > ピッチ/2π でループ状)。
+% ピッチ・始点・a は、原図の画素への当てはめで決めるのが確実(references/pitfalls.md)。
+\begin{tikzpicture}[line width=0.7pt]
+  \def\yc{1}\def\R{0.5}\def\xa{0.3}\def\xb{5.3}
+  \draw[line width=0.5pt] (\xa,\yc+\R) -- (\xb,\yc+\R)  (\xa,\yc-\R) -- (\xb,\yc-\R);
+  \draw[line width=0.5pt] (\xa,\yc) ellipse[x radius=0.05, y radius=\R];
+  \draw[line width=0.5pt] (\xb,\yc-\R) arc[start angle=-90, end angle=90, x radius=0.05, y radius=\R];
+  % 細い巻線(両半周とも描く)
+  \draw[line width=0.5pt] (0.6,0) -- (0.6,\yc-\R)
+    plot[domain=0:3780, samples=500, smooth] ({0.6+0.4*\x/360-0.06*sin(\x)}, {\yc-\R*cos(\x)})
+    .. controls (4.9,\yc+\R) and (5.0,0.6) .. (5.0,0);
+  % 太い巻線: 裏側は細く、手前(上り半周)だけ太く重ねる
+  \draw[line width=0.5pt] plot[domain=0:1260, samples=200, smooth]
+    ({0.9+1.2*\x/360}, {\yc-\R*cos(\x)});
+  \foreach \k in {0,...,3}
+    \draw[line width=1.8pt, line cap=round] plot[domain=360*\k:360*\k+180, samples=40, smooth]
+      ({0.9+1.2*\x/360}, {\yc-\R*cos(\x)});
+\end{tikzpicture}

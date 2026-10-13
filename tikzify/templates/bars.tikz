@@ -1,0 +1,10 @@
+% 棒グラフ: Excel・スクショのグラフは数値を読み取って表にする
+\begin{tikzpicture}
+  \begin{axis}[
+      ybar, bar width=7mm, width=9cm, height=5.5cm, ymin=0,
+      symbolic x coords={A,B,C,D}, xtick=data, nodes near coords,
+      ylabel={件数}, enlarge x limits=0.2, axis x line*=bottom, axis y line*=left,
+    ]
+    \addplot[fill=gray!40] coordinates {(A,12) (B,30) (C,21) (D,8)};
+  \end{axis}
+\end{tikzpicture}

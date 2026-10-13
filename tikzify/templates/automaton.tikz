@@ -1,0 +1,13 @@
+% 状態遷移図・グラフ: automata + quotes。辺ラベルは "a" で書ける
+\begin{tikzpicture}[
+    >={Stealth[length=2mm]}, node distance=22mm, auto, line width=0.6pt,
+    every state/.style={minimum size=9mm},
+  ]
+  \node[state, initial]   (q0) {$q_0$};
+  \node[state, right=of q0] (q1) {$q_1$};
+  \node[state, accepting, right=of q1] (q2) {$q_2$};
+  \path[->] (q0) edge["$a$"] (q1)
+            (q1) edge["$b$"] (q2)
+            (q1) edge[loop above, "$a$"] ()
+            (q2) edge[bend left=35, "{$a,b$}"] (q0);
+\end{tikzpicture}

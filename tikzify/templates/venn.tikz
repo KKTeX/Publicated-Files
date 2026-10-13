@@ -1,0 +1,10 @@
+% ベン図・集合: 透過塗りか、\clip で共通部分だけ塗る
+\begin{tikzpicture}[line width=0.6pt]
+  \def\A{(0,0) circle[radius=1.5]}
+  \def\B{(1.8,0) circle[radius=1.5]}
+  \begin{scope}\clip \A; \fill[orange!35] \B; \end{scope}
+  \draw \A node[left=6mm] {$A$};
+  \draw \B node[right=6mm] {$B$};
+  \node at (0.9,0) {$A\cap B$};
+  \draw (-2,-2) rectangle (3.8,2) node[below left] {$U$};
+\end{tikzpicture}

@@ -1,0 +1,5 @@
+% 可換図式: tikz-cd。手書きの四角形・三角形の図式はまずこれ
+\begin{tikzcd}[row sep=large, column sep=large]
+  A \arrow[r, "f"] \arrow[d, "g"'] & B \arrow[d, "h"] \\
+  C \arrow[r, "k"'] \arrow[ru, dashed, "\exists!\,u" description] & D
+\end{tikzcd}

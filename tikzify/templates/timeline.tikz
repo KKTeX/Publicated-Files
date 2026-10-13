@@ -1,0 +1,9 @@
+% 数直線・時系列: \foreach で目盛り、区間は太線と白丸/黒丸
+\begin{tikzpicture}[>={Stealth[length=2mm]}, line width=0.6pt]
+  \draw[->] (-0.5,0) -- (8.5,0) node[right] {$x$};
+  \foreach \x in {0,...,8} \draw (\x,0.08) -- (\x,-0.08) node[below] {$\x$};
+  \draw[line width=2.2pt, blue] (2,0) -- (5,0);
+  \fill[blue] (2,0) circle[radius=1mm];
+  \draw[blue, fill=white] (5,0) circle[radius=1mm];
+  \node[above, blue] at (3.5,0.1) {$2 \le x < 5$};
+\end{tikzpicture}

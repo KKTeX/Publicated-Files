@@ -1,0 +1,15 @@
+% 幾何: 点を名前付き座標にし、角・中点・交点は calc / angles / intersections で求める
+\begin{tikzpicture}[line width=0.6pt, dot/.style={circle, fill, inner sep=1.1pt}]
+  \coordinate (A) at (0,0);
+  \coordinate (B) at (5,0);
+  \coordinate (C) at (1.6,3);
+  \coordinate (M) at ($(A)!0.5!(B)$);
+  \coordinate (H) at ($(A)!(C)!(B)$);   % C から AB への垂線の足
+  \draw (A) -- (B) -- (C) -- cycle;
+  \draw[dashed] (C) -- (H);
+  \draw (H) ++(0.25,0) -- ++(0,0.25) -- ++(-0.25,0);   % 直角記号
+  \draw (C) -- (M);
+  \pic[draw, "$\theta$", angle radius=7mm, angle eccentricity=1.45] {angle=B--A--C};
+  \foreach \p/\pos in {A/below left, B/below right, C/above, M/below, H/below}
+    \node[dot, label=\pos:$\p$] at (\p) {};
+\end{tikzpicture}

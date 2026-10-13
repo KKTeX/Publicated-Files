@@ -1,0 +1,7 @@
+% 回路図: circuitikz。素子は to[...] で置く。欧州/米国記法は文書に合わせる
+\begin{circuitikz}[european, line width=0.6pt]
+  \draw (0,0) to[V, l=$V_s$] (0,3)
+        to[R, l=$R$, -*] (3,3)
+        to[C, l_=$C$] (3,0) -- (0,0);
+  \draw (3,3) -- (5,3) to[L, l=$L$] (5,0) -- (3,0);
+\end{circuitikz}

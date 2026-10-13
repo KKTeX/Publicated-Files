@@ -1,0 +1,21 @@
+% ブロック図・フローチャート: positioning で相対配置、スタイルはローカル
+\begin{tikzpicture}[
+    node distance=8mm and 12mm, >={Stealth[length=2mm]}, line width=0.6pt,
+    blk/.style={draw, rounded corners=1.5mm, minimum width=24mm, minimum height=9mm, align=center},
+    dec/.style={draw, diamond, aspect=2, inner sep=1pt, align=center},
+    io/.style={draw, trapezium, trapezium left angle=70, trapezium right angle=110, minimum height=8mm},
+    term/.style={draw, rounded rectangle, minimum width=18mm, minimum height=7mm},
+  ]
+  \node[term] (s) {開始};
+  \node[io,  below=of s] (in) {$x$ を入力};
+  \node[blk, below=of in] (p) {$y \gets f(x)$};
+  \node[dec, below=of p] (d) {$y>0$?};
+  \node[blk, right=of d] (q) {符号を反転};
+  \node[term, below=of d] (e) {終了};
+  \draw[->] (s) -- (in);
+  \draw[->] (in) -- (p);
+  \draw[->] (p) -- (d);
+  \draw[->] (d) -- node[right, font=\small] {Yes} (e);
+  \draw[->] (d) -- node[above, font=\small] {No} (q);
+  \draw[->] (q) |- (p);
+\end{tikzpicture}

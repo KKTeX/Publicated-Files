@@ -1,0 +1,18 @@
+% 力学の図: 斜面・壁は patterns.meta、力は太い矢印、ばねは decorations
+\begin{tikzpicture}[>={Stealth[length=2.4mm]}, line width=0.6pt,
+    force/.style={->, very thick}]
+  \def\ang{25}
+  \fill[pattern={Lines[angle=45, distance=2mm]}] (0,0) -- (6,0) -- (6,-0.25) -- (0,-0.25) -- cycle;
+  \draw (0,0) -- (6,0) -- (6,{6*tan(\ang)}) -- cycle;
+  \draw (1,0) arc[start angle=0, end angle=\ang, radius=1] node[midway, right] {$\alpha$};
+  \begin{scope}[shift={(3.6,{3.6*tan(\ang)})}, rotate=\ang]
+    \draw[fill=gray!20] (-0.5,0) rectangle (0.5,0.7);
+    \coordinate (G) at (0,0.35);
+    \draw[force] (G) -- ++(0,1.0) node[above] {$N$};
+    \draw[force] (G) -- ++(-1.1,0) node[left] {$f$};
+    \draw[decorate, decoration={coil, segment length=2.5mm, amplitude=1.6mm}]
+      (0.5,0.35) -- (2.55,0.35);
+    \draw[very thick] (2.6,0) -- (2.6,0.75);   % ばねの固定端
+  \end{scope}
+  \draw[force] (G) -- ++(0,-1.3) node[below] {$mg$};
+\end{tikzpicture}

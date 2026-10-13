@@ -1,0 +1,10 @@
+% 木構造: forest は括弧記法で書け、間隔を自動で揃える(tikzpicture ではなく forest 環境)
+\begin{forest}
+  for tree={draw, rounded corners=1mm, minimum height=6mm, inner xsep=2mm,
+            l sep=8mm, s sep=4mm, edge={-{Stealth[length=1.6mm]}}}
+  [根
+    [A [A1] [A2]]
+    [B [B1]]
+    [C [C1] [C2] [C3]]
+  ]
+\end{forest}

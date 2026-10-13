@@ -1,0 +1,23 @@
+% 関数・データのグラフ: pgfplots。曲線はなぞらず式かデータで描く
+\begin{tikzpicture}
+  \begin{axis}[
+      width=9cm, height=6cm, axis lines=middle,
+      xlabel={$t$}, ylabel={$x(t)$}, xmin=0, xmax=6.5, ymin=-1.2, ymax=1.2,
+      xtick={0,3.1416,6.2832}, xticklabels={$0$,$\pi$,$2\pi$},
+      legend pos=north east, legend style={font=\small, draw=none},
+    ]
+    \addplot[thick, blue, domain=0:6.3, samples=150] {exp(-0.3*x)*cos(deg(2*x))};
+    \addlegendentry{理論値}
+    \addplot[only marks, mark=o, red] table {
+      t    x
+      0.0  1.00
+      1.0  -0.31
+      2.0  -0.36
+      3.0  0.39
+      4.0  -0.04
+      5.0  -0.18
+      6.0  0.14
+    };
+    \addlegendentry{測定値}
+  \end{axis}
+\end{tikzpicture}
