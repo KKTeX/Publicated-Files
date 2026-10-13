@@ -48,7 +48,7 @@ figs/<name>.snippet.tex    貼り付け用 figure 環境 + 必要プリアンブ
 | PDF の中の画像(入試問題・論文に多い。線画は画像、ラベルは文字として上に重なっている) | `svg2tikz.py --crop` で画像の配置とラベル位置を取り、`pdfimages -png` で取り出した画像を grid.py へ(`references/sources.md`) |
 | 図の元データ(Mermaid, Graphviz dot, draw.io XML, Excalidraw JSON, matplotlibコード, CSV/Excelの数値) | ソースから構造と数値を直接読む。画像を経由しない |
 | PowerPoint / Keynote / Word の図 | PDF に書き出してもらい(またはアプリで書き出し)ベクター経路へ。無理ならスクショで画像経路 |
-| 論文PDFの一部 | `pdftocairo -pdf -f N -l N -x .. -y .. -W .. -H ..` で切り出してベクター経路。ラスター図なら画像経路 |
+| 論文PDFの一部 | `svg2tikz.py PDF --page N --crop X,Y,W,H` でその範囲だけをベクターの下書きにする(`references/sources.md`)。ラスター図なら画像経路 |
 
 形式ごとの細かい手順は `references/sources.md`。
 

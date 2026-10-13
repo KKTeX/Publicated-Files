@@ -28,12 +28,15 @@
 cp -R tikzify ~/.claude/skills/
 ```
 
-Claude Code で「この図を TikZ にして」「手書きを tikz で清書して論文に入れたい」のように頼むと使われます。手順の詳細は [`SKILL.md`](./SKILL.md) にあります。
+Claude Code で「この図を TikZ にして」「手書きを tikz で清書して論文に入れたい」のように頼むと使われます。
+
+使い方は [利用マニュアル(PDF)](./manual/tikzify-manual.pdf)([TeX ソース](./manual/tikzify-manual.tex))にまとめてあります。Claude が従う手順の詳細は [`SKILL.md`](./SKILL.md) にあります。
 
 ## 構成
 
 ```
 SKILL.md            手順(入力の種類ごとの経路、書き方の規則、照合、挿入)
+manual/             利用マニュアル(tikzify-manual.tex と組版済み PDF)
 references/         図の種類と道具、手書き図の読み方、入力形式ごとの取り込み、よくあるエラー
 templates/          図の種類別の雛形 12 種(フローチャート、状態遷移、木、可換図式、回路、
                     pgfplots、棒グラフ、幾何、力学、数直線、ベン図、ソレノイド)

@@ -1,0 +1,16 @@
+% traced from photo.jpg (grid frame: 12 cm wide, origin bottom-left)
+\begin{tikzpicture}[
+    >={Stealth[length=2.2mm]}, line width=0.8pt,
+    block/.style={draw, rounded corners=2.5mm, minimum width=2.25cm, minimum height=1.3cm},
+    proc/.style={draw, ellipse, minimum width=2.85cm, minimum height=1.6cm},
+    sink/.style={draw, minimum width=2.35cm, minimum height=0.95cm},
+  ]
+  \node[block] (in)   at (2.5,4.6) {Input};
+  \node[proc]  (f)    at (7.6,4.6) {$f(x)$};
+  \node[sink]   (outp) at (7.6,1.43) {Output};
+
+  \draw[->] (in) -- (f);
+  \draw[->] (f) -- (outp);
+  \draw[->] (in.north) .. controls (2.6,6.4) and (5.4,6.7) .. (f.115)
+    node[pos=0.5, above] {feedback};
+\end{tikzpicture}
