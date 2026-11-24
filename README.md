@@ -98,6 +98,7 @@ Python 3.7 以上、ImageMagick 7、poppler、TeX 環境が必要です。
 | 鉄緑の校内模試模試を作ろう（非公式） | [問題冊子](./Qiita/鉄緑の校内模試模試を作ろう（非公式）/mock-exam.tex)・[解答用紙](./Qiita/鉄緑の校内模試模試を作ろう（非公式）/mock-answersheet.tex) | [問題冊子](./Qiita/鉄緑の校内模試模試を作ろう（非公式）/mock-exam.pdf)・[解答用紙](./Qiita/鉄緑の校内模試模試を作ろう（非公式）/mock-answersheet.pdf) |
 | TeXで共通テスト数学の解答用紙を再現 | [`.tex`](./Qiita/TeXで共通テスト数学の解答用紙を再現/qiita-common-test-math-answersheet.tex) | [`.pdf`](./Qiita/TeXで共通テスト数学の解答用紙を再現/qiita-common-test-math-answersheet.pdf) |
 | 東大の解答用紙をTikZで再現（非公式） | [理科](./Qiita/東大の解答用紙をTikZで再現（非公式）/rika.tex)・[数学（理系）](./Qiita/東大の解答用紙をTikZで再現（非公式）/sugaku.tex) | [理科](./Qiita/東大の解答用紙をTikZで再現（非公式）/rika-a3.pdf)・[数学（理系）](./Qiita/東大の解答用紙をTikZで再現（非公式）/sugaku-a3.pdf) |
+| チャッピーと東大国語の解答用紙の再現作成&採点（非公式） | — | [用紙見本](./Qiita/チャッピーと東大国語の解答用紙の再現作成&採点/用紙見本.pdf) |
 
 `KKchemstruct` の作成例をコンパイルする場合は、先に
 [`KKTeX/KKchemstruct`](https://github.com/KKTeX/KKchemstruct) の
