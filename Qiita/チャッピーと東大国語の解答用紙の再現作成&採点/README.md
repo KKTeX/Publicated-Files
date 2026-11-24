@@ -11,7 +11,7 @@ GitHub上の公開先: <https://github.com/KKTeX/Publicated-Files/tree/main/Qiit
 - `用紙見本.pdf`: 見本の用紙（A4 横・3 ページ）。作業フォルダに入れて使う
 - `手書き答案.swift`: 発行した印刷用 PDF に手書き風の答案を書き込み、スキャン風の答案 PDF にするスクリプト。作業フォルダに入れて使う
 - `解答例.json`: `手書き答案.swift` に渡す解答の例（2 人分）
-- `figures/`: 記事の画像と実演動画 `demo.mp4`（16:9・約 23 秒・無音）
+- `figures/`: 記事の画像と実演動画 `demo.mp4`（16:9・約 44 秒・無音）
 
 ## 手書き答案.swift
 
