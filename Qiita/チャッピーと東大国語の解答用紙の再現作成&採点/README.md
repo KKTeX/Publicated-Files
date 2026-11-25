@@ -8,10 +8,12 @@ GitHub上の公開先: <https://github.com/KKTeX/Publicated-Files/tree/main/Qiit
 
 - `qiita-todai-kokugo-scoring64.md`: 記事の原稿
 - `プロンプト.txt`: ChatGPT に送ったプロンプト全文
+- `修正プロンプト.txt`: 仕上がりを見て直させた 2 回目のプロンプト（記事の追記）
+- `ChatGPT実行記録.md`: 2 回のプロンプトの履歴、使ったモデル・アプリのバージョン、かかった時間、ChatGPT の報告
 - `用紙見本.pdf`: 見本の用紙（A4 横・3 ページ）。作業フォルダに入れて使う
 - `手書き答案.swift`: 発行した印刷用 PDF に手書き風の答案を書き込み、スキャン風の答案 PDF にするスクリプト。作業フォルダに入れて使う
 - `解答例.json`: `手書き答案.swift` に渡す解答の例（2 人分）
-- `figures/`: 記事の画像と実演動画 `demo.mp4`（16:9・約 44 秒・無音）
+- `figures/`: 記事の画像と実演動画 `demo.mp4`（16:9・約 44 秒・無音。1 回目だけを撮ったもの）。`fix-marks.png` と `fix-mae.png` は 2 回目で直す前と直したあと
 
 ## 手書き答案.swift
 
