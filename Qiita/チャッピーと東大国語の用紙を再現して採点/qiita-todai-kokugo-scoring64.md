@@ -1,12 +1,12 @@
 ---
-title: チャッピーと東大国語の解答用紙の再現作成&採点
+title: チャッピーと東大国語の用紙を再現して採点
 tags: ChatGPT プロンプト 受験 Scoring64 採点
 author: KKTeX
 slide: false
 ---
 **非公式**です。東京大学とは関係ありません。
 
-ChatGPT（Work、GPT-6.2 Sol・思考量「軽」）にこのプロンプトを 1 回送ると、[Scoring64](https://scoring64.fermion.company/) で東大国語の形式の解答用紙を組み、2 人分の答案を採点して返却用 PDF まで作ります（約 36 分）。見本の用紙・スクリプト・記録は[公開ディレクトリ](https://github.com/KKTeX/Publicated-Files/tree/main/Qiita/チャッピーと東大国語の解答用紙の再現作成&採点)にあります。
+ChatGPT（Work、GPT-6.2 Sol・思考量「軽」）にこのプロンプトを 1 回送ると、[Scoring64](https://scoring64.fermion.company/) で東大国語の形式の解答用紙を組み、2 人分の答案を採点して返却用 PDF まで作ります（約 36 分）。見本の用紙・スクリプト・記録は[公開ディレクトリ](https://github.com/KKTeX/Publicated-Files/tree/main/Qiita/チャッピーと東大国語の用紙を再現して採点)にあります。
 
 <!-- 動画：figures/demo.mp4（X に投稿し、その URL を 1 行で貼って埋め込む） -->
 
