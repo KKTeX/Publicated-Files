@@ -4,6 +4,8 @@ Qiita 記事用の公開ファイルです。ChatGPT（Work）が Scoring64 の�
 
 **非公式**です。東京大学とは関係ありません。`用紙見本.pdf` は Scoring64 で組んだ再現で、大学名・年度・ロゴは入れていません。実際の試験問題・受験者情報は含みません（答案の氏名と解答は実演用の作り物です）。
 
+Qiita の記事: <https://qiita.com/KKTeX/items/5f1bedbeadd540352c3d>
+
 GitHub上の公開先: <https://github.com/KKTeX/Publicated-Files/tree/main/Qiita/チャッピーと東大国語の用紙を再現して採点>
 
 - `qiita-todai-kokugo-scoring64.md`: 記事の原稿
