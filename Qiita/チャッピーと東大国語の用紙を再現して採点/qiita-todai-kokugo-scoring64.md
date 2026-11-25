@@ -10,7 +10,7 @@ slide: false
 
 ChatGPT（GPT-6.2 Sol・思考量「軽」）にこのプロンプトを 1 回送ると、[Scoring64](https://scoring64.fermion.company/) で東大国語の形式の解答用紙を組み、2 人分の答案を採点して返却用 PDF まで作ります。見本の用紙・スクリプト・記録は[公開ディレクトリ](https://github.com/KKTeX/Publicated-Files/tree/main/Qiita/チャッピーと東大国語の用紙を再現して採点)にあります。
 
-<!-- 動画：figures/demo.mp4（X に投稿し、その URL を 1 行で貼って埋め込む） -->
+https://x.com/KKTeX_LaTeX3/status/2125448842112041198
 
 ![ChatGPT が組んだ用紙（1 ページ目）](figures/sheet-page1.png)
 
